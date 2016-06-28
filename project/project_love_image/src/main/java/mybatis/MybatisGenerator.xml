@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8"?>  
+<!DOCTYPE generatorConfiguration    
+      PUBLIC "-//mybatis.org//DTD MyBatis Generator Configuration 1.0//EN"    
+      "http://mybatis.org/dtd/mybatis-generator-config_1_0.dtd">  
+  
+<generatorConfiguration>  
+  
+    <context id="tables" targetRuntime="MyBatis3">  
+        <plugin type="org.mybatis.generator.plugins.SerializablePlugin"></plugin>  
+          
+        <!-- import mapper -->  
+        <!-- 
+        <plugin type="org.mybatis.generator.plugins.MapperConfigPlugin">  
+            <property name="fileName" value="GeneratedMapperConfig.xml" />  
+            <property name="targetPackage" value="mybatis/mapper" />  
+            <property name="targetProject" value="src/main/java" />  
+        </plugin>  
+         --> 
+          
+        <!-- 是否去除自动生成的注释 -->  
+        <commentGenerator>  
+            <property name="suppressAllComments" value="true" />  
+        </commentGenerator>  
+          
+        <!-- jdbc连接配置 -->  
+		<jdbcConnection driverClass="com.mysql.jdbc.Driver"
+			connectionURL="jdbc:mysql://101.201.74.219:3306/i_image" userId="root"
+			password="TuoDe988988root">
+		</jdbcConnection>
+          
+        <!-- java类型配置 -->  
+        <javaTypeResolver>  
+            <property name="forceBigDecimals" value="false" />  
+        </javaTypeResolver>  
+  
+        <!-- generate Model -->  
+        <javaModelGenerator targetPackage="love.image.model"   
+            targetProject="src/main/java">  
+            <property name="enableSubPackages" value="true" />  
+        </javaModelGenerator>  
+  
+        <!-- generate xml -->  
+        <sqlMapGenerator targetPackage="love.image.mapper"   
+            targetProject="src/main/java">  
+            <property name="enableSubPackages" value="true" />  
+        </sqlMapGenerator>  
+  
+        <!-- generate dao -->  
+        <javaClientGenerator type="XMLMAPPER" targetPackage="love.image.dao"   
+            targetProject="src/main/java">  
+            <property name="enableSubPackages" value="true" />  
+        </javaClientGenerator>  
+          
+		<!-- 为哪些表生成代码 tableName:表名 schema:不用填写,其余属性是禁用例子查询的生成 -->
+		<table schema="" tableName="t_user" domainObjectName="t_user"
+			enableSelectByExample="false" selectByExampleQueryId="false"
+			enableUpdateByExample="false" enableDeleteByExample="false" 
+			enableCountByExample="false">
+			<property name="useActualColumnNames" value="true" />
+		</table>
+          
+    </context>  
+</generatorConfiguration>    
