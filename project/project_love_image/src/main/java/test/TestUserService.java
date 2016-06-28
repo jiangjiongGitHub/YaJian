@@ -4,6 +4,7 @@ import love.image.model.t_user;
 import love.image.service.RedisService;
 import love.image.service.UserService;
 
+import java.util.Date;
 import java.util.List;
 
 import org.apache.log4j.Logger;
@@ -33,10 +34,5 @@ public class TestUserService {
 	public void testQueryById1() {
 		t_user userInfo = userService.selectByPrimaryKey(1);
 		LOGGER.info(JSON.toJSON(userInfo));
-
-		ShardedJedisPipeline p = redisService.pipelined();
-
-		List<Object> results = p.syncAndReturnAll();
-
 	}
 }
