@@ -16,7 +16,7 @@ public class UpdateTimer {
 
 	public void execute() {
 
-		log.info("\n\n定时任务：XXX");
+		log.info("\n\n定时任务：To Do Something.");
 		// synchronized (this) {
 		// log.info("bgn -- " + System.currentTimeMillis());
 		// orderService.someBodyToBuy();
