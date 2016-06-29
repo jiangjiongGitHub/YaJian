@@ -19,20 +19,14 @@ import redis.clients.jedis.ShardedJedisPipeline;
 import com.alibaba.fastjson.JSON;
 
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(locations = { "classpath:spring.xml" })
+@ContextConfiguration(locations = { "classpath:spring_mvc.xml" })
 public class TestUserService {
 
 	private static final Logger LOGGER = Logger
 			.getLogger(TestUserService.class);
 
-	@Autowired
-	private UserService userService;
-	@Autowired
-	private RedisService redisService;
-
 	@Test
 	public void testQueryById1() {
-		t_user userInfo = userService.selectByPrimaryKey(1);
-		LOGGER.info(JSON.toJSON(userInfo));
+		LOGGER.info("Test");
 	}
 }

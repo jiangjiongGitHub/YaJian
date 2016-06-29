@@ -109,7 +109,8 @@
 			<artifactId>druid</artifactId>
 			<version>1.0.19</version>
 		</dependency>
-
+	
+		<!-- spring AOP -->
 		<dependency>
 			<groupId>org.aspectj</groupId>
 			<artifactId>aspectjweaver</artifactId>
@@ -193,23 +194,11 @@
 			<version>2.8.0</version>
 		</dependency>
 
-
-
 		<!-- quartz -->
 		<dependency>
 			<groupId>org.springframework</groupId>
 			<artifactId>spring-context-support</artifactId>
 			<version>3.2.9.RELEASE</version>
-
-			<!-- 移除quartz防止版本冲突 -->
-			<!-- 
-			<exclusions>
-				<exclusion>
-					<artifactId>org.quartz-scheduler</artifactId>
-					<groupId>quartz</groupId>
-				</exclusion>
-			</exclusions>
-			 -->
 		</dependency>
 
 		<dependency>

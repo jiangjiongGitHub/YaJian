@@ -17,25 +17,26 @@ import org.mybatis.generator.internal.DefaultShellCallback;
 
 /**
  * mybatis反向工具，可以使用此生成所需代码。
- * 
  */
 public class MyBatisGeneratorTool {
 
 	public static void main(String[] args) {
-		String path=MyBatisGeneratorTool.class.getResource("").getPath()+"MybatisGenerator.xml";
-        System.out.println("path -- "+path);  
-        
+		String path = MyBatisGeneratorTool.class.getResource("").getPath()
+				+ "MybatisGenerator.xml";
+		System.out.println("path -- " + path);
+
 		try {
 			List<String> warnings = new ArrayList<String>();
 			ConfigurationParser cp = new ConfigurationParser(warnings);
-			
+
 			File configFile = new File(path);
 			Configuration config = cp.parseConfiguration(configFile);
-			
+
 			boolean overwrite = true;
 			DefaultShellCallback callback = new DefaultShellCallback(overwrite);
-			
-			MyBatisGenerator myBatisGenerator = new MyBatisGenerator(config, callback, warnings);
+
+			MyBatisGenerator myBatisGenerator = new MyBatisGenerator(config,
+					callback, warnings);
 			myBatisGenerator.generate(null);
 		} catch (IOException e) {
 			e.printStackTrace();
@@ -49,5 +50,4 @@ public class MyBatisGeneratorTool {
 			e.printStackTrace();
 		}
 	}
-
 }

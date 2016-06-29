@@ -24,8 +24,7 @@
           
         <!-- jdbc连接配置 -->  
 		<jdbcConnection driverClass="com.mysql.jdbc.Driver"
-			connectionURL="jdbc:mysql://101.201.74.219:3306/i_image" userId="root"
-			password="TuoDe988988root">
+			connectionURL="jdbc:mysql://ip:port/db" userId="" password="">
 		</jdbcConnection>
           
         <!-- java类型配置 -->  

@@ -31,12 +31,6 @@ public class AppInterceptor implements HandlerInterceptor {
 
 	private Log log = LogFactory.getLog(AppInterceptor.class);
 
-	@Autowired
-	private RedisService redisService;
-
-	@Autowired
-	private UserService userService;
-
 	public AppInterceptor() {
 
 	}
@@ -58,31 +52,6 @@ public class AppInterceptor implements HandlerInterceptor {
 		String authJson = request.getParameter("auth");
 		String infoJson = request.getParameter("info");
 		String sign = request.getParameter("sign");
-
-		if (!StringUtil.isBlank(authJson))
-			log.info("auth的值是:"
-					+ (authJson).replace("\n", "").replace("\r", "")
-							.replace(" ", ""));
-		if (!StringUtil.isBlank(infoJson))
-			log.info("info的值是:"
-					+ (infoJson).replace("\n", "").replace("\r", "")
-							.replace(" ", ""));
-		log.info("sign的值是:" + sign);
-
-		if ("/YiYuanYunGou/order/shoppingAlipayReceive.yyyg".equals(requestUri
-				.trim())
-				|| "/YiYuanYunGou/order/rechargeAlipayReceive.yyyg"
-						.equals(requestUri.trim())) {
-			log.info("支付宝回调>>>> >>>> >>>> >>>>");
-			return true;
-		}
-		if ("/YiYuanYunGou/order/shoppingTenReceive.yyyg".equals(requestUri
-				.trim())
-				|| "/YiYuanYunGou/order/rechargeTenReceive.yyyg"
-						.equals(requestUri.trim())) {
-			log.info("微信回调>>>> >>>> >>>> >>>>");
-			return true;
-		}
 
 		// 登录接口判断重复登录
 		if (requestUri.equals("/YiYuanYunGou/user/login.yyyg")) {
