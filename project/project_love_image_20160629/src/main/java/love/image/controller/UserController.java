@@ -8,7 +8,10 @@ import java.util.Date;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 
+import love.image.model.Student;
+import love.image.model.StudentDao;
 import love.image.model.t_user;
 import love.image.service.RedisService;
 import love.image.service.UserService;
@@ -16,8 +19,10 @@ import love.image.util.JJ_ImageUtil;
 import love.image.util.MD5;
 import love.image.util.StringUtil;
 
+import org.apache.catalina.Session;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -32,12 +37,11 @@ public class UserController {
 	@RequestMapping("/index")
 	public String index(HttpServletRequest request,
 			HttpServletResponse response,
-			@RequestParam(required = false) MultipartFile file) {
+			@RequestParam(required = false) MultipartFile file, Model model)
+			throws Exception {
 		// http://192.168.020.122:15000/love_image/user/index.home
 		// http://127.000.000.001:15000/love_image/user/index.home
 
-		String wh = "w";
-		int wh_size = 1000;
 		String path1 = request.getSession().getServletContext().getRealPath("")
 				+ File.separator;
 		String path2 = new SimpleDateFormat("yyyyMM").format(new Date())
@@ -51,7 +55,12 @@ public class UserController {
 			filePath.mkdirs();
 		}
 
+		StudentDao stuDao = new StudentDao(path1 + "db/students.xml");
+
 		try {
+			String wh = "w";
+			int wh_size = 1000;
+
 			if (file != null && file.getInputStream().available() > 0) {
 
 				java.io.InputStream in = file.getInputStream();
@@ -81,10 +90,10 @@ public class UserController {
 					buffImg.getGraphics().drawImage(
 							srcImgBuffer.getScaledInstance(width, height,
 									java.awt.Image.SCALE_SMOOTH), 0, 0, null);
-
+					// write jpg
 					javax.imageio.ImageIO.write(buffImg, "JPEG",
 							new java.io.File(path1 + path2 + "_" + name));
-
+					// read jpg
 					java.awt.Image img = javax.imageio.ImageIO
 							.read(new java.io.File(path1 + path2 + "_" + name));
 
@@ -99,8 +108,9 @@ public class UserController {
 						g.drawImage(img, 0, (width_new - height_new) / 2,
 								width_new, height_new, java.awt.Color.white,
 								null);
-
 						g.dispose();
+
+						// write jpg
 						javax.imageio.ImageIO.write(buffImg_new, "JPEG",
 								new java.io.File(path1 + path2 + name));
 					} else {
@@ -113,17 +123,34 @@ public class UserController {
 						g.drawImage(img, (height_new - width_new) / 2, 0,
 								width_new, height_new, java.awt.Color.white,
 								null);
-
 						g.dispose();
+
+						// write jpg
 						javax.imageio.ImageIO.write(buffImg_new, "JPEG",
 								new java.io.File(path1 + path2 + name));
 					}
 				}
+
+				Student s = new Student();
+				s.setId((stuDao.length() + 1) + "");
+				s.setName(path2 + name);
+				stuDao.create(s);
+
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-		return "/user/index";
+
+		model.addAttribute("image", stuDao.getall());
+
+		// HttpSession session = request.getSession();
+		// session.setAttribute("image", stuDao.getall());
+
+		return "/user/image";
+	}
+
+	public static void main(String[] args) throws Exception {
+		StudentDao stuDao = new StudentDao("students.xml");
 	}
 
 }
