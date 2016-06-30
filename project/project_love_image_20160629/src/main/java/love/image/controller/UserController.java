@@ -8,7 +8,9 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.text.SimpleDateFormat;
+import java.util.Collections;
 import java.util.Date;
+import java.util.List;
 
 import javax.imageio.ImageIO;
 import javax.servlet.http.HttpServletRequest;
@@ -162,7 +164,9 @@ public class UserController {
 			e.printStackTrace();
 		}
 
-		model.addAttribute("image", stuDao.getall());
+		List<Student> getall = stuDao.getall();
+		Collections.reverse(getall);
+		model.addAttribute("image", getall);
 
 		// HttpSession session = request.getSession();
 		// session.setAttribute("image", "true");
