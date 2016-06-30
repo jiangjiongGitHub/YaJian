@@ -20,6 +20,10 @@ String basePath = request.getScheme()+"://"+request.getServerName()+":"+request.
 		/* bj */
 	</style>
 	
+	<style type="text/css">
+		img {max-width: 100%; height: auto; width: auto\9;}
+	</style>
+	
 </head>
 
 <body>
@@ -47,29 +51,24 @@ String basePath = request.getScheme()+"://"+request.getServerName()+":"+request.
 			<table border="1" bordercolor="#d2d8db" width="95%" align="center" style="text-align:center; font-size:13px;">
 				<tr style="height: 50px">
 					<!-- 
-					 -->
 					<td width="3%"  bgcolor="#e5e5e5"><input id="checkbox_all" name="checkbox_all" type="checkbox" onclick="checkAll()"></td>
 					<td width="3%"  bgcolor="#e5e5e5">序号</td>
 					<td width="10%" bgcolor="#e5e5e5">标题</td>
+					 -->
 					<td width="80%" bgcolor="#e5e5e5">图片</td>
 				</tr>
 				
 				<c:forEach items="${image}" var="m" varStatus="p">
 					<tr>
 						<!-- 
-						 -->
-						<td>
-							<input name="checkbox_name" type="checkbox" value="${m.id}">
-						</td>
-						<td>
-							${p.count+(pageModel.currentPage-1)*pageModel.pageSize}
-						</td>
-						
+						<td><input name="checkbox_name" type="checkbox" value="${m.id}"></td>
+						<td>${p.count+(pageModel.currentPage-1)*pageModel.pageSize} </td>
 						<td title="">${m.id }</td>
+						 -->
 						<td title="">
 							<c:if test="${not empty m.name }">
 								<a title="" href="${m.name }" target="_black" >
-								<img alt="" src="${m.name }" width="500px" height="500px" /></a>
+								<img alt="" src="${m.name }" width=" " height=" " /></a>
 							</c:if>
 						</td>
 					</tr>
