@@ -105,7 +105,7 @@ public class UserController {
 							width_new, BufferedImage.TYPE_INT_RGB);
 
 					Graphics2D g = buffImg_new.createGraphics();
-					g.setColor(java.awt.Color.white);
+					g.setColor(new Color(255, 255, 255, 0));
 					g.fillRect(0, 0, width_new, width_new);
 					g.drawImage(img, 0, (width_new - height_new) / 2,
 							width_new, height_new, Color.white, null);
@@ -142,7 +142,7 @@ public class UserController {
 					BufferedImage buffImg_new = new BufferedImage(height_new,
 							height_new, BufferedImage.TYPE_INT_RGB);
 					Graphics2D g = buffImg_new.createGraphics();
-					g.setColor(java.awt.Color.white);
+					g.setColor(new Color(255, 255, 255, 0));
 					g.fillRect(0, 0, height_new, height_new);
 					g.drawImage(img, (height_new - width_new) / 2, 0,
 							width_new, height_new, Color.white, null);
