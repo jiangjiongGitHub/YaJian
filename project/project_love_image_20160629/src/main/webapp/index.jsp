@@ -17,7 +17,7 @@ String basePath = request.getScheme()+"://"+request.getServerName()+":"+request.
 
 <body>
 
-	<div style="background-color: rgb(202, 234, 202); width: 1000px; height: 800px">
+	<div style="background-color: rgb(202, 234, 202)">
 		<a href="#">图片</a>
 		<form method="post" action="user/index.home" method="post" enctype="multipart/form-data">
 			<table border="1" cellpadding="0" cellspacing="0" style="width: 100%">
@@ -26,15 +26,7 @@ String basePath = request.getScheme()+"://"+request.getServerName()+":"+request.
 					<td width="80%">内容</td>
 				</tr>
 				<tr>
-					<td>auth</td>
-					<td><input type="text" name="auth" value='{"imei":"123456789"}'/></td>
-				</tr>
-				<tr>
-					<td>info</td>
-					<td><input type="text" name="info" value='{"userId":"1"}'/></td>
-				</tr>
-				<tr>
-					<td>avatar</td>
+					<td>file</td>
 					<td><input type="file" name="file" value=''/></td>
 				</tr>
 				<tr>

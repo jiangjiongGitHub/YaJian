@@ -1,11 +1,16 @@
 package love.image.controller;
 
+import java.awt.Color;
+import java.awt.Graphics2D;
+import java.awt.Image;
+import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
+import javax.imageio.ImageIO;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
@@ -58,84 +63,100 @@ public class UserController {
 		StudentDao stuDao = new StudentDao(path1 + "db/students.xml");
 
 		try {
-			String wh = "w";
-			int wh_size = 1000;
+			int wh_size = 1500;
 
 			if (file != null && file.getInputStream().available() > 0) {
 
-				java.io.InputStream in = file.getInputStream();
-				java.awt.image.BufferedImage srcImgBuffer = javax.imageio.ImageIO
-						.read(in);
+				InputStream in = file.getInputStream();
+				BufferedImage srcImgBuffer = ImageIO.read(in);
 
 				int width_old = srcImgBuffer.getWidth();
 				int height_old = srcImgBuffer.getHeight();
 
-				System.out.println(width_old);
-				System.out.println(height_old);
+				System.out.println("width_old -- " + width_old);
+				System.out.println("height_old -- " + height_old);
 
-				if ("w".equals(wh)) {
+				if (width_old >= height_old) {
+					System.out.println("width_old >= height_old");
+
 					int width = wh_size;
 					int height = height_old * wh_size / width_old;
 
-					java.awt.image.BufferedImage buffImg = new java.awt.image.BufferedImage(
-							width, height,
-							java.awt.image.BufferedImage.TYPE_INT_RGB);
+					BufferedImage buffImg = new BufferedImage(width, height,
+							BufferedImage.TYPE_INT_RGB);
 
 					int width_new = buffImg.getWidth();
 					int height_new = buffImg.getHeight();
 
-					System.out.println(width_new);
-					System.out.println(height_new);
+					System.out.println("width_new -- " + width_new);
+					System.out.println("height_new -- " + height_new);
 
 					buffImg.getGraphics().drawImage(
 							srcImgBuffer.getScaledInstance(width, height,
-									java.awt.Image.SCALE_SMOOTH), 0, 0, null);
+									Image.SCALE_SMOOTH), 0, 0, null);
 					// write jpg
-					javax.imageio.ImageIO.write(buffImg, "JPEG",
-							new java.io.File(path1 + path2 + "_" + name));
+					ImageIO.write(buffImg, "JPEG", new File(path1 + path2 + "_"
+							+ name));
 					// read jpg
-					java.awt.Image img = javax.imageio.ImageIO
-							.read(new java.io.File(path1 + path2 + "_" + name));
+					Image img = ImageIO.read(new File(path1 + path2 + "_"
+							+ name));
 
-					if (width_new >= height_new) {
-						java.awt.image.BufferedImage buffImg_new = new java.awt.image.BufferedImage(
-								width_new, width_new,
-								java.awt.image.BufferedImage.TYPE_INT_RGB);
+					BufferedImage buffImg_new = new BufferedImage(width_new,
+							width_new, BufferedImage.TYPE_INT_RGB);
 
-						java.awt.Graphics2D g = buffImg_new.createGraphics();
-						g.setColor(java.awt.Color.white);
-						g.fillRect(0, 0, width_new, width_new);
-						g.drawImage(img, 0, (width_new - height_new) / 2,
-								width_new, height_new, java.awt.Color.white,
-								null);
-						g.dispose();
+					Graphics2D g = buffImg_new.createGraphics();
+					g.setColor(java.awt.Color.white);
+					g.fillRect(0, 0, width_new, width_new);
+					g.drawImage(img, 0, (width_new - height_new) / 2,
+							width_new, height_new, Color.white, null);
+					g.dispose();
 
-						// write jpg
-						javax.imageio.ImageIO.write(buffImg_new, "JPEG",
-								new java.io.File(path1 + path2 + name));
-					} else {
-						java.awt.image.BufferedImage buffImg_new = new java.awt.image.BufferedImage(
-								height_new, height_new,
-								java.awt.image.BufferedImage.TYPE_INT_RGB);
-						java.awt.Graphics2D g = buffImg_new.createGraphics();
-						g.setColor(java.awt.Color.white);
-						g.fillRect(0, 0, height_new, height_new);
-						g.drawImage(img, (height_new - width_new) / 2, 0,
-								width_new, height_new, java.awt.Color.white,
-								null);
-						g.dispose();
+					// write jpg
+					ImageIO.write(buffImg_new, "JPEG", new File(path1 + path2
+							+ name));
+				} else {
+					System.out.println("width_old < height_old");
 
-						// write jpg
-						javax.imageio.ImageIO.write(buffImg_new, "JPEG",
-								new java.io.File(path1 + path2 + name));
-					}
+					int height = wh_size;
+					int width = width_old * wh_size / height_old;
+
+					BufferedImage buffImg = new BufferedImage(width, height,
+							BufferedImage.TYPE_INT_RGB);
+
+					int width_new = buffImg.getWidth();
+					int height_new = buffImg.getHeight();
+
+					System.out.println("width_new -- " + width_new);
+					System.out.println("height_new -- " + height_new);
+
+					buffImg.getGraphics().drawImage(
+							srcImgBuffer.getScaledInstance(width, height,
+									Image.SCALE_SMOOTH), 0, 0, null);
+					// write jpg
+					ImageIO.write(buffImg, "JPEG", new File(path1 + path2 + "_"
+							+ name));
+					// read jpg
+					Image img = ImageIO.read(new File(path1 + path2 + "_"
+							+ name));
+
+					BufferedImage buffImg_new = new BufferedImage(height_new,
+							height_new, BufferedImage.TYPE_INT_RGB);
+					Graphics2D g = buffImg_new.createGraphics();
+					g.setColor(java.awt.Color.white);
+					g.fillRect(0, 0, height_new, height_new);
+					g.drawImage(img, (height_new - width_new) / 2, 0,
+							width_new, height_new, Color.white, null);
+					g.dispose();
+
+					// write jpg
+					ImageIO.write(buffImg_new, "JPEG", new File(path1 + path2
+							+ name));
 				}
 
 				Student s = new Student();
 				s.setId((stuDao.length() + 1) + "");
 				s.setName(path2 + name);
 				stuDao.create(s);
-
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -144,7 +165,7 @@ public class UserController {
 		model.addAttribute("image", stuDao.getall());
 
 		// HttpSession session = request.getSession();
-		// session.setAttribute("image", stuDao.getall());
+		// session.setAttribute("image", "true");
 
 		return "/user/image";
 	}

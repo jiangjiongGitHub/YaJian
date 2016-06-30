@@ -1,13 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <students> 
-  <student id="1"> 
-    <name>a</name> 
-  </student>  
-  <student id="2"> 
-    <name>b</name> 
-  </student>  
-  <student id="3"> 
-    <name>c</name> 
-  </student>  
+
 </students>
