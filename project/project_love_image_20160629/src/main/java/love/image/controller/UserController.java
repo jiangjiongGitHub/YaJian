@@ -62,7 +62,7 @@ public class UserController {
 			filePath.mkdirs();
 		}
 
-		StudentDao stuDao = new StudentDao(path1 + "db/students.xml");
+		StudentDao stuDao = new StudentDao(path1 + "db/xml/students.xml");
 
 		try {
 			int wh_size = 1500;
