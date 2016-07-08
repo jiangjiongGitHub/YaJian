@@ -1,8 +1,11 @@
 package test;
 
+import java.awt.AlphaComposite;
+import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.Graphics2D;
 import java.awt.Image;
+import java.awt.Transparency;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.InputStream;
@@ -57,7 +60,7 @@ public class ImageFile {
 			String path2 = new SimpleDateFormat("yyyyMM").format(new Date())
 					+ File.separator;
 			String name = new SimpleDateFormat("yyyyMMddHHmmssSSS")
-					.format(new Date()) + ".jpg";
+					.format(new Date()) + ".png";
 			System.out.println(path1 + path2 + name);
 
 			File newFilePath = new File(path1 + path2);
@@ -94,7 +97,7 @@ public class ImageFile {
 							srcImgBuffer.getScaledInstance(width, height,
 									Image.SCALE_SMOOTH), 0, 0, null);
 					// write jpg
-					ImageIO.write(buffImg, "JPEG", new File(path1 + path2 + "_"
+					ImageIO.write(buffImg, "png", new File(path1 + path2 + "_"
 							+ name));
 					// read jpg
 					Image img = ImageIO.read(new File(path1 + path2 + "_"
@@ -104,14 +107,23 @@ public class ImageFile {
 							width_new, BufferedImage.TYPE_INT_RGB);
 
 					Graphics2D g = buffImg_new.createGraphics();
+
+					// bgn 边框变透明
+					buffImg_new = g.getDeviceConfiguration()
+							.createCompatibleImage(width_new, width_new,
+									Transparency.TRANSLUCENT);
+					g.dispose();
+					g = buffImg_new.createGraphics();
 					g.setColor(new Color(255, 255, 255, 0));
+					// end
+
 					g.fillRect(0, 0, width_new, width_new);
 					g.drawImage(img, 0, (width_new - height_new) / 2,
 							width_new, height_new, Color.white, null);
 					g.dispose();
 
 					// write jpg
-					ImageIO.write(buffImg_new, "JPEG", new File(path1 + path2
+					ImageIO.write(buffImg_new, "png", new File(path1 + path2
 							+ name));
 				} else {
 					System.out.println("width_old < height_old");
@@ -132,7 +144,7 @@ public class ImageFile {
 							srcImgBuffer.getScaledInstance(width, height,
 									Image.SCALE_SMOOTH), 0, 0, null);
 					// write jpg
-					ImageIO.write(buffImg, "JPEG", new File(path1 + path2 + "_"
+					ImageIO.write(buffImg, "png", new File(path1 + path2 + "_"
 							+ name));
 					// read jpg
 					Image img = ImageIO.read(new File(path1 + path2 + "_"
@@ -140,15 +152,25 @@ public class ImageFile {
 
 					BufferedImage buffImg_new = new BufferedImage(height_new,
 							height_new, BufferedImage.TYPE_INT_RGB);
+
 					Graphics2D g = buffImg_new.createGraphics();
+
+					// bgn 边框变透明
+					buffImg_new = g.getDeviceConfiguration()
+							.createCompatibleImage(height_new, height_new,
+									Transparency.TRANSLUCENT);
+					g.dispose();
+					g = buffImg_new.createGraphics();
 					g.setColor(new Color(255, 255, 255, 0));
+					// end
+
 					g.fillRect(0, 0, height_new, height_new);
 					g.drawImage(img, (height_new - width_new) / 2, 0,
 							width_new, height_new, Color.white, null);
 					g.dispose();
 
 					// write jpg
-					ImageIO.write(buffImg_new, "JPEG", new File(path1 + path2
+					ImageIO.write(buffImg_new, "png", new File(path1 + path2
 							+ name));
 				}
 			} catch (Exception e) {
