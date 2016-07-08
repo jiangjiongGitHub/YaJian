@@ -20,10 +20,10 @@ import com.alibaba.fastjson.JSON;
 
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(locations = { "classpath:spring_mvc.xml" })
-public class TestUserService {
+public class UserServiceTest {
 
 	private static final Logger LOGGER = Logger
-			.getLogger(TestUserService.class);
+			.getLogger(UserServiceTest.class);
 
 	@Test
 	public void testQueryById1() {
