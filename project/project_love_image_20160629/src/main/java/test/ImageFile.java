@@ -22,7 +22,8 @@ import love.image.model.Student;
 public class ImageFile {
 
 	public static void main(String[] args) {
-		File dir = new File("E:\\360downloads\\wpcache\\");
+		// File dir = new File("E:\\360downloads\\wpcache\\");
+		File dir = new File(".");
 
 		getAllFiles(dir, 0);
 	}
@@ -54,7 +55,8 @@ public class ImageFile {
 
 	public static void reSizeImage(String filePath) {
 
-		if (filePath.endsWith(".jpg")) {
+		if (filePath.toLowerCase().endsWith(".jpg")
+				|| filePath.toLowerCase().endsWith(".png")) {
 			// request.getSession().getServletContext().getRealPath("");
 			String path1 = "E:\\" + File.separator;
 			String path2 = new SimpleDateFormat("yyyyMM").format(new Date())
