@@ -1,4 +1,4 @@
-package test;
+package love.image.test;
 
 import java.awt.AlphaComposite;
 import java.awt.BasicStroke;

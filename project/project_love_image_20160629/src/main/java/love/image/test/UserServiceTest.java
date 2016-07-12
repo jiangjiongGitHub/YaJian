@@ -1,4 +1,4 @@
-package test;
+package love.image.test;
 
 import love.image.model.t_user;
 import love.image.service.RedisService;
