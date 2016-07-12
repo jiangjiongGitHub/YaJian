@@ -58,7 +58,7 @@ public class ImageFile {
 		if (filePath.toLowerCase().endsWith(".jpg")
 				|| filePath.toLowerCase().endsWith(".png")) {
 			// request.getSession().getServletContext().getRealPath("");
-			String path1 = "E:\\" + File.separator;
+			String path1 = "D:\\" + File.separator;
 			String path2 = new SimpleDateFormat("yyyyMM").format(new Date())
 					+ File.separator;
 			String name = new SimpleDateFormat("yyyyMMddHHmmssSSS")
@@ -70,7 +70,7 @@ public class ImageFile {
 				newFilePath.mkdirs();
 			}
 
-			int wh_size = 1500;
+			int wh_size = 2000;
 			try {
 				BufferedImage srcImgBuffer = ImageIO.read(new File(filePath));
 
