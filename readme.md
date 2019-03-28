@@ -2,13 +2,10 @@
 
 ---
 
-- 2018-01-29
+### git命令
+0. add
+0. commit
+0. push
+0. pull
 
-- add
-- commit
-- push
-- pull
 
----
-
-- 2018-02-26
