@@ -123,13 +123,19 @@ public class SpringBootController {
 	 */
 	@RequestMapping("set")
 	@ResponseBody
-	public String strSet(String str) {
+	public String strSet(String str, String key) {
 		JSONObject json = new JSONObject();
 		json.put("message", "Error");
 		json.put("status", "-1");
 
+		
+		if (key == null || "".equals(key)) {
+			key="0";
+		}
 		str = str.trim();
+		int keys = Integer.parseInt(key);
 		json.put("str", str);
+		json.put("key", key);
 		json.put("strEncode", getEncoding(str));
 		logInfo(str);
 
@@ -148,13 +154,13 @@ public class SpringBootController {
 			for (int i = 0; i < len; i++) {
 				// 排查：1000次打印一次，精确到1000，然后逐个循环，找到内存溢出值。
 				if (i % 3 == 0) {
-					sb_.append(byteStr[i] + ",");
+					sb_.append(byteStr[i] + keys + ",");
 				}
 				if (i % 3 == 1) {
-					sb_.append(byteStr[i] + ",");
+					sb_.append(byteStr[i] + keys + ",");
 				}
 				if (i % 3 == 2) {
-					sb_.append(byteStr[i] + ",");
+					sb_.append(byteStr[i] + keys + ",");
 				}
 			}
 
@@ -173,13 +179,18 @@ public class SpringBootController {
 	 */
 	@RequestMapping("get")
 	@ResponseBody
-	public String strGet(String str) {
+	public String strGet(String str, String key) {
 		JSONObject json = new JSONObject();
 		json.put("message", "Error");
 		json.put("status", "-1");
 
+		if (key == null || "".equals(key)) {
+			key="0";
+		}
 		str = str.trim();
+		int keys = Integer.parseInt(key);
 		json.put("str", str);
+		json.put("key", key);
 		logInfo(str);
 
 		if (str == null || "".equals(str)) {
@@ -195,13 +206,13 @@ public class SpringBootController {
 			while (st.hasMoreElements()) {
 				String stri = st.nextToken();
 				if (i % 3 == 0) {
-					byteStr[i] = (byte) (Integer.parseInt(stri));
+					byteStr[i] = (byte) (Integer.parseInt(stri) - keys);
 				}
 				if (i % 3 == 1) {
-					byteStr[i] = (byte) (Integer.parseInt(stri));
+					byteStr[i] = (byte) (Integer.parseInt(stri) - keys);
 				}
 				if (i % 3 == 2) {
-					byteStr[i] = (byte) (Integer.parseInt(stri));
+					byteStr[i] = (byte) (Integer.parseInt(stri) - keys);
 				}
 				i++;
 			}

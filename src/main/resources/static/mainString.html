@@ -39,7 +39,7 @@
 				//$("#text2").val($("#text1").val());
 				
 				// 127.0.0.1:8080/cron
-				$.post("set",{str:$("#text1").val()},function(result){
+				$.post("set",{str:$("#text1").val(),key:$("#input").val()},function(result){
 					 console.log(result);
 					
 					var parsedJson = jQuery.parseJSON(result);
@@ -53,7 +53,7 @@
 				// $("#text1").val($("#text2").val());
 				
 				// 127.0.0.1:8080/cron
-				$.post("get",{str:$("#text2").val()},function(result){
+				$.post("get",{str:$("#text2").val(),key:$("#input").val()},function(result){
 					 console.log(result);
 					
 					var parsedJson = jQuery.parseJSON(result);
@@ -88,7 +88,8 @@
 					<p>欢迎访问此网站！</p>
 <!-- 					<iframe src="/tools/CanvasTime.html" width="100%" height="440px;" scrolling="no" frameborder="0"> </iframe> -->
 						
-						http://127.0.0.1:8080/div2.html static <br>
+						http://127.0.0.1:8080/div2.html static <br><br>
+						<input id="input"> <br><br>
 						
 						<div style="width: 100%; border: 0px solid red;" onclick="log1(this)">
 							<textarea rows="3" cols="" style="width: 98%;" id="text1">click me</textarea>
