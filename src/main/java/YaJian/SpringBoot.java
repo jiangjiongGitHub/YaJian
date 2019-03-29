@@ -1,14 +1,13 @@
 package YaJian;
 
+import org.springframework.boot.SpringApplication;
+import org.springframework.boot.autoconfigure.SpringBootApplication;
 
-@org.springframework.boot.autoconfigure.SpringBootApplication
-public class SpringBoot  {
-
+@SpringBootApplication
+public class SpringBoot {
 
 	public static void main(String[] args) {
-		org.springframework.boot.SpringApplication.run(SpringBoot.class, args);
+		SpringApplication.run(SpringBoot.class, args);
 	}
-	
 
 }
-

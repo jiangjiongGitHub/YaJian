@@ -1,0 +1,147 @@
+<html>
+	<head>
+		<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+		<title>javascript bootstrap</title>
+		
+		<!-- jQuery文件。务必在bootstrap.min.js 之前引入 -->
+		<script src="https://cdn.staticfile.org/jquery/3.2.1/jquery.min.js"></script>
+		
+		<!-- 新 Bootstrap4 核心 CSS 文件 -->
+		<link rel="stylesheet" href="https://cdn.staticfile.org/twitter-bootstrap/4.1.0/css/bootstrap.min.css">
+		<!-- 最新的 Bootstrap4 核心 JavaScript 文件 -->
+		<script src="https://cdn.staticfile.org/twitter-bootstrap/4.1.0/js/bootstrap.min.js"></script>
+		<!-- popper.min.js 用于弹窗、提示、下拉菜单 -->
+		<script src="https://cdn.staticfile.org/popper.js/1.12.5/umd/popper.min.js"></script>
+		
+		<!-- 菜鸟教程找的cdn链接,https://unpkg.com/vue -->
+		<script src="https://cdn.staticfile.org/vue/2.5.17/vue.min.js"></script>
+		
+		<link rel="stylesheet" href="/css/bootstrapTest.css">
+		<script src="/js/bootstrapTest.js"></script>
+		
+		<style type="text/css"></style>
+		<script type="text/javascript"></script>
+		
+	</head>
+	<body>
+		<!-- node.js http请求，后端查询 -->
+		
+		
+		
+		<!-- 上部 -->
+		<div class="topDiv" style="">
+		
+			<div class="topDiv1" style="">
+				<span style="font-size: 28px; padding-left: 50px;">欢迎您</span>
+			</div>
+			
+			<div class="topDiv2" style="">
+				<ul class="top_ul">
+					<li class="top_li" th:each="top : ${ listTop }" th:text="${ top.name }" th:onclick="'javascript:topClick('+${ top.id }+')'" ></li>
+				</ul>
+			</div>
+			
+		</div>
+		
+		
+		
+		<!-- 中部 -->
+		<div class="middleDiv" style="">
+			
+			<div>
+				<!-- 中间左侧菜单 -->
+				<div class="middleDiv1" style="">
+					<table class="middleDiv1Table" style="">
+						<tr class="middleDiv1TR" style="background-color: #FAFAFA;">
+							<td class="middleDiv1TD" >中间左侧</td>
+						</tr>
+					</table>
+					<table class="middleDiv1Table" style="">
+						<tr class="middleDiv1TR" th:each="top : ${ listLeft }">
+							<td class="middleDiv1TD" th:text="${ top.name }" th:onclick="'javascript:topClick('+${ top.id }+')'" ></td>
+						</tr>
+						<tr class="middleDiv1TR">
+							<td class="middleDiv1TD" onclick="topClick2('../in.html')" >in</td>
+						</tr>
+						<tr class="middleDiv1TR">
+							<td class="middleDiv1TD" onclick="topClick2('../div.html')" >in</td>
+						</tr>
+						<tr class="middleDiv1TR">
+							<td class="middleDiv1TD" onclick="topClick2('../div2.html')" >in</td>
+						</tr>
+					</table>
+					
+<!-- 					<div style="" > -->
+<!-- 						<iframe src="http://cdn.abowman.com/widgets/pendulumclock/pendulumClockV2.swf" width="160" height="130" scrolling="NO" frameborder="0"></iframe> -->
+<!-- 					</div> -->
+					
+<!-- 					<div style="" > -->
+<!-- 						<iframe src="http://cdn.abowman.com/widgets/newtonscradle/newtonsCradle.swf" width="160" height="130" scrolling="NO" frameborder="0"></iframe> -->
+<!-- 					</div> -->
+				</div>
+				
+				<!-- 中间板块 -->
+				<div id="middleHtml" class="middleDiv2" style="">
+					<p>欢迎访问此网站！</p>
+					<iframe src="/tools/CanvasTime.html" width="100%" height="440px;" scrolling="no" frameborder="0"> </iframe>
+				</div>
+				
+				
+				<!-- 中间右侧跳转 -->
+				<div class="middleDiv3" style="">
+					<table class="middleDiv1Table" style="">
+						<tr class="middleDiv1TR" style="background-color: #FAFAFA;">
+							<td class="middleDiv1TD" >中间右侧</td>
+						</tr>
+					</table>
+					<table class="middleDiv1Table" style="">
+						<tr class="middleDiv1TR" th:each="top : ${ listRight }">
+							<td class="middleDiv1TD" th:text="${ top.name }" th:onclick="'javascript:topClick('+${ top.id }+')'" ></td>
+						</tr>
+					</table>
+					
+<!-- 					<div> -->
+<!-- 						<object type="application/x-shockwave-flash" style="outline: none;" data="http://cdn.abowman.com/widgets/hamster/hamster.swf?" width="160" height="130"> -->
+<!-- 							<param name="movie" value="http://cdn.abowman.com/widgets/hamster/hamster.swf?"></param> -->
+<!-- 							<param name="AllowScriptAccess" value="always"></param> -->
+<!-- 							<param name="wmode" value="opaque"></param> -->
+<!-- 						</object> -->
+<!-- 					</div> -->
+					
+<!-- 					<div style="" > -->
+<!-- 						<iframe src="http://cdn.abowman.com/widgets/fish/fish.swf" width="160" height="130" scrolling="NO" frameborder="0"></iframe> -->
+<!-- 					</div> -->
+					
+<!-- 					<div style="" > -->
+<!-- 						<iframe src="http://cdn.abowman.com/widgets/turtles/turtle.swf" width="160" height="130" scrolling="NO" frameborder="0"></iframe> -->
+<!-- 					</div> -->
+				</div>
+			</div>
+		</div>
+		
+		
+		
+		<!-- 下部 -->
+		<!-- clear:both;清空上面的float效果 -->
+		<div class="bottomDiv" style="">
+		
+			<div class="bottomDiv1" style="">
+				<ul class="bottom_ul">
+					<li class="bottom_li" th:each="top : ${ listBottom }" th:text="${ top.name }" th:onclick="'javascript:topClick('+${ top.id }+')'" ></li>
+				</ul>
+			</div>
+			
+			<div class="bottomDiv2" style="">
+				<p onclick="contactUs()">联系我们</p>
+			</div>
+			
+		</div>
+		
+
+
+
+
+
+	</body>
+
+</html>

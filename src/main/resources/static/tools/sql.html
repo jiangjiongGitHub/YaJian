@@ -1,0 +1,54 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<HTML>
+<HEAD>
+<TITLE>SQL2StringBuffer</TITLE>
+<META NAME="Generator" CONTENT="EditPlus">
+<script>
+	var ie = !-[1,];   
+	function changeSQL(){
+		var srcSQL = document.getElementById("srcSQL");
+		var srcInner = srcSQL.value;
+		var sqlBuf = ""
+		var BufObj = "StringBuffer sql = new StringBuffer();"
+		//如果是xml格式，为了去除空格就打开注释
+        //var endBufObj = "String sqlString = sqlBuf.toString().replaceAll(\" \", \"\");";
+		var newSrc = "";
+		if(ie){
+			var newSrc = srcInner.split("\r\n");
+		}else{
+			var patt = new RegExp(/.+/g);
+			var newSrc = srcInner.match(patt);
+		}
+		var len = newSrc.length;
+		for(var i=0;i<len;i++){
+			var temp=newSrc[i];
+			if(i < len-1){
+			sqlBuf += "sql.append(\" " + temp + " \");" + "\r\n";
+			}
+			if(i == len-1){
+			sqlBuf += "sql.append(\" " + temp + " \");";
+			}
+		}
+		
+		var showSQL = document.getElementById("showSQL");
+		showSQL.innerText = BufObj + "\n" + sqlBuf  ;
+        //xml去空格
+        //showSQL.innerText = BufObj + "\n" + sqlBuf + "\n" + endBufObj ;
+	}
+	
+	
+</script>
+</HEAD>
+<BODY>
+<table border="1" width="100%" >
+	<tr align="center">
+		<td width="45%"><textarea id="srcSQL" rows="40" cols="85" ></textarea></td>
+		<td>
+			<button onclick="changeSQL()" style="cursor:hand;"><font color="blue" size="5"><b>转换</b></button><p>
+			
+		</td>
+		<td width="45%"><textarea id="showSQL" rows="40" cols="85" ></textarea></td>
+	</tr>
+</table>
+</BODY>
+</HTML>
