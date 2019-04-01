@@ -9,9 +9,8 @@ logging:
     YaJian: debug
 
 # Do not need below
-# spring:
-#   mvc:
-#     static-path-pattern: /static/**
-#     view:
-#       prefix: classpath:/templates/
-#       suffix: .html
+spring:
+  thymeleaf:
+    cache: false
+    prefix: classpath:/templates/
+    suffix: .html
