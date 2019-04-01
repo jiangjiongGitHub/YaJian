@@ -14,7 +14,7 @@ import com.alibaba.fastjson.JSONObject;
 @Controller
 public class SpringBootMainController {
 
-	// http://127.0.0.1:8080/index/123
+	// http://127.0.0.1:8888/index/123
 	@RequestMapping("/index/{key}")
 	public String index(Model model, @PathVariable String key) {
 		JSONObject json = new JSONObject();
@@ -67,7 +67,7 @@ public class SpringBootMainController {
 		return "/bootstrapTest";
 	}
 
-	// http://127.0.0.1:8080/vuePage/123
+	// http://127.0.0.1:8888/vuePage/123
 	@RequestMapping("/vuePage/{key}")
 	public ModelAndView vuePage(@PathVariable String key) {
 		ModelAndView view = new ModelAndView();

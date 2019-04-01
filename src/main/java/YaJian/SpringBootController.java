@@ -30,7 +30,7 @@ public class SpringBootController {
 	}
 
 	/**
-	 * 127.0.0.1:8080/main
+	 * 127.0.0.1:8888/main
 	 * {"timestamp":"2019-04-01T06:45:40.946+0000","status":404,"error":"Not Found","message":"No message available","path":"/main.html"}
 	 * @return
 	 */
@@ -43,7 +43,7 @@ public class SpringBootController {
 	}
 
 	/**
-	 * 127.0.0.1:8080/cron?cron=000
+	 * 127.0.0.1:8888/cron?cron=000
 	 * 
 	 * @return
 	 */
@@ -121,7 +121,7 @@ public class SpringBootController {
 	}
 
 	/**
-	 * 127.0.0.1:8080/set?str=000
+	 * 127.0.0.1:8888/set?str=000
 	 * 
 	 * @return
 	 */
@@ -183,7 +183,7 @@ public class SpringBootController {
 	}
 
 	/**
-	 * 127.0.0.1:8080/get?str=000
+	 * 127.0.0.1:8888/get?str=000
 	 * 
 	 * @return
 	 */
@@ -245,7 +245,7 @@ public class SpringBootController {
 	}
 
 	/**
-	 * 127.0.0.1:8080/html1
+	 * 127.0.0.1:8888/html1
 	 * 
 	 * @return
 	 */
@@ -258,7 +258,7 @@ public class SpringBootController {
 	}
 
 	/**
-	 * 127.0.0.1:8080/html2
+	 * 127.0.0.1:8888/html2
 	 * 
 	 * @return
 	 */
