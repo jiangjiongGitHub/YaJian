@@ -1,5 +1,6 @@
 package YaJian;
 
+import java.io.UnsupportedEncodingException;
 import java.nio.charset.Charset;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -30,7 +31,7 @@ public class SpringBootController {
 
 	/**
 	 * 127.0.0.1:8080/main
-	 * 
+	 * {"timestamp":"2019-04-01T06:45:40.946+0000","status":404,"error":"Not Found","message":"No message available","path":"/main.html"}
 	 * @return
 	 */
 	@RequestMapping("main")
@@ -108,7 +109,10 @@ public class SpringBootController {
 			json.put("map", map);
 			json.put("mapCount", i);
 		} catch (Exception e) {
-			e.printStackTrace();
+			Map<String, String> map = new LinkedHashMap<String, String>();
+			map.put("cron" + String.format("%03d", 1), "请输入正确的CRON表达式");
+			json.put("map", map);
+			log.error("CRON表达式异常");
 		}
 
 		json.put("message", "Success");
@@ -128,12 +132,18 @@ public class SpringBootController {
 		json.put("message", "Error");
 		json.put("status", "-1");
 
-		
 		if (key == null || "".equals(key)) {
-			key="0";
+			key = "0";
 		}
+		int keys = 0;
+		try {
+			keys = Integer.parseInt(key);
+		} catch (Exception e) {
+			keys = 0;
+			log.error("Integer.parseInt(key)异常");
+		}
+
 		str = str.trim();
-		int keys = Integer.parseInt(key);
 		json.put("str", str);
 		json.put("key", key);
 		json.put("strEncode", getEncoding(str));
@@ -185,10 +195,17 @@ public class SpringBootController {
 		json.put("status", "-1");
 
 		if (key == null || "".equals(key)) {
-			key="0";
+			key = "0";
 		}
+		int keys = 0;
+		try {
+			keys = Integer.parseInt(key);
+		} catch (Exception e) {
+			keys = 0;
+			log.error("Integer.parseInt(key)异常");
+		}
+
 		str = str.trim();
-		int keys = Integer.parseInt(key);
 		json.put("str", str);
 		json.put("key", key);
 		logInfo(str);
@@ -218,8 +235,8 @@ public class SpringBootController {
 			}
 
 			json.put("sb_", new String(byteStr, "UTF-8"));
-		} catch (Exception e) {
-			e.printStackTrace();
+		} catch (UnsupportedEncodingException e) {
+			log.error("new String(byteStr, \"UTF-8\")异常");
 		}
 
 		json.put("message", "Success");
@@ -279,8 +296,8 @@ public class SpringBootController {
 					return encode;
 				}
 			}
-		} catch (Exception e) {
-			e.printStackTrace();
+		} catch (UnsupportedEncodingException e) {
+			log.error("new String(str.getBytes(), encode)异常");
 		}
 		return "未识别编码格式";
 	}

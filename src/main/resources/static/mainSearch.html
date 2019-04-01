@@ -30,6 +30,12 @@
 				$('.bottomDiv').load('/main/bottom.html');
 			});
 			
+			
+			function search360(){
+				var searchWord = $('#searchWord360').val();
+				console.log(searchWord);
+				window.open('https://www.so.com/s?q='+searchWord);
+			}
 			function bdsearch(){
 				var searchWord = $('#searchWordBD').val();
 				console.log(searchWord);
@@ -55,11 +61,12 @@
 				console.log(searchWord);
 				window.open('https://cn.bing.com/search?q='+searchWord);
 			}
-			function search360(){
-				var searchWord = $('#searchWord360').val();
+			function aqysearch(){
+				var searchWord = $('#searchWordAQY').val();
 				console.log(searchWord);
-				window.open('https://www.so.com/s?q='+searchWord);
+				window.open('http://so.iqiyi.com/so/q_'+searchWord);
 			}
+			
 			
 			window.console = window.console || (function () {
 				var c ={};
@@ -128,6 +135,11 @@
 						<tr class="middleDiv1TR">
 							<td class="middleDiv1TD" >
 								<input id="searchWordTB">&nbsp;&nbsp;<button onclick="tbsearch()">淘宝搜索</button><br>
+							</td>
+						</tr>
+						<tr class="middleDiv1TR">
+							<td class="middleDiv1TD" >
+								<input id="searchWordAQY">&nbsp;&nbsp;<button onclick="aqysearch()">爱奇艺搜索</button><br>
 							</td>
 						</tr>
 					</table>

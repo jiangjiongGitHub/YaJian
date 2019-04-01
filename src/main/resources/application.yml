@@ -1,6 +1,17 @@
 
+server:
+  port: 8888
+
 logging:
   file: target/springboot.log
   level:
     root: info
-    YaJian: debug 
+    YaJian: debug
+
+# Do not need below
+# spring:
+#   mvc:
+#     static-path-pattern: /static/**
+#     view:
+#       prefix: classpath:/templates/
+#       suffix: .html

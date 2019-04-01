@@ -61,3 +61,13 @@ function addFavorite2() {
 		alert('您的浏览器不支持,请按 Ctrl+D 手动收藏!');
 	}
 }
+
+function isIntNum(val) {
+	var regPos = /^\d+$/; // 非负整数
+	var regNeg = /^\-[1-9][0-9]*$/; // 负整数
+	if (regPos.test(val) || regNeg.test(val)) {
+		return true;
+	} else {
+		return false;
+	}
+}

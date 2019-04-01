@@ -18,10 +18,10 @@ public class SpringBootMainController {
 	@RequestMapping("/index/{key}")
 	public String index(Model model, @PathVariable String key) {
 		JSONObject json = new JSONObject();
-		int aaa = 101;
+		int aaa = 100;
 		{
 			List<JSONObject> list = new ArrayList<JSONObject>();
-			for (int i = aaa + 0; i <= aaa + 10; i++) {
+			for (int i = aaa + 1; i <= aaa + 10; i++) {
 				JSONObject jsoni = new JSONObject();
 				jsoni.put("id", i);
 				jsoni.put("name", "name_" + i);
@@ -32,7 +32,7 @@ public class SpringBootMainController {
 		}
 		{
 			List<JSONObject> list = new ArrayList<JSONObject>();
-			for (int i = aaa + 10; i <= aaa + 18; i++) {
+			for (int i = aaa + 11; i <= aaa + 18; i++) {
 				JSONObject jsoni = new JSONObject();
 				jsoni.put("id", i);
 				jsoni.put("name", "name_" + i);
@@ -43,7 +43,7 @@ public class SpringBootMainController {
 		}
 		{
 			List<JSONObject> list = new ArrayList<JSONObject>();
-			for (int i = aaa + 20; i <= aaa + 25; i++) {
+			for (int i = aaa + 21; i <= aaa + 25; i++) {
 				JSONObject jsoni = new JSONObject();
 				jsoni.put("id", i);
 				jsoni.put("name", "name_" + i);
@@ -54,7 +54,7 @@ public class SpringBootMainController {
 		}
 		{
 			List<JSONObject> list = new ArrayList<JSONObject>();
-			for (int i = aaa + 30; i <= aaa + 38; i++) {
+			for (int i = aaa + 31; i <= aaa + 38; i++) {
 				JSONObject jsoni = new JSONObject();
 				jsoni.put("id", i);
 				jsoni.put("name", "name_" + i);
@@ -65,59 +65,6 @@ public class SpringBootMainController {
 		}
 		model.addAttribute("list", json.toString());
 		return "/bootstrapTest";
-	}
-	
-	// http://127.0.0.1:8080/index2/123
-	@RequestMapping("/index2/{key}")
-	public String index2(Model model, @PathVariable String key) {
-		JSONObject json = new JSONObject();
-		int aaa = 101;
-		{
-			List<JSONObject> list = new ArrayList<JSONObject>();
-			for (int i = aaa + 0; i <= aaa + 10; i++) {
-				JSONObject jsoni = new JSONObject();
-				jsoni.put("id", i);
-				jsoni.put("name", "name_" + i);
-				list.add(jsoni);
-			}
-			json.put("listTop", list);
-			model.addAttribute("listTop", list);
-		}
-		{
-			List<JSONObject> list = new ArrayList<JSONObject>();
-			for (int i = aaa + 10; i <= aaa + 18; i++) {
-				JSONObject jsoni = new JSONObject();
-				jsoni.put("id", i);
-				jsoni.put("name", "name_" + i);
-				list.add(jsoni);
-			}
-			json.put("listLeft", list);
-			model.addAttribute("listLeft", list);
-		}
-		{
-			List<JSONObject> list = new ArrayList<JSONObject>();
-			for (int i = aaa + 20; i <= aaa + 25; i++) {
-				JSONObject jsoni = new JSONObject();
-				jsoni.put("id", i);
-				jsoni.put("name", "name_" + i);
-				list.add(jsoni);
-			}
-			json.put("listRight", list);
-			model.addAttribute("listRight", list);
-		}
-		{
-			List<JSONObject> list = new ArrayList<JSONObject>();
-			for (int i = aaa + 30; i <= aaa + 38; i++) {
-				JSONObject jsoni = new JSONObject();
-				jsoni.put("id", i);
-				jsoni.put("name", "name_" + i);
-				list.add(jsoni);
-			}
-			json.put("listBottom", list);
-			model.addAttribute("listBottom", list);
-		}
-		model.addAttribute("list", json.toString());
-		return "/bootstrapTest2";
 	}
 
 	// http://127.0.0.1:8080/vuePage/123
