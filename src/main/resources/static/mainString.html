@@ -43,7 +43,7 @@
 				}
 				
 				// 127.0.0.1:8080/cron
-				$.post("set",{str:$("#text1").val(),key:$("#input").val()},function(result){
+				$.post("/set",{str:$("#text1").val(),key:$("#input").val()},function(result){
 					 console.log(result);
 					
 					var parsedJson = jQuery.parseJSON(result);
@@ -61,7 +61,7 @@
 				}
 				
 				// 127.0.0.1:8080/cron
-				$.post("get",{str:$("#text2").val(),key:$("#input").val()},function(result){
+				$.post("/get",{str:$("#text2").val(),key:$("#input").val()},function(result){
 					 console.log(result);
 					
 					var parsedJson = jQuery.parseJSON(result);

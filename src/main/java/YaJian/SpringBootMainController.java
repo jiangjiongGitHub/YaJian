@@ -14,9 +14,10 @@ import com.alibaba.fastjson.JSONObject;
 @Controller
 public class SpringBootMainController {
 
-	// http://127.0.0.1:8888/index/123
-	@RequestMapping("/index/{key}")
-	public String index(Model model, @PathVariable String key) {
+	// http://127.0.0.1:8888/bootstrapPage/123
+	@RequestMapping("/bootstrapPage/{key}")
+	public ModelAndView bootstrapPage(@PathVariable String key) {
+		ModelAndView view = new ModelAndView();
 		JSONObject json = new JSONObject();
 		int aaa = 100;
 		{
@@ -28,7 +29,7 @@ public class SpringBootMainController {
 				list.add(jsoni);
 			}
 			json.put("listTop", list);
-			model.addAttribute("listTop", list);
+			view.addObject("listTop", list);
 		}
 		{
 			List<JSONObject> list = new ArrayList<JSONObject>();
@@ -39,7 +40,7 @@ public class SpringBootMainController {
 				list.add(jsoni);
 			}
 			json.put("listLeft", list);
-			model.addAttribute("listLeft", list);
+			view.addObject("listLeft", list);
 		}
 		{
 			List<JSONObject> list = new ArrayList<JSONObject>();
@@ -50,7 +51,7 @@ public class SpringBootMainController {
 				list.add(jsoni);
 			}
 			json.put("listRight", list);
-			model.addAttribute("listRight", list);
+			view.addObject("listRight", list);
 		}
 		{
 			List<JSONObject> list = new ArrayList<JSONObject>();
@@ -61,10 +62,11 @@ public class SpringBootMainController {
 				list.add(jsoni);
 			}
 			json.put("listBottom", list);
-			model.addAttribute("listBottom", list);
+			view.addObject("listBottom", list);
 		}
-		model.addAttribute("list", json.toString());
-		return "/bootstrapTest";
+		view.addObject("list", json.toString());
+		view.setViewName("bootstrapTest"); // 异常"/bootstrapTest"
+		return view;
 	}
 
 	// http://127.0.0.1:8888/vuePage/123
@@ -72,7 +74,7 @@ public class SpringBootMainController {
 	public ModelAndView vuePage(@PathVariable String key) {
 		ModelAndView view = new ModelAndView();
 		view.addObject("list", "欢迎进入HTML页面" + key);
-		view.setViewName("vueTest");
+		view.setViewName("vueTest"); // 异常"/vueTest"
 		return view;
 	}
 

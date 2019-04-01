@@ -31,14 +31,17 @@ public class SpringBootController {
 
 	/**
 	 * 127.0.0.1:8888/main
-	 * {"timestamp":"2019-04-01T06:45:40.946+0000","status":404,"error":"Not Found","message":"No message available","path":"/main.html"}
 	 * @return
 	 */
 	@RequestMapping("main")
 	@ResponseBody
 	public String main() {
 		JSONObject json = new JSONObject();
-		json.put("fast", "done");
+		json.put("timestamp", System.currentTimeMillis());
+		json.put("status", 404);
+		json.put("error", "Not Found");
+		json.put("message", "No message available");
+		json.put("path", "/main.html");
 		return json.toJSONString();
 	}
 
@@ -254,7 +257,7 @@ public class SpringBootController {
 		JSONObject json = new JSONObject();
 		json.put("fast", "done");
 		request.setAttribute("key", "hello world");
-		return "in"; // thymeleaf to templates *.html
+		return "index"; // thymeleaf to templates index.html
 	}
 
 	/**
@@ -263,10 +266,11 @@ public class SpringBootController {
 	 * @return
 	 */
 	@RequestMapping("html2")
-	public String html2() {
+	public String html2(HttpServletRequest request) {
 		JSONObject json = new JSONObject();
 		json.put("fast", "done");
-		return "in.html"; // thymeleaf to static *.html
+		request.setAttribute("key", "hello world");
+		return "index.html"; // thymeleaf to static index.html
 	}
 
 	public static void main(String[] args) {
