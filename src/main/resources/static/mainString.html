@@ -17,17 +17,17 @@
 		<!-- 菜鸟教程找的cdn链接,https://unpkg.com/vue -->
 		<script src="https://cdn.staticfile.org/vue/2.5.17/vue.min.js"></script>
 		
-		<link rel="stylesheet" href="/css/bootstrapTest.css">
-		<script src="/js/bootstrapTest.js"></script>
+		<link rel="stylesheet" href="css/bootstrapTest.css">
+		<script src="js/bootstrapTest.js"></script>
 		
 		<style type="text/css"></style>
 		
 		<script type="text/javascript">
 			$(document).ready(function() {
-				$('.topDiv').load('/main/top.html');
-				$('.middleDiv1').load('/main/left.html');
-				$('.middleDiv3').load('/main/right.html');
-				$('.bottomDiv').load('/main/bottom.html');
+				$('.topDiv').load('main/top.html');
+				$('.middleDiv1').load('main/left.html');
+				$('.middleDiv3').load('main/right.html');
+				$('.bottomDiv').load('main/bottom.html');
 			});
 		</script>
 		
@@ -43,7 +43,7 @@
 				}
 				
 				// 127.0.0.1:8080/cron
-				$.post("/set",{str:$("#text1").val(),key:$("#input").val()},function(result){
+				$.post("set",{str:$("#text1").val(),key:$("#input").val()},function(result){
 					 console.log(result);
 					
 					var parsedJson = jQuery.parseJSON(result);
@@ -61,7 +61,7 @@
 				}
 				
 				// 127.0.0.1:8080/cron
-				$.post("/get",{str:$("#text2").val(),key:$("#input").val()},function(result){
+				$.post("get",{str:$("#text2").val(),key:$("#input").val()},function(result){
 					 console.log(result);
 					
 					var parsedJson = jQuery.parseJSON(result);

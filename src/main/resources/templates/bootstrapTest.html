@@ -16,11 +16,180 @@
 		<!-- 菜鸟教程找的cdn链接,https://unpkg.com/vue -->
 		<script src="https://cdn.staticfile.org/vue/2.5.17/vue.min.js"></script>
 		
-		<link rel="stylesheet" href="/css/bootstrapTest.css">
-		<script src="/js/bootstrapTest.js"></script>
 		
-		<style type="text/css"></style>
-		<script type="text/javascript"></script>
+		<style type="text/css">
+			div{
+				border:0px solid #000000;
+				background:#FFFFFF;
+				color:#000000;
+				margin:0 auto;
+				border:0;
+				padding:0;
+			}
+			
+			
+			.topDiv {
+				/** #选择器作用于ID，.选择器作用于class **/
+				width: 98%; 
+				background:#FF0000; 
+				box-shadow: 10px 5px 5px #888888;
+			}
+			.topDiv1 {
+				width: 100%; 
+				background:#F6F6F6;
+			}
+			.topDiv2 {
+				width: 100%; 
+				background:#96B97D;
+			}
+			
+			
+			.top_ul{
+				width: 90%;
+				height: 26px;
+				margin-bottom: 0;
+			}
+			.top_li{
+				width: 80px;
+				margin-left: 15px;
+				display: inline-block;
+				font-size: 16px;
+				color: #FFFFFF;
+			}
+			
+			
+			
+			.middleDiv {
+				/** #选择器作用于ID，.选择器作用于class **/
+				/** line-height: 50%; **/
+				width: 98%; 
+				background:#F6F6F6; 
+				box-shadow: 10px 5px 5px #888888; 
+				border-top: 1px solid #F6F6F6; 
+				border-bottom: 1px solid #F6F6F6;
+				text-align: center;
+				margin-top:5px; 
+			}
+			
+			.middleDiv > div {
+				/** > 子选择器 **/
+				background:#F6F6F6; 
+			}
+			
+			
+			
+			.middleDiv1,.middleDiv2,.middleDiv3{
+				/** inline-block，不使用float=left，不然会有水平自动居中问题**/
+				/** top right bottom left **/
+				margin:10px 5px 10px 5px;
+				display: inline-block;
+				vertical-align: top;
+				text-align: left;
+			}
+			
+			.middleDiv1{
+				width: 12%; 
+				border-right: 1px solid #F6F6F6;
+			}
+			.middleDiv2{
+				width: 70%; 
+				min-height:60%; 
+				border-left: 1px solid #F6F6F6; 
+				border-right: 1px solid #F6F6F6;
+			}
+			.middleDiv3{
+				width: 12%; 
+				border-left: 1px solid #F6F6F6;
+			}
+			
+			
+			.middleDiv1Table{
+				margin:1px auto;
+				width: 100%;
+			}
+			.middleDiv1TR{
+				background-color: #F6F4F0;
+				display:block;
+				margin: 2px;
+			}
+			.middleDiv1TD{
+				
+			}
+			
+			
+			#middleHtml {
+				/** #选择器作用于ID，.选择器作用于class **/
+				padding-top: 15px; 
+				padding-left: 15px; 
+				padding-right: 15px; 
+				padding-bottom: 15px; 
+				min-height: 480px;
+			}
+			
+			
+			
+			
+			
+			.bottomDiv {
+				width: 98%; 
+				background:#FF0000; 
+				box-shadow: 10px 5px 5px #888888; 
+				margin-top:5px;
+			}
+			.bottomDiv1 {
+				width: 100%; 
+				background:#F6F6F6; 
+			}
+			.bottomDiv2 {
+				width: 100%; 
+				background:#F6F6F6; 
+				text-align: center;
+				font-size: 16px;
+				padding-top: 10px;
+				padding-bottom: 5px; 
+			}
+			
+			.bottom_ul{
+				width: 80%;
+				margin-bottom: 0;
+			}
+			.bottom_li{
+				width: 80px;
+				margin-left: 15px;
+				display: inline-block;
+				font-size: 14px;
+				color: #000000;
+				/* background-color:#F6F4F0; */
+			}
+		</style>
+		
+		<script type="text/javascript">
+			window.onload = function() {
+				console.log("I am in .");
+			}
+	
+			function topClick(id) {
+				$.ajax({
+					url : "../vuePage/" + id,
+					data : {},
+					type : 'get',
+					cache : false,
+					dataType : "html",
+					success : function(data) {
+						// alert(data);
+						$("#middleHtml").html(data);
+					},
+					error : function() {
+						alert("出错了");
+					}
+				});
+			}
+			
+			
+			function contactUs() {
+				alert("Email:12345@qq.com");
+			}
+		</script>
 		
 	</head>
 	<body>
@@ -71,7 +240,7 @@
 				<!-- 中间板块 -->
 				<div id="middleHtml" class="middleDiv2" style="">
 					<p>欢迎访问此网站！</p>
-					<iframe src="/tools/CanvasTime.html" width="100%" height="440px;" scrolling="no" frameborder="0"> </iframe>
+<!-- 					<iframe src="tools/CanvasTime.html" width="100%" height="440px;" scrolling="no" frameborder="0"> </iframe> -->
 				</div>
 				
 				
