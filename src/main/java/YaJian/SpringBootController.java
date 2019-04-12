@@ -30,7 +30,7 @@ public class SpringBootController {
 	}
 
 	/**
-	 * 127.0.0.1:8888/main
+	 * 127.0.0.1:18888/main
 	 * @return
 	 */
 	@RequestMapping("main")
@@ -46,7 +46,7 @@ public class SpringBootController {
 	}
 
 	/**
-	 * 127.0.0.1:8888/cron?cron=000
+	 * 127.0.0.1:18888/cron?cron=000
 	 * 
 	 * @return
 	 */
@@ -124,7 +124,7 @@ public class SpringBootController {
 	}
 
 	/**
-	 * 127.0.0.1:8888/set?str=000
+	 * 127.0.0.1:18888/set?str=000
 	 * 
 	 * @return
 	 */
@@ -186,7 +186,7 @@ public class SpringBootController {
 	}
 
 	/**
-	 * 127.0.0.1:8888/get?str=000
+	 * 127.0.0.1:18888/get?str=000
 	 * 
 	 * @return
 	 */
@@ -248,7 +248,7 @@ public class SpringBootController {
 	}
 
 	/**
-	 * 127.0.0.1:8888/html1
+	 * 127.0.0.1:18888/html1
 	 * 
 	 * @return
 	 */
@@ -261,7 +261,7 @@ public class SpringBootController {
 	}
 
 	/**
-	 * 127.0.0.1:8888/html2
+	 * 127.0.0.1:18888/html2
 	 * 
 	 * @return
 	 */
@@ -292,7 +292,7 @@ public class SpringBootController {
 
 	public static String getEncoding(String str) {
 		try {
-			String[] encodes = new String[] { "ASCII", "ISO-8859-1", "GB2312", "UTF-16", "UTF-8" };
+			String[] encodes = new String[] { "ASCII", "ISO-8859-1", "GBK", "UTF-8" };
 
 			for (String encode : encodes) {
 				logInfo(encode + "--{" + str + "}--{" + new String(str.getBytes(), encode) + "}");

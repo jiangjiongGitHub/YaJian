@@ -12,9 +12,9 @@ import org.springframework.web.servlet.ModelAndView;
 import com.alibaba.fastjson.JSONObject;
 
 @Controller
-public class SpringBootMainController {
+public class SpringBootControllerTemplates {
 
-	// http://127.0.0.1:8888/bootstrapPage/123
+	// http://127.0.0.1:18888/bootstrapPage/123
 	@RequestMapping("/bootstrapPage/{key}")
 	public ModelAndView bootstrapPage(@PathVariable String key) {
 		ModelAndView view = new ModelAndView();
@@ -69,7 +69,7 @@ public class SpringBootMainController {
 		return view;
 	}
 
-	// http://127.0.0.1:8888/vuePage/123
+	// http://127.0.0.1:18888/vuePage/123
 	@RequestMapping("/vuePage/{key}")
 	public ModelAndView vuePage(@PathVariable String key) {
 		ModelAndView view = new ModelAndView();
