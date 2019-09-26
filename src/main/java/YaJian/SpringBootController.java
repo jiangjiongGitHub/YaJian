@@ -14,28 +14,30 @@ import org.quartz.CronExpression;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.alibaba.fastjson.JSONObject;
 
+@CrossOrigin
 @Controller
 public class SpringBootController {
 
 	private static Logger log = LoggerFactory.getLogger(SpringBootController.class);
 
 	private static void logInfo(Object obj) {
-		// System.out.println("SpringBootController--" + obj);
-		log.debug(obj + "");
+		log.debug("SpringBootController--" + obj);
 	}
 
 	/**
-	 * 127.0.0.1:18888/main
-	 * @return
+	 * 127.0.0.1:18888/test
+	 * 
+	 * @return String
 	 */
-	@RequestMapping("main")
+	@RequestMapping("test")
 	@ResponseBody
-	public String main() {
+	public String test() {
 		JSONObject json = new JSONObject();
 		json.put("timestamp", System.currentTimeMillis());
 		json.put("status", 404);
@@ -48,7 +50,7 @@ public class SpringBootController {
 	/**
 	 * 127.0.0.1:18888/cron?cron=000
 	 * 
-	 * @return
+	 * @return String
 	 */
 	@RequestMapping("cron")
 	@ResponseBody
@@ -126,7 +128,7 @@ public class SpringBootController {
 	/**
 	 * 127.0.0.1:18888/set?str=000
 	 * 
-	 * @return
+	 * @return String
 	 */
 	@RequestMapping("set")
 	@ResponseBody
@@ -188,7 +190,7 @@ public class SpringBootController {
 	/**
 	 * 127.0.0.1:18888/get?str=000
 	 * 
-	 * @return
+	 * @return String
 	 */
 	@RequestMapping("get")
 	@ResponseBody
@@ -247,6 +249,8 @@ public class SpringBootController {
 		return json.toJSONString();
 	}
 
+
+
 	/**
 	 * 127.0.0.1:18888/html1
 	 * 
@@ -257,7 +261,8 @@ public class SpringBootController {
 		JSONObject json = new JSONObject();
 		json.put("fast", "done");
 		request.setAttribute("key", "hello world");
-		return "index"; // thymeleaf to templates index.html
+		// thymeleaf to templates : "vueTest" or "vueTest.html";
+		return "vueTest";
 	}
 
 	/**
@@ -270,18 +275,18 @@ public class SpringBootController {
 		JSONObject json = new JSONObject();
 		json.put("fast", "done");
 		request.setAttribute("key", "hello world");
-		return "index.html"; // thymeleaf to static index.html
+		// thymeleaf to templates : "bootstrapTest" or "bootstrapTest.html"
+		return "bootstrapTest.html";
 	}
 
 	public static void main(String[] args) {
-		// 获取系统默认编码
-		System.out.println("系统默认编码：" + System.getProperty("file.encoding")); // 查询结果GBK
-		// 系统默认字符编码
-		System.out.println("系统默认字符编码：" + Charset.defaultCharset()); // 查询结果GBK
-		// 操作系统用户使用的语言
 		System.out.println("系统默认语言：" + System.getProperty("user.language")); // 查询结果zh
+		System.out.println("系统默认编码：" + System.getProperty("file.encoding")); // 查询结果UTF-8
+		System.out.println("系统默认字符编码：" + Charset.defaultCharset()); // 查询结果UTF-8
 
 		System.out.println();
+		System.out.println();
+
 		String s1 = "hi, nice to meet you!";
 		String s2 = "hi, 我来了！";
 
@@ -292,7 +297,7 @@ public class SpringBootController {
 
 	public static String getEncoding(String str) {
 		try {
-			String[] encodes = new String[] { "ASCII", "ISO-8859-1", "GBK", "UTF-8" };
+			String[] encodes = new String[] { "ASCII", "ISO-8859-1", "GBK", "Unicode", "UTF-8", "UTF-16" };
 
 			for (String encode : encodes) {
 				logInfo(encode + "--{" + str + "}--{" + new String(str.getBytes(), encode) + "}");

@@ -28,8 +28,8 @@ public class SpringBootInteceptor implements HandlerInterceptor {
 			log.warn("未登录！");
 			
 			// 未登录或者session过期在这里执行跳转登录页面
-			//response.sendRedirect("/login");
-			//return false;
+			// response.sendRedirect("/login");
+			// return false;
 		}
 		
 		String requestUri = request.getRequestURI();
