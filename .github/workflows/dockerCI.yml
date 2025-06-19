@@ -16,19 +16,30 @@ jobs:
 
     steps:
     - uses: actions/checkout@v4
+
     - name: ubuntu-latest-run-something
       run: |
-        echo "docker pull nginx"
+        echo "--> docker pull nginx"
         docker pull nginx
-        echo "java -version"
+        echo "--> java -version"
         java -version
-        echo "mvn -v"
+        echo "--> mvn -v"
         mvn -v
-        echo "pwd"
+        echo "--> pwd"
         pwd
-        echo "ls -al"
+        echo "--> ls -al"
         ls -al
-        echo "ls -al ../"
+        echo "--> ls -al ../"
         ls -al ../
-        echo "mvn clean package"
+
+    - name: ubuntu-latest-run-something
+      run: |
+        echo "--> mvn clean package"
         mvn clean package
+
+    - name: ubuntu-latest-run-something
+      run: |
+        echo "--> ls -al"
+        ls -al
+        echo "--> ls -al ../"
+        ls -al ../
