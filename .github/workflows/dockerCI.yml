@@ -25,7 +25,7 @@ jobs:
         pwd
         echo "ls -al"
         ls -al
-        echo "ls -al /home/runner/work/YaJian/YaJian"
-        ls -al /home/runner/work/YaJian/YaJian
+        echo "ls -al ../"
+        ls -al ../
         echo "mvn clean package"
         # mvn clean package
