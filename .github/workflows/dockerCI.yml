@@ -6,6 +6,8 @@ on:
   # pull_request:
     # branches: [ "master" ]
   workflow_dispatch:
+  schedule:
+  - cron: "0 2 * * 1-5"
 
 jobs:
   build:
@@ -13,6 +15,7 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+    - uses: actions/checkout@v4
     - name: ubuntu-latest-run-something
       run: |
         echo "docker pull nginx"
@@ -28,4 +31,4 @@ jobs:
         echo "ls -al ../"
         ls -al ../
         echo "mvn clean package"
-        # mvn clean package
+        mvn clean package
