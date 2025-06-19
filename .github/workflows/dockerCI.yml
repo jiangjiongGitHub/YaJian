@@ -13,12 +13,19 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    - name: ubuntu docker pull
+    - name: ubuntu-latest-run-something
       run: |
+        echo "docker pull nginx"
         docker pull nginx
+        echo "java -version"
         java -version
+        echo "mvn -v"
         mvn -v
+        echo "pwd"
         pwd
+        echo "ls -al"
         ls -al
+        echo "ls -al /home/runner/work/YaJian/YaJian"
         ls -al /home/runner/work/YaJian/YaJian
+        echo "mvn clean package"
         # mvn clean package
