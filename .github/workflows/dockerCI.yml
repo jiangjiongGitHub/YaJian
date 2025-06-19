@@ -13,6 +13,6 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    - name: ubuntu docker run
+    - name: ubuntu docker pull
       run: |
-        docker run nginx
+        docker pull nginx
