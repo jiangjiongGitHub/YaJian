@@ -16,3 +16,7 @@ jobs:
     - name: ubuntu docker pull
       run: |
         docker pull nginx
+        java -version
+        mvn -v
+        ls -al
+        mvn clean package
