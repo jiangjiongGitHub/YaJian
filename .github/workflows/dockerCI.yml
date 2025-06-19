@@ -1,8 +1,8 @@
 name: dockerCI
 
 on:
-  # push:
-    # branches: [ "master" ]
+  push:
+    branches: [ "master" ]
   # pull_request:
     # branches: [ "master" ]
   workflow_dispatch:
@@ -18,5 +18,7 @@ jobs:
         docker pull nginx
         java -version
         mvn -v
+        pwd
         ls -al
-        mvn clean package
+        ls -al /home/runner/work/YaJian/YaJian
+        # mvn clean package
