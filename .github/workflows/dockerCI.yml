@@ -51,5 +51,9 @@ jobs:
 
     - name: ubuntu-latest-kill
       run: |
-        echo "--> sleep 30 && pkill -f 'YaJian-0.0.1.jar'  && echo '[$(date)] 进程已终止'"
-        sleep 30 && pkill -f 'YaJian-0.0.1.jar'  && echo '[$(date)] 进程已终止'
+        echo "--> ps -ef | grep YaJian-0.0.1.jar"
+        ps -ef | grep YaJian-0.0.1.jar
+        echo "--> sleep 30 && pkill -f 'YaJian-0.0.1.jar'"
+        sleep 30 && pkill -f 'YaJian-0.0.1.jar'
+        echo "--> ps -ef | grep YaJian-0.0.1.jar"
+        ps -ef | grep YaJian-0.0.1.jar
