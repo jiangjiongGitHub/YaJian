@@ -1,4 +1,4 @@
-package YaJian;
+package yj.yajian;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;

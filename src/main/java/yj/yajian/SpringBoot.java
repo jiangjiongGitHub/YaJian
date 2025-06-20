@@ -1,4 +1,4 @@
-package YaJian;
+package yj.yajian;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;

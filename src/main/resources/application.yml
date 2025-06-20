@@ -14,3 +14,8 @@ spring:
     cache: false
     prefix: classpath:/templates/
     suffix: .html
+
+database:
+  directory: ./data
+  save:
+    interval: 60000

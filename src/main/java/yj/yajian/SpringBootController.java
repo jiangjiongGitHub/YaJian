@@ -1,4 +1,4 @@
-package YaJian;
+package yj.yajian;
 
 import java.io.UnsupportedEncodingException;
 import java.nio.charset.Charset;

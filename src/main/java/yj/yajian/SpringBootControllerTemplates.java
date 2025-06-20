@@ -1,4 +1,4 @@
-package YaJian;
+package yj.yajian;
 
 import java.util.ArrayList;
 import java.util.List;
