@@ -17,7 +17,7 @@ jobs:
     steps:
     - uses: actions/checkout@v4
 
-    - name: ubuntu-latest-run-something
+    - name: ubuntu-latest-env
       run: |
         echo "--> docker pull nginx"
         docker pull nginx
@@ -32,19 +32,24 @@ jobs:
         echo "--> ls -al"
         ls -al
 
-    - name: ubuntu-latest-run-something
+    - name: ubuntu-latest-build
       run: |
         echo "--> mvn clean package"
         mvn clean package
 
-    - name: ubuntu-latest-run-something
+    - name: ubuntu-latest-ls
       run: |
         echo "--> ls -al"
         ls -al
         echo "--> ls -al ./target"
         ls -al ./target
 
-    - name: ubuntu-latest-run-something
+    - name: ubuntu-latest-start
       run: |
-        echo "--> java -jar ./target/YaJian-0.0.1.jar"
-        java -jar ./target/YaJian-0.0.1.jar
+        echo "--> java -jar ./target/YaJian-0.0.1.jar &"
+        java -jar ./target/YaJian-0.0.1.jar &
+
+    - name: ubuntu-latest-kill
+      run: |
+        echo "--> sleep 30 && pkill -f 'YaJian-0.0.1.jar'  && echo '[$(date)] 进程已终止'"
+        sleep 30 && pkill -f 'YaJian-0.0.1.jar'  && echo '[$(date)] 进程已终止'
