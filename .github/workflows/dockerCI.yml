@@ -27,10 +27,10 @@ jobs:
         mvn -v
         echo "--> pwd"
         pwd
-        echo "--> ls -al"
-        ls -al
         echo "--> ls -al ../"
         ls -al ../
+        echo "--> ls -al"
+        ls -al
 
     - name: ubuntu-latest-run-something
       run: |
@@ -41,5 +41,10 @@ jobs:
       run: |
         echo "--> ls -al"
         ls -al
-        echo "--> ls -al ../"
-        ls -al ../
+        echo "--> ls -al ./target"
+        ls -al ./target
+
+    - name: ubuntu-latest-run-something
+      run: |
+        echo "--> java -jar ./target/YaJian-0.0.1.jar"
+        java -jar ./target/YaJian-0.0.1.jar
