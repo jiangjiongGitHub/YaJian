@@ -54,12 +54,22 @@ public class DataController {
                     .name("iPhone XR")
                     .price(new BigDecimal("2999.99"))
                     .category(DemoPO.Category.ELECTRONICS)
-                    .tags(Arrays.asList(" 电子", "旗舰", "5G"))
+                    .tags(Arrays.asList("ELECTRONICS", "PHONE", "5G"))
                     .createdAt(LocalDateTime.now().minusDays(5))
-                    .expireDate(LocalDate.of(2025, 7, 10))
+                    .expireDate(LocalDate.now().minusDays(2))
                     .active(true)
                     .build();
-            dbService.put("list", JSONObject.toJSONString(Arrays.asList(product1)));
+            DemoPO product2 = DemoPO.builder()
+                    .id(2L)
+                    .name("iPhone XS")
+                    .price(new BigDecimal("3999.99"))
+                    .category(DemoPO.Category.ELECTRONICS)
+                    .tags(Arrays.asList("ELECTRONICS", "PHONE", "5G"))
+                    .createdAt(LocalDateTime.now().minusDays(5))
+                    .expireDate(LocalDate.now().minusDays(2))
+                    .active(true)
+                    .build();
+            dbService.put("list", JSONObject.toJSONString(Arrays.asList(product1, product2)));
         }
         dbService.put(key, value);
         return true;
