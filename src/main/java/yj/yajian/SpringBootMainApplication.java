@@ -2,12 +2,14 @@ package yj.yajian;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.scheduling.annotation.EnableScheduling;
 
 @SpringBootApplication
-public class SpringBoot {
+@EnableScheduling
+public class SpringBootMainApplication {
 
     public static void main(String[] args) {
-        SpringApplication.run(SpringBoot.class, args);
+        SpringApplication.run(SpringBootMainApplication.class, args);
     }
 
 }

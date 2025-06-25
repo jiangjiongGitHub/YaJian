@@ -5,7 +5,7 @@ server:
 logging:
   file: target/springboot.log
   level:
-    root: debug
+    root: info
     YaJian: debug
 
 # Do not need below

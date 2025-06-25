@@ -45,12 +45,14 @@ public class FileDatabaseService {
         try {
             File latestFile = findLatestDataFile();
             if (latestFile != null) {
+                System.out.println("Loading database from: " + latestFile.getAbsolutePath());
                 loadDataFromFile(latestFile);
                 System.out.println("Loaded database from: " + latestFile.getAbsolutePath());
             } else {
                 System.out.println("No existing data files found. Starting with empty database.");
             }
         } catch (Exception e) {
+            e.printStackTrace();
             System.err.println("Error initializing database: " + e.getMessage());
         }
     }
@@ -58,8 +60,9 @@ public class FileDatabaseService {
     /**
      * 定期保存数据（每分钟）
      */
-    @Scheduled(fixedRate = 60000) // 60秒
+    @Scheduled(initialDelay = 30000, fixedDelay = 60000) // 60秒 fixedRate 改为 fixedDelay
     public void autoSave() {
+        System.out.println("Executing autoSave at: " + new Date()); // 添加日志输出
         saveToFile();
     }
 
@@ -101,7 +104,8 @@ public class FileDatabaseService {
             Optional<Path> latestPath = paths
                     .filter(Files::isRegularFile)
                     .filter(p -> p.toString().endsWith(".json"))
-                    .max(Comparator.comparingLong(p -> p.toFile().lastModified()));
+                    // .max(Comparator.comparingLong(p -> p.toFile().lastModified()));
+                    .max(Comparator.comparing(p -> p.getFileName().toString()));
 
             return latestPath.map(Path::toFile).orElse(null);
         }
@@ -133,6 +137,7 @@ public class FileDatabaseService {
 
             System.out.println("Database saved to: " + filePath);
         } catch (IOException e) {
+            e.printStackTrace();
             System.err.println("Error saving database: " + e.getMessage());
         }
     }
