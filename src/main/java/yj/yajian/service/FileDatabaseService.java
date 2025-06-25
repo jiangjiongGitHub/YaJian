@@ -28,14 +28,14 @@ import java.util.stream.Stream;
 public class FileDatabaseService {
 
     // 内存数据库
-    private static final Map<String, Object> DATABASE = new ConcurrentHashMap<>();
+    private static final Map<String, String> DATABASE = new ConcurrentHashMap<>();
 
     // 数据存储目录
     @Value("${database.directory:./data}")
     private String dataDirectory;
 
     private final ObjectMapper objectMapper = new ObjectMapper();
-    private final SimpleDateFormat dateFormat = new SimpleDateFormat("yyyyMMddHHmmssSSS");
+    private final SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy_MM_dd__HH_mm_ss");
 
     /**
      * 启动时加载最新数据文件
@@ -76,11 +76,11 @@ public class FileDatabaseService {
     }
 
     // 核心数据库操作方法
-    public void put(String key, Object value) {
+    public void put(String key, String value) {
         DATABASE.put(key, value);
     }
 
-    public Object get(String key) {
+    public String get(String key) {
         return DATABASE.get(key);
     }
 
@@ -113,10 +113,15 @@ public class FileDatabaseService {
 
     private void loadDataFromFile(File file) {
         try {
+            if (!file.exists() || file.length() == 0) {
+                DATABASE.clear();
+                return;
+            }
+
             byte[] bytes = Files.readAllBytes(file.toPath());
             Map<?, ?> loaded = objectMapper.readValue(bytes, Map.class);
             DATABASE.clear();
-            loaded.forEach((k, v) -> DATABASE.put(k.toString(), v));
+            loaded.forEach((k, v) -> DATABASE.put(k.toString(), v.toString()));
         } catch (IOException e) {
             throw new RuntimeException("Failed to load database file", e);
         }
