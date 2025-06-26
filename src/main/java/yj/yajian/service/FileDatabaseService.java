@@ -60,10 +60,35 @@ public class FileDatabaseService {
     /**
      * 定期保存数据（每分钟）
      */
-    @Scheduled(initialDelay = 30000, fixedDelay = 60000) // 60秒 fixedRate 改为 fixedDelay
+    @Scheduled(initialDelay = 60000, fixedDelay = 60000) // 60秒 fixedRate 改为 fixedDelay
     public void autoSave() {
         System.out.println("Executing autoSave at: " + new Date()); // 添加日志输出
         saveToFile();
+        deleteOldFiles();
+    }
+
+    private void deleteOldFiles() {
+        Path dirPath = Paths.get(dataDirectory);
+        if (Files.exists(dirPath)) {
+            try (Stream<Path> paths = Files.list(dirPath)) {
+                paths.filter(Files::isRegularFile)
+                        .filter(p -> p.toString().endsWith(".json"))
+                        .sorted(Comparator.comparing((Path p) ->
+                                p.getFileName().toString()
+                        ).reversed())
+                        .skip(20) // 跳过最新的文件
+                        .forEach(p -> {
+                            try {
+                                Files.delete(p);
+                                System.out.println("Deleted file: " + p);
+                            } catch (Exception e) {
+                                e.printStackTrace();
+                            }
+                        });
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
     }
 
     /**
@@ -104,9 +129,7 @@ public class FileDatabaseService {
             Optional<Path> latestPath = paths
                     .filter(Files::isRegularFile)
                     .filter(p -> p.toString().endsWith(".json"))
-                    // .max(Comparator.comparingLong(p -> p.toFile().lastModified()));
                     .max(Comparator.comparing(p -> p.getFileName().toString()));
-
             return latestPath.map(Path::toFile).orElse(null);
         }
     }

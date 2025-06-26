@@ -26,7 +26,7 @@ public class DataController {
         this.dbService = dbService;
     }
 
-    @Scheduled(initialDelay = 60000, fixedDelay = 1000)
+    @Scheduled(fixedDelay = 1000)
     public void autoSave() {
         dbService.put(generate(), generate());
         System.out.println("Executing put at: " + new Date());
