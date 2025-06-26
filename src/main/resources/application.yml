@@ -14,8 +14,27 @@ spring:
     cache: false
     prefix: classpath:/templates/
     suffix: .html
+    mode: HTML                  # 模板模式
+    encoding: UTF-8             # 文件编码
+  servlet:
+    multipart:
+      max-file-size: 10MB       # 单个文件大小限制
+      max-request-size: 10MB    # 总请求大小限制
+      enabled: true             # 启用文件上传
+      location:                 # 临时存储目录(可选)
 
 database:
   directory: ./data
   save:
     interval: 60000
+
+app:
+  upload:
+    folder: src/main/resources/static/uploads/  # 文件存储路径
+    allowed-extensions:         # 允许的文件扩展名(可选)
+      - .jpg
+      - .jpeg
+      - .png
+      - .gif
+      - .pdf
+      - .txt
