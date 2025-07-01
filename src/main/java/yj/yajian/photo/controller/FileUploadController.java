@@ -1,12 +1,14 @@
 package yj.yajian.photo.controller;
 
 import com.alibaba.fastjson.JSONObject;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+import org.thymeleaf.util.StringUtils;
 import yj.yajian.db.service.FileDatabaseService;
 import yj.yajian.photo.entity.FileEntity;
 
@@ -19,8 +21,13 @@ import java.nio.file.Paths;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.nio.file.attribute.FileTime;
 import java.text.SimpleDateFormat;
+import java.time.LocalDate;
+import java.time.ZoneId;
+import java.time.format.DateTimeFormatter;
 import java.util.*;
+import java.util.stream.Collectors;
 
+@Slf4j
 @Controller
 @RequestMapping("/photo")
 public class FileUploadController {
@@ -66,6 +73,57 @@ public class FileUploadController {
         }
         model.addAttribute("fileEntitys", fileEntitys);
         return "/photo/upload";
+    }
+
+    @GetMapping("/indexSearch")
+    public String indexSearch( @RequestParam(required = false) String startDate,
+                               @RequestParam(required = false) String endDate,
+                               @RequestParam(required = false) String tagFilter,
+                               Model model) throws IOException {
+        // 打印参数
+        log.info("startDate: {}, endDate: {}, tagFilter: {}", startDate, endDate, tagFilter);
+
+        checkUploadFolder();
+
+        // 获取已上传文件列表
+        List<String> files = new ArrayList<>();
+        Files.walk(Paths.get(UPLOADED_FOLDER))
+                .filter(Files::isRegularFile)
+                .forEach(file -> files.add(file.getFileName().toString()));
+
+        List<FileEntity> fileEntitys = new ArrayList<>();
+        // 循环files转换为FileEntity实体添加到fileEntitys
+        for (String file : files) {
+            FileEntity fileEntity = JSONObject.parseObject(dbService.get(file) == null ? "{}" : dbService.get(file), FileEntity.class);
+            if (fileEntity.getName() == null) {
+                fileEntity.setName(file);
+            }
+            fileEntitys.add(fileEntity);
+        }
+
+        // 示例：将字符串格式日期转为 LocalDate 进行比较
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+        LocalDate start = StringUtils.isEmpty(startDate) ? null : LocalDate.parse(startDate, formatter);
+        LocalDate end = StringUtils.isEmpty(endDate) ? null : LocalDate.parse(endDate, formatter);
+
+        List<FileEntity> collect = fileEntitys.stream()
+                .filter(f -> f.getTags() != null)
+                .filter(f -> StringUtils.isEmpty(tagFilter) || f.getTags().contains(tagFilter))
+                .filter(f -> start == null || end == null || isWithinDateRange(f, start, end)) // 自定义方法判断是否在时间范围内
+                .collect(Collectors.toList());
+        model.addAttribute("fileEntitys", collect);
+        return "/photo/upload";
+    }
+
+    private boolean isWithinDateRange(FileEntity f, LocalDate start, LocalDate end) {
+        try {
+            FileTime fileTime = Files.getLastModifiedTime(Paths.get(UPLOADED_FOLDER + File.separator + f.getName()));
+            LocalDate fileDate = fileTime.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
+            return fileDate.isAfter(start) && fileDate.isBefore(end);
+        } catch (IOException e) {
+            e.printStackTrace();
+            return false;
+        }
     }
 
     // 请求URL：http://127.0.0.1:18888/photo/upload

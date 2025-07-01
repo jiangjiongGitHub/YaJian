@@ -21,4 +21,5 @@ public class FileEntity {
     private String name;            // 名称（字符串）
     private Long size;              // 大小（高精度小数）
     private List<String> tags;      // 标签（列表）
+    private Long lastModifiedTime;      // 标签（列表）
 }

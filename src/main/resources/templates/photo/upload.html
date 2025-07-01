@@ -57,6 +57,34 @@
     <!-- 消息提示 -->
     <div th:if="${message}" class="alert alert-info" th:text="${message}"></div>
 
+    <!-- 筛选表单 Spring MVC 是通过 name 属性匹配请求参数的，而不是 id -->
+    <div class="card mb-4">
+        <div class="card-body">
+            <h5 class="card-title">筛选条件</h5>
+            <form id="filterForm" action="/photo/indexSearch" class="row g-3">
+                <div class="col-md-5">
+                    <label for="startDate" class="form-label">开始日期</label>
+                    <input type="date" class="form-control" id="startDate" name="startDate">
+                </div>
+                <div class="col-md-5">
+                    <label for="endDate" class="form-label">结束日期</label>
+                    <input type="date" class="form-control" id="endDate" name="endDate">
+                </div>
+                <div class="col-md-5">
+                    <label for="tagFilter" class="form-label">标签</label>
+                    <select class="form-select" id="tagFilter" name="tagFilter">
+                        <option value="">全部</option>
+                        <option value="2025" selected>2025</option>
+                        <option value="2026">2026</option>
+                    </select>
+                </div>
+                <div class="col-md-2 d-flex align-items-end">
+                    <button type="submit" class="btn btn-primary w-100">筛选</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
     <!-- 文件列表 -->
     <div class="card">
         <div class="card-header">
@@ -99,8 +127,29 @@
     </div>
 </div>
 <script>
+    // 页面加载完成后执行
+    window.onload = function () {
+        setDefaultDate();
+    }
+
+    function setDefaultDate() {
+        const today = new Date();
+        const oneMonthAgo = new Date();
+        oneMonthAgo.setMonth(oneMonthAgo.getMonth() - 1);
+
+        const formatDate = (date) => {
+            const year = date.getFullYear();
+            const month = String(date.getMonth() + 1).padStart(2, '0');
+            const day = String(date.getDate()).padStart(2, '0');
+            return `${year}-${month}-${day}`;
+        };
+
+        document.getElementById('startDate').value = formatDate(oneMonthAgo);
+        document.getElementById('endDate').value = formatDate(today);
+    }
+
     let pressTimer;
-    const longPressDuration = 1000; // 长按时间阈值，单位：毫秒
+    const longPressDuration = 3000; // 长按时间阈值，单位：毫秒
 
     document.addEventListener('DOMContentLoaded', function () {
         document.querySelectorAll('.tag-item').forEach(function (element) {
