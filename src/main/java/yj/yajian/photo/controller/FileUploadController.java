@@ -56,6 +56,7 @@ public class FileUploadController {
         return "/photo/upload";
     }
 
+    // 请求URL：http://127.0.0.1:18888/photo/upload
     @PostMapping("/upload")
     public String singleFileUpload(@RequestParam("file") MultipartFile file,
                                    RedirectAttributes redirectAttributes) {
