@@ -147,4 +147,30 @@ public class FileUploadController {
         build.setTags(tags);
         dbService.put(newFileName, JSONObject.toJSONString(build));
     }
+
+    @PostMapping("/addTag")
+    public String addTag(@RequestParam("fileName") String fileName,
+                         @RequestParam("tag") String tag) {
+        // 获取现有 FileEntity
+        String json = dbService.get(fileName);
+        FileEntity fileEntity = JSONObject.parseObject(json, FileEntity.class);
+
+        if (fileEntity == null) {
+            fileEntity = FileEntity.builder().name(fileName).tags(new ArrayList<>()).build();
+        }
+
+        if (fileEntity.getTags() == null) {
+            fileEntity.setTags(new ArrayList<>());
+        }
+
+        // 添加新标签
+        if (!fileEntity.getTags().contains(tag)) {
+            fileEntity.getTags().add(tag);
+        }
+
+        // 保存回数据库
+        dbService.put(fileName, JSONObject.toJSONString(fileEntity));
+
+        return "redirect:/photo/index";
+    }
 }
