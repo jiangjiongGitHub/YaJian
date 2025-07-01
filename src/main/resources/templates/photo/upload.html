@@ -53,17 +53,17 @@
         <div class="card-body file-list">
             <div th:if="${files.empty}"  class="text-muted">暂无上传文件</div>
             <div th:each="file : ${files}" class="file-item">
-                <div th:text="${file}"></div>
+                <div th:text="${file.name}"></div>
                 <!-- 图片预览 -->
-                <img th:if="${#strings.endsWith(file,  '.jpg')
-                            or #strings.endsWith(file,  '.jpeg')
-                            or #strings.endsWith(file,  '.png')
-                            or #strings.endsWith(file,  '.gif')}"
-                     th:src="@{'/uploads/' + ${file}}"
+                <img th:if="${#strings.endsWith(file.name, '.jpg')
+                            or #strings.endsWith(file.name, '.jpeg')
+                            or #strings.endsWith(file.name, '.png')
+                            or #strings.endsWith(file.name, '.gif')}"
+                     th:src="@{'/uploads/' + ${file.name}}"
                      class="preview-img">
                 <!-- 文件链接 -->
                 <div class="mt-2">
-                    <a th:href="@{'/uploads/' + ${file}}" class="btn btn-sm btn-outline-primary">下载</a>
+                    <a th:href="@{'/uploads/' + ${file.name}}" class="btn btn-sm btn-outline-primary">下载</a>
                 </div>
             </div>
         </div>

@@ -1,5 +1,6 @@
 package yj.yajian.photo.controller;
 
+import com.alibaba.fastjson.JSONObject;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -10,6 +11,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import yj.yajian.db.service.FileDatabaseService;
+import yj.yajian.photo.entity.FileEntity;
 
 import javax.annotation.Resource;
 import java.io.File;
@@ -21,6 +23,7 @@ import java.nio.file.attribute.BasicFileAttributes;
 import java.nio.file.attribute.FileTime;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 
@@ -58,7 +61,16 @@ public class FileUploadController {
                 .filter(Files::isRegularFile)
                 .forEach(file -> files.add(file.getFileName().toString()));
 
-        model.addAttribute("files", files);
+        List<FileEntity> fileEntitys = new ArrayList<>();
+        // 循环files转换为FileEntity实体添加到fileEntitys
+        for (String file : files) {
+            FileEntity fileEntity = JSONObject.parseObject(dbService.get(file) == null ? "{}" : dbService.get(file), FileEntity.class);
+            if (fileEntity.getName() == null) {
+                fileEntity.setName(file);
+            }
+            fileEntitys.add(fileEntity);
+        }
+        model.addAttribute("files", fileEntitys);
         return "/photo/upload";
     }
 
@@ -128,5 +140,14 @@ public class FileUploadController {
 
         // 删除临时文件
         Files.deleteIfExists(tempPath);
+
+        saveDB(newFileName);
+    }
+
+    private void saveDB(String newFileName) {
+        FileEntity build = FileEntity.builder().name(newFileName).build();
+        List<String> tags = Arrays.asList(newFileName.substring(0, 4));
+        build.setTags(tags);
+        dbService.put(newFileName, JSONObject.toJSONString(build));
     }
 }

@@ -1,5 +1,6 @@
 package yj.yajian.db.controller;
 
+import cn.hutool.core.date.DateUtil;
 import com.alibaba.fastjson.JSONObject;
 import com.alibaba.fastjson.TypeReference;
 import org.springframework.scheduling.annotation.Scheduled;
@@ -28,7 +29,7 @@ public class DataController {
 
     @Scheduled(fixedDelay = 1000)
     public void autoSave() {
-        dbService.put(generate(), generate());
+        dbService.put(DateUtil.today(), generate());
         System.out.println("Executing put at: " + new Date());
     }
 
