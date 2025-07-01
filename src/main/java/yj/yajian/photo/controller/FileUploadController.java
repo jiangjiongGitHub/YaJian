@@ -4,10 +4,7 @@ import com.alibaba.fastjson.JSONObject;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import yj.yajian.db.service.FileDatabaseService;
@@ -22,10 +19,7 @@ import java.nio.file.Paths;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.nio.file.attribute.FileTime;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 
 @Controller
 @RequestMapping("/photo")
@@ -89,7 +83,7 @@ public class FileUploadController {
             // 保存文件
             String name = uploadRenameSave(file);
 
-            redirectAttributes.addFlashAttribute("message", "文件上传成功: '" + name + "'");
+            redirectAttributes.addFlashAttribute("message", "文件上传成功：" + name);
         } catch (IOException e) {
             e.printStackTrace();
             redirectAttributes.addFlashAttribute("message", "文件上传失败");
@@ -172,5 +166,35 @@ public class FileUploadController {
         dbService.put(fileName, JSONObject.toJSONString(fileEntity));
 
         return "redirect:/photo/index";
+    }
+
+    @PostMapping("/removeTag")
+    @ResponseBody
+    public Map<String, Object> removeTag(@RequestBody Map<String, String> payload) {
+        String fileName = payload.get("fileName");
+        String tag = payload.get("tag");
+
+        // 获取现有 FileEntity
+        String json = dbService.get(fileName);
+        FileEntity fileEntity = JSONObject.parseObject(json, FileEntity.class);
+
+        if (fileEntity == null) {
+            fileEntity = FileEntity.builder().name(fileName).tags(new ArrayList<>()).build();
+        }
+
+        if (fileEntity.getTags() == null) {
+            fileEntity.setTags(new ArrayList<>());
+        }
+
+        // 移除标签
+        fileEntity.getTags().remove(tag);
+
+        // 保存回数据库
+        dbService.put(fileName, JSONObject.toJSONString(fileEntity));
+
+        Map<String, Object> result = new HashMap<>();
+        result.put("success", true);
+        result.put("message", "操作成功");
+        return result;
     }
 }

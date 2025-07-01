@@ -16,13 +16,21 @@
             border-radius: 4px;
         }
         .preview-img {
-            max-width: 200px;
-            max-height: 200px;
+            max-width: 100px;
+            max-height: 100px;
             margin-top: 10px;
         }
         .badge {
             margin-right: 5px;
             margin-bottom: 5px;
+        }
+        .tag-item {
+            transition: transform 0.2s ease;
+            cursor: pointer;
+        }
+        .tag-item:active {
+            transform: scale(1.1);
+            background-color: #e9ecef;
         }
     </style>
 </head>
@@ -60,8 +68,12 @@
                 <div th:text="${file.name}"></div>
                 <!-- 展示标签 -->
                 <div th:if="${file.tags != null and !file.tags.isEmpty()}" class="mt-2">
-                    <span th:each="tag : ${file.tags}" class="badge bg-secondary" th:text="${tag}">
-                    </span>
+                        <span
+                                th:each="tag : ${file.tags}"
+                                class="badge bg-secondary tag-item"
+                                th:text="${tag}"
+                                th:attr="data-tag=${tag}, data-filename=${file.name}">
+                        </span>
                 </div>
                 <!-- 图片预览 -->
                 <img th:if="${#strings.endsWith(file.name, '.jpg')
@@ -86,5 +98,61 @@
         </div>
     </div>
 </div>
+<script>
+    let pressTimer;
+    const longPressDuration = 1000; // 长按时间阈值，单位：毫秒
+
+    document.addEventListener('DOMContentLoaded', function () {
+        document.querySelectorAll('.tag-item').forEach(function (element) {
+            let tagName = element.getAttribute('data-tag');
+            let fileName = element.getAttribute('data-filename');
+
+            // 开始触摸/按下
+            element.addEventListener('touchstart', function () {
+                pressTimer = window.setTimeout(function () {
+                    removeTag(fileName, tagName, element);
+                }, longPressDuration);
+            });
+
+            // 取消触摸/抬起
+            element.addEventListener('touchend', function () {
+                clearTimeout(pressTimer);
+            });
+
+            // PC端鼠标按下与抬起
+            element.addEventListener('mousedown', function () {
+                pressTimer = window.setTimeout(function () {
+                    removeTag(fileName, tagName, element);
+                }, longPressDuration);
+            });
+
+            element.addEventListener('mouseup', function () {
+                clearTimeout(pressTimer);
+            });
+        });
+    });
+
+    function removeTag(fileName, tag, element) {
+        fetch('/photo/removeTag', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({fileName, tag})
+        }).then(response => {
+            if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+            return response.json();
+        }).then(data => {
+            if (data.success) {
+                element.remove(); // 成功时移除对应标签
+            } else {
+                alert('删除失败: ' + data.message); // 失败时提示错误信息
+            }
+        }).catch(error => {
+            console.error('Error:', error);
+            alert('网络异常，删除失败');
+        });
+    }
+</script>
 </body>
 </html>
