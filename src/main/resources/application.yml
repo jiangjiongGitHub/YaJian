@@ -25,16 +25,7 @@ spring:
 
 database:
   directory: ./data
-  save:
-    interval: 60000
 
 app:
   upload:
-    folder: src/main/resources/static/uploads/  # 文件存储路径
-    allowed-extensions:         # 允许的文件扩展名(可选)
-      - .jpg
-      - .jpeg
-      - .png
-      - .gif
-      - .pdf
-      - .txt
+    folder: src/main/resources/static/uploads

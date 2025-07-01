@@ -31,7 +31,7 @@ public class FileDatabaseService {
     private static final Map<String, String> DATABASE = new ConcurrentHashMap<>();
 
     // 数据存储目录
-    @Value("${database.directory:./data}")
+    @Value("${database.directory}") // ${database.directory:./data}
     private String dataDirectory;
 
     private final ObjectMapper objectMapper = new ObjectMapper();
