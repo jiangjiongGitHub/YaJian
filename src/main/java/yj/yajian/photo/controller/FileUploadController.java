@@ -70,7 +70,7 @@ public class FileUploadController {
             }
             fileEntitys.add(fileEntity);
         }
-        model.addAttribute("files", fileEntitys);
+        model.addAttribute("fileEntitys", fileEntitys);
         return "/photo/upload";
     }
 
@@ -87,13 +87,9 @@ public class FileUploadController {
             checkUploadFolder();
 
             // 保存文件
-            uploadRenameSave(file);
+            String name = uploadRenameSave(file);
 
-            redirectAttributes.addFlashAttribute("message",
-                    "文件上传成功: '" + file.getOriginalFilename() + "'");
-
-            String photo = dbService.get("photo");
-            dbService.put("photo", (photo == null ? "" : photo) + "," + file.getOriginalFilename());
+            redirectAttributes.addFlashAttribute("message", "文件上传成功: '" + name + "'");
         } catch (IOException e) {
             e.printStackTrace();
             redirectAttributes.addFlashAttribute("message", "文件上传失败");
@@ -102,7 +98,7 @@ public class FileUploadController {
         return "redirect:/photo/index";
     }
 
-    private void uploadRenameSave(MultipartFile file) throws IOException {
+    private String uploadRenameSave(MultipartFile file) throws IOException {
         // 获取原始文件名
         String originalFilename = file.getOriginalFilename();
 
@@ -142,6 +138,7 @@ public class FileUploadController {
         Files.deleteIfExists(tempPath);
 
         saveDB(newFileName);
+        return newFileName;
     }
 
     private void saveDB(String newFileName) {

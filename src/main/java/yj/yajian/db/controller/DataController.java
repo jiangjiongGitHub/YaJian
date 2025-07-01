@@ -93,4 +93,12 @@ public class DataController {
     public Map<String, Object> getAll() {
         return dbService.getAll();
     }
+
+    // 根据key删除元素
+    // URL: http://127.0.0.1:18888/data/remove?key=123
+    @GetMapping("/remove")
+    public Boolean remove(@RequestParam String key) {
+        dbService.remove(key);
+        return true;
+    }
 }

@@ -51,9 +51,14 @@
             已上传文件
         </div>
         <div class="card-body file-list">
-            <div th:if="${files.empty}"  class="text-muted">暂无上传文件</div>
-            <div th:each="file : ${files}" class="file-item">
+            <div th:if="${fileEntitys.empty}"  class="text-muted">暂无上传文件</div>
+            <div th:each="file : ${fileEntitys}" class="file-item">
                 <div th:text="${file.name}"></div>
+                <!-- 展示标签 -->
+                <div th:if="${file.tags != null and !file.tags.isEmpty()}" class="mt-2">
+                    <span th:each="tag : ${file.tags}" class="badge bg-secondary" th:text="${tag}">
+                    </span>
+                </div>
                 <!-- 图片预览 -->
                 <img th:if="${#strings.endsWith(file.name, '.jpg')
                             or #strings.endsWith(file.name, '.jpeg')
