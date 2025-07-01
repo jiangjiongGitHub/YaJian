@@ -27,7 +27,7 @@ public class SpringBootController {
 	private static Logger log = LoggerFactory.getLogger(SpringBootController.class);
 
 	private static void logInfo(Object obj) {
-		log.debug("SpringBootController--" + obj);
+		log.info("SpringBootController--" + obj);
 	}
 
 	/**

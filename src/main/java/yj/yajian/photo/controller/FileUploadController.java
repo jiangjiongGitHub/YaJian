@@ -32,8 +32,20 @@ public class FileUploadController {
     // 上传文件存储目录
     private static String UPLOADED_FOLDER = "src/main/resources/static/uploads/";
 
+    private void checkUploadFolder() {
+        // 创建上传目录(如果不存在)
+        Path uploadPath = Paths.get(UPLOADED_FOLDER);
+        if (!Files.exists(uploadPath)) {
+            try {
+                Files.createDirectories(uploadPath);
+            } catch (IOException e) {}
+        }
+    }
+
     @GetMapping("/photo")
     public String index(Model model) throws IOException {
+        checkUploadFolder();
+
         // 获取已上传文件列表
         List<String> files = new ArrayList<>();
         Files.walk(Paths.get(UPLOADED_FOLDER))
@@ -53,11 +65,7 @@ public class FileUploadController {
         }
 
         try {
-            // 创建上传目录(如果不存在)
-            Path uploadPath = Paths.get(UPLOADED_FOLDER);
-            if (!Files.exists(uploadPath)) {
-                Files.createDirectories(uploadPath);
-            }
+            checkUploadFolder();
 
             // 保存文件
             byte[] bytes = file.getBytes();
