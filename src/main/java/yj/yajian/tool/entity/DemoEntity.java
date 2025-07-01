@@ -1,4 +1,4 @@
-package yj.yajian.po;
+package yj.yajian.tool.entity;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -18,7 +18,7 @@ import java.util.List;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class DemoPO {
+public class DemoEntity {
     // 核心字段（多种类型）
     private Long id;                // ID（长整型）
     private String name;            // 名称（字符串）

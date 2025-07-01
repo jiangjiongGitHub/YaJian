@@ -1,11 +1,11 @@
-package yj.yajian.controller;
+package yj.yajian.db.controller;
 
 import com.alibaba.fastjson.JSONObject;
 import com.alibaba.fastjson.TypeReference;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.web.bind.annotation.*;
-import yj.yajian.po.DemoPO;
-import yj.yajian.service.FileDatabaseService;
+import yj.yajian.tool.entity.DemoEntity;
+import yj.yajian.db.service.FileDatabaseService;
 
 import java.math.BigDecimal;
 import java.security.SecureRandom;
@@ -48,22 +48,22 @@ public class DataController {
     @GetMapping("/put")
     public Boolean saveData(@RequestParam String key, @RequestParam String value) {
         {
-            // 放入一个List<DemoPO>对象，测试json序列化和反序列化
-            DemoPO product1 = DemoPO.builder()
+            // 放入一个List<DemoEntity>对象，测试json序列化和反序列化
+            DemoEntity product1 = DemoEntity.builder()
                     .id(1L)
                     .name("iPhone XR")
                     .price(new BigDecimal("2999.99"))
-                    .category(DemoPO.Category.ELECTRONICS)
+                    .category(DemoEntity.Category.ELECTRONICS)
                     .tags(Arrays.asList("ELECTRONICS", "PHONE", "5G"))
                     .createdAt(LocalDateTime.now().minusDays(5))
                     .expireDate(LocalDate.now().minusDays(2))
                     .active(true)
                     .build();
-            DemoPO product2 = DemoPO.builder()
+            DemoEntity product2 = DemoEntity.builder()
                     .id(2L)
                     .name("iPhone XS")
                     .price(new BigDecimal("3999.99"))
-                    .category(DemoPO.Category.ELECTRONICS)
+                    .category(DemoEntity.Category.ELECTRONICS)
                     .tags(Arrays.asList("ELECTRONICS", "PHONE", "5G"))
                     .createdAt(LocalDateTime.now().minusDays(5))
                     .expireDate(LocalDate.now().minusDays(2))
@@ -79,8 +79,8 @@ public class DataController {
     @GetMapping("/get")
     public Object getData(@RequestParam String key) {
         {
-            // 放入一个List<DemoPO>对象，测试json序列化和反序列化
-            List<DemoPO> list = JSONObject.parseObject(dbService.get("list"), new TypeReference<List<DemoPO>>() {
+            // 放入一个List<DemoEntity>对象，测试json序列化和反序列化
+            List<DemoEntity> list = JSONObject.parseObject(dbService.get("list"), new TypeReference<List<DemoEntity>>() {
             });
             System.out.println(list);
         }

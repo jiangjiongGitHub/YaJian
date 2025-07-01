@@ -1,15 +1,14 @@
 package yj.yajian.photo.controller;
 
-import com.alibaba.fastjson.JSONObject;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
-import yj.yajian.service.FileDatabaseService;
+import yj.yajian.db.service.FileDatabaseService;
 
 import javax.annotation.Resource;
 import java.io.IOException;
@@ -17,10 +16,10 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 @Controller
+@RequestMapping("/photo")
 public class FileUploadController {
 
     // @Value("${app.upload.folder}")
@@ -42,7 +41,8 @@ public class FileUploadController {
         }
     }
 
-    @GetMapping("/photo")
+    // http://127.0.0.1:18888/photo/index
+    @GetMapping("/index")
     public String index(Model model) throws IOException {
         checkUploadFolder();
 
@@ -53,7 +53,7 @@ public class FileUploadController {
                 .forEach(file -> files.add(file.getFileName().toString()));
 
         model.addAttribute("files", files);
-        return "upload";
+        return "/photo/upload";
     }
 
     @PostMapping("/upload")
@@ -61,7 +61,7 @@ public class FileUploadController {
                                    RedirectAttributes redirectAttributes) {
         if (file.isEmpty()) {
             redirectAttributes.addFlashAttribute("message", "请选择一个文件上传");
-            return "redirect:/photo";
+            return "redirect:/photo/index";
         }
 
         try {
@@ -82,6 +82,6 @@ public class FileUploadController {
             redirectAttributes.addFlashAttribute("message", "文件上传失败");
         }
 
-        return "redirect:/photo";
+        return "redirect:/photo/index";
     }
 }

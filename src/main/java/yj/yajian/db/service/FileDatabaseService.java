@@ -1,4 +1,4 @@
-package yj.yajian.service;
+package yj.yajian.db.service;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.beans.factory.annotation.Value;
