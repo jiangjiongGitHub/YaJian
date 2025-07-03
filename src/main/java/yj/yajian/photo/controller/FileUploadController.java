@@ -3,6 +3,7 @@ package yj.yajian.photo.controller;
 import com.alibaba.fastjson.JSONObject;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -76,10 +77,10 @@ public class FileUploadController {
     }
 
     @GetMapping("/indexSearch")
-    public String indexSearch( @RequestParam(required = false) String startDate,
-                               @RequestParam(required = false) String endDate,
-                               @RequestParam(required = false) String tagFilter,
-                               Model model) throws IOException {
+    public String indexSearch(@RequestParam(required = false) String startDate,
+                              @RequestParam(required = false) String endDate,
+                              @RequestParam(required = false) String tagFilter,
+                              Model model) throws IOException {
         // 打印参数
         log.info("startDate: {}, endDate: {}, tagFilter: {}", startDate, endDate, tagFilter);
 
@@ -254,5 +255,50 @@ public class FileUploadController {
         result.put("success", true);
         result.put("message", "操作成功");
         return result;
+    }
+
+    @PostMapping("/renameFile")
+    public ResponseEntity<Map<String, Object>> renameFile(@RequestBody Map<String, String> payload) {
+        String oldFileName = payload.get("oldFileName");
+
+        File oldFile = new File(UPLOADED_FOLDER + File.separator + oldFileName);
+
+        Map<String, Object> response = new HashMap<>();
+
+        if (oldFile.exists()) {
+            // 把名称改为 yyyyMMdd.HHmmss.SSS 格式，取文件创建日期，如果日期不存在，则取当前日期
+            SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMdd.HHmmss.SSS");
+            String newFileName = sdf.format(new Date(oldFile.lastModified())) + oldFileName.substring(oldFileName.lastIndexOf(".")).toLowerCase();
+            File newFile = new File(UPLOADED_FOLDER + File.separator + newFileName);
+
+            if (newFile.exists()) {
+                response.put("success", false);
+                response.put("message", "文件已存在：" + newFileName);
+
+                // 修改文件名为当前文件名后面加上三位随机数字名称，注意后缀名
+                String newFileName2 = sdf.format(new Date(oldFile.lastModified())) + "." + (int) (Math.random() * 1000) + oldFileName.substring(oldFileName.lastIndexOf(".")).toLowerCase();
+                File newFile2 = new File(UPLOADED_FOLDER + File.separator + newFileName2);
+                if (oldFile.renameTo(newFile2)) {
+                    response.put("success", true);
+                    response.put("message", response.get("message") + "，文件名已更改为：" + newFileName2);
+                } else {
+                    response.put("success", false);
+                    response.put("message", response.get("message") + "，无法更改文件名为：" + newFileName2);
+                }
+            } else {
+                if (oldFile.renameTo(newFile)) {
+                    response.put("success", true);
+                    response.put("message", "文件名已更改为：" + newFileName);
+                } else {
+                    response.put("success", false);
+                    response.put("message", "无法更改文件名为：" + newFileName);
+                }
+            }
+        } else {
+            response.put("success", false);
+            response.put("message", "文件不存在：" + oldFileName);
+        }
+
+        return ResponseEntity.ok(response);
     }
 }

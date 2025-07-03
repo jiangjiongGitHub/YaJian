@@ -1,22 +1,8 @@
 ### YaJian
-0. 系统网站静态页面
-0. 搜索汇总
-0. cron解析
-0. 字符串加解密
+- 搜索汇总
+- cron解析
+- 字符串加解密
+- 相册管理
 
-
-
-### Tomcat
-0. add
-0. commit
-0. push
-0. pull
-
-
-### git命令
-0. add
-0. commit
-0. push
-0. pull
-
-
+### 访问地址
+- http://127.0.0.1:18888/main.html

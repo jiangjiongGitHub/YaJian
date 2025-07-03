@@ -115,7 +115,18 @@
                      class="preview-img">
                 <!-- 文件链接 -->
                 <div class="mt-2">
-                    <a th:href="@{'/uploads/' + ${file.name}}" class="btn btn-sm btn-outline-primary">下载</a>
+                    <a th:href="@{'/uploads/' + ${file.name}}"
+                       class="btn btn-sm btn-outline-primary"
+                       target="_blank"
+                       rel="noopener noreferrer">
+                        查看图片
+                    </a>
+                    <button type="button"
+                            class="btn btn-sm btn-outline-warning"
+                            th:attr="onclick='renameFile(\'' + ${file.name} + '\')'">
+                        重命名
+                    </button>
+
                     <!-- 添加标签表单 -->
                     <form th:action="@{/photo/addTag}" method="post" class="mt-3">
                         <input type="hidden" name="fileName" th:value="${file.name}">
@@ -231,6 +242,34 @@
             alert('网络异常，删除失败');
         });
     }
+
+    function renameFile(oldFileName) {
+        // const newFileName = prompt("请输入新的文件名:", oldFileName);
+        const newFileName = 'null';
+        if (newFileName && newFileName !== oldFileName) {
+            fetch('/photo/renameFile', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ oldFileName, newFileName })
+            }).then(response => {
+                if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+                return response.json();
+            }).then(data => {
+                if (data.success) {
+                    alert('文件名已成功更改');
+                    location.reload(); // 成功时刷新页面以更新文件列表
+                } else {
+                    alert('更改失败: ' + data.message); // 失败时提示错误信息
+                }
+            }).catch(error => {
+                console.error('Error:', error);
+                alert('网络异常，更改失败');
+            });
+        }
+    }
+
 </script>
 </body>
 </html>
