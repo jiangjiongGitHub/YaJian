@@ -47,12 +47,14 @@
     <!-- 上传表单 -->
     <div class="card mb-4">
         <div class="card-body">
-            <form method="POST" action="/photo/upload" enctype="multipart/form-data">
-                <div class="mb-3">
+            <form method="POST" action="/photo/upload" enctype="multipart/form-data" class="row g-3 align-items-end">
+                <div class="col-md-6">
                     <label for="file" class="form-label">选择文件上传</label>
                     <input class="form-control" type="file" id="file" name="file">
                 </div>
-                <button type="submit" class="btn btn-primary">上传</button>
+                <div class="col-md-6 text-end">
+                    <button type="submit" class="btn btn-primary">上传</button>
+                </div>
             </form>
         </div>
     </div>
@@ -60,28 +62,33 @@
     <!-- 消息提示 -->
     <div th:if="${message}" class="alert alert-info" th:text="${message}"></div>
 
-    <!-- 筛选表单 Spring MVC 是通过 name 属性匹配请求参数的，而不是 id -->
+    <!-- Spring MVC 是通过 name 属性匹配请求参数的，而不是 id -->
+    <!-- 筛选表单 -->
     <div class="card mb-4">
         <div class="card-body">
             <h5 class="card-title">筛选条件</h5>
             <form id="filterForm" action="/photo/indexSearch" class="row g-3">
-                <div class="col-md-5">
+                <div class="col-md-3">
                     <label for="startDate" class="form-label">开始日期</label>
-                    <input type="text" id="startDate" name="startDate" class="form-control" placeholder="yyyy-mm-dd">
+                    <input type="text" id="startDate" name="startDate" class="form-control"
+                           placeholder="yyyy-mm-dd"
+                           th:value="${startDate} ? ${startDate}" />
                 </div>
-                <div class="col-md-5">
+                <div class="col-md-3">
                     <label for="endDate" class="form-label">结束日期</label>
-                    <input type="text" id="endDate" name="endDate" class="form-control" placeholder="yyyy-mm-dd">
+                    <input type="text" id="endDate" name="endDate" class="form-control"
+                           placeholder="yyyy-mm-dd"
+                           th:value="${endDate} ? ${endDate}" />
                 </div>
-                <div class="col-md-5">
+                <div class="col-md-3">
                     <label for="tagFilter" class="form-label">标签</label>
                     <select class="form-select" id="tagFilter" name="tagFilter">
-                        <option value="">全部</option>
-                        <option value="2025" selected>2025</option>
-                        <option value="2026">2026</option>
+                        <option value="" th:selected="${tagFilter == null or tagFilter == ''}">全部</option>
+                        <option value="2025" th:selected="${tagFilter == '2025'}">2025</option>
+                        <option value="2026" th:selected="${tagFilter == '2026'}">2026</option>
                     </select>
                 </div>
-                <div class="col-md-2 d-flex align-items-end">
+                <div class="col-md-3 d-flex align-items-end">
                     <button type="submit" class="btn btn-primary w-100">筛选</button>
                 </div>
             </form>
@@ -91,7 +98,7 @@
     <!-- 文件列表 -->
     <div class="card">
         <div class="card-header">
-            已上传文件
+            已上传文件（共 <span th:text="${fileEntitys != null ? fileEntitys.size() : 0}">0</span> 条）
         </div>
         <div class="card-body file-list">
             <div th:if="${fileEntitys.empty}"  class="text-muted">暂无上传文件</div>

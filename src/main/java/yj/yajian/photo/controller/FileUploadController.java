@@ -108,11 +108,13 @@ public class FileUploadController {
         LocalDate end = StringUtils.isEmpty(endDate) ? null : LocalDate.parse(endDate, formatter);
 
         List<FileEntity> collect = fileEntitys.stream()
-                .filter(f -> f.getTags() != null)
-                .filter(f -> StringUtils.isEmpty(tagFilter) || f.getTags().contains(tagFilter))
+                .filter(f -> StringUtils.isEmpty(tagFilter) || (f.getTags() != null && f.getTags().contains(tagFilter)))
                 .filter(f -> start == null || end == null || isWithinDateRange(f, start, end)) // 自定义方法判断是否在时间范围内
                 .collect(Collectors.toList());
         model.addAttribute("fileEntitys", collect);
+        model.addAttribute("startDate", startDate);
+        model.addAttribute("endDate", endDate);
+        model.addAttribute("tagFilter", tagFilter);
         return "/photo/upload";
     }
 
