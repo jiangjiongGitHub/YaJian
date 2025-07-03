@@ -18,8 +18,8 @@ spring:
     encoding: UTF-8             # 文件编码
   servlet:
     multipart:
-      max-file-size: 10MB       # 单个文件大小限制
-      max-request-size: 10MB    # 总请求大小限制
+      max-file-size: 50MB       # 单个文件大小限制
+      max-request-size: 80MB    # 总请求大小限制
       enabled: true             # 启用文件上传
       location:                 # 临时存储目录(可选)
 

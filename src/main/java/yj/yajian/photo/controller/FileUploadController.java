@@ -118,6 +118,15 @@ public class FileUploadController {
         return "/photo/upload";
     }
 
+    @GetMapping("/tags")
+    @ResponseBody
+    public Map<String, List<String>> getTags() {
+        List<String> tags = Arrays.asList("风景", "人物", "动物", "建筑"); // 示例数据，实际可以从数据库获取
+        Map<String, List<String>> response = new HashMap<>();
+        response.put("tags", tags);
+        return response;
+    }
+
     private boolean isWithinDateRange(FileEntity f, LocalDate start, LocalDate end) {
         try {
             FileTime fileTime = Files.getLastModifiedTime(Paths.get(UPLOADED_FOLDER + File.separator + f.getName()));
@@ -310,4 +319,35 @@ public class FileUploadController {
 
         return ResponseEntity.ok(response);
     }
+
+    @PostMapping("/deleteFile")
+    @ResponseBody
+    public Map<String, Object> deleteFile(@RequestBody Map<String, String> payload) {
+        Map<String, Object> result = new HashMap<>();
+        String fileName = payload.get("fileName");
+
+        File fileToDelete = new File(UPLOADED_FOLDER + File.separator + fileName);
+        if (!fileToDelete.exists()) {
+            result.put("success", false);
+            result.put("message", "文件不存在：" + fileName);
+            return result;
+        }
+
+        try {
+            // 删除文件
+            Files.delete(fileToDelete.toPath());
+
+            // 从数据库中移除记录
+            dbService.remove(fileName);
+
+            result.put("success", true);
+            result.put("message", "文件删除成功：" + fileName);
+        } catch (IOException e) {
+            result.put("success", false);
+            result.put("message", "文件删除失败：" + e.getMessage());
+        }
+
+        return result;
+    }
+
 }

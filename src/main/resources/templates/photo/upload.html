@@ -20,8 +20,8 @@
             border-radius: 4px;
         }
         .preview-img {
-            max-width: 100px;
-            max-height: 100px;
+            max-width: 200px;
+            max-height: 200px;
             margin-top: 10px;
         }
         .badge {
@@ -59,7 +59,7 @@
             <form method="POST" action="/photo/upload" enctype="multipart/form-data" class="d-flex align-items-end gap-3">
                 <div>
                     <!--<label for="file" class="form-label">选择文件上传</label>-->
-                    <input class="form-control" type="file" id="file" name="file">
+                    <input class="form-control" type="file" id="file" name="file" accept=".jpg,.jpeg,.png,.gif,.bmp,.webp" />
                 </div>
                 <div>
                     <button type="submit" class="btn btn-primary">上传图片</button>
@@ -90,10 +90,8 @@
                 </div>
                 <div class="col-md-3">
                     <label for="tagFilter" class="form-label">标签</label>
-                    <select class="form-select" id="tagFilter" name="tagFilter">
+                    <select class="form-select" id="tagFilter" name="tagFilter" data-selected="${tagFilter != null ? tagFilter : ''}">
                         <option value="" th:selected="${tagFilter == null or tagFilter == ''}">全部</option>
-                        <option value="2025" th:selected="${tagFilter == '2025'}">2025</option>
-                        <option value="2026" th:selected="${tagFilter == '2026'}">2026</option>
                     </select>
                 </div>
                 <div class="col-md-3 d-flex align-items-end">
@@ -141,6 +139,11 @@
                             th:attr="onclick='renameFile(\'' + ${file.name} + '\')'">
                         重命名
                     </button>
+                    <button type="button"
+                            class="btn btn-sm btn-outline-danger"
+                            th:attr="onclick='deleteFile(\'' + ${file.name} + '\')'">
+                        删除图片
+                    </button>
 
                     <!-- 添加标签表单 -->
                     <form th:action="@{/photo/addTag}" method="post" class="mt-3">
@@ -161,7 +164,7 @@
 <script>
     // 页面加载完成后执行
     window.onload = function () {
-        // setDefaultDate();
+
     }
 
     function setDefaultDate() {
@@ -235,6 +238,32 @@
                 }
             }
         });
+
+        const tagSelect = document.getElementById('tagFilter');
+        const selectedTag = tagSelect.getAttribute('data-selected');
+
+        // 调用后端接口获取标签列表
+        fetch('/photo/tags')
+            .then(response => response.json())
+            .then(data => {
+            if (data.tags && Array.isArray(data.tags)) {
+                data.tags.forEach(tag => {
+                    const option = document.createElement('option');
+                    option.value = tag;
+                    option.textContent = tag;
+
+                    // 如果当前标签是上次选中的标签，则设置为选中状态
+                    if (tag === selectedTag) {
+                        option.selected = true;
+                    }
+
+                    tagSelect.appendChild(option);
+                });
+            }
+        }).catch(error => {
+            console.error('获取标签失败:', error);
+        });
+
     });
 
     function removeTag(fileName, tag, element) {
@@ -285,6 +314,35 @@
             });
         }
     }
+
+    function deleteFile(fileName) {
+        if (confirm("确定要删除文件 " + fileName + " 吗？")) {
+            fetch('/photo/deleteFile', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({fileName})
+            })
+                .then(response => {
+                if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+                return response.json();
+            })
+                .then(data => {
+                if (data.success) {
+                    alert('文件已成功删除');
+                    location.reload(); // 刷新页面以更新文件列表
+                } else {
+                    alert('删除失败: ' + data.message);
+                }
+            })
+                .catch(error => {
+                console.error('Error:', error);
+                alert('网络异常，删除失败');
+            });
+        }
+    }
+
 
 </script>
 </body>
