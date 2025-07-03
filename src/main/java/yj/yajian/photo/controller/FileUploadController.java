@@ -259,12 +259,19 @@ public class FileUploadController {
 
     @PostMapping("/renameFile")
     public ResponseEntity<Map<String, Object>> renameFile(@RequestBody Map<String, String> payload) {
-        String oldFileName = payload.get("oldFileName");
-
-        File oldFile = new File(UPLOADED_FOLDER + File.separator + oldFileName);
-
         Map<String, Object> response = new HashMap<>();
 
+        String oldFileName = payload.get("oldFileName");
+
+        // 如果文件名符合规范，就不修改：规范为 yyyyMMdd.HHmmss.SSS.jpg 或 yyyyMMdd.HHmmss.SSS.XXX.jpg 除后缀名外，都是数字或小数点 其中 yyyyMMdd.HHmmss.SSS 为时间，XXX为随机数字，可以是1到3位，后缀名一般是常用图片格式
+        if (oldFileName.matches("^\\d{8}\\.\\d{6}\\.\\d{3}(\\.\\d{1,3})?\\.(?i)(jpg|jpeg|png|gif|bmp|webp)$")) {
+            response.put("success", false);
+            response.put("message", "文件名符合规范：" + oldFileName);
+            return ResponseEntity.ok(response);
+        }
+
+
+        File oldFile = new File(UPLOADED_FOLDER + File.separator + oldFileName);
         if (oldFile.exists()) {
             // 把名称改为 yyyyMMdd.HHmmss.SSS 格式，取文件创建日期，如果日期不存在，则取当前日期
             SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMdd.HHmmss.SSS");
