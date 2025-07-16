@@ -130,6 +130,8 @@ public class FileUploadController {
     @GetMapping("/tags")
     @ResponseBody
     public Map<String, List<String>> getTags() {
+        deleteUnuseData();
+
         // 从dbService获取所有数据，遍历获取标签
         Map<String, Object> all = dbService.getAll();
         if (all == null) {
@@ -369,6 +371,19 @@ public class FileUploadController {
         }
 
         return result;
+    }
+
+    private void deleteUnuseData(){
+        // 遍历 UPLOADED_FOLDER 文件夹下文件，已知文件名作为 dbService map 的 key, dbService 有很多多余数据，如果 key 不在 UPLOADED_FOLDER 里的文件列表中，则删除
+        Map<String, Object> all = dbService.getAll();
+        all.forEach((k, v) -> {
+            log.info("KEY = {}", k);
+            File file = new File(UPLOADED_FOLDER + File.separator + k);
+            if (!file.exists()) {
+                dbService.remove(k);
+                log.info("RM = {}", k);
+            }
+        });
     }
 
 }
