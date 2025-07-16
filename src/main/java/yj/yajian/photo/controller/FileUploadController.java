@@ -110,8 +110,14 @@ public class FileUploadController {
         LocalDateTime startOfDay = start != null ? start.atStartOfDay() : null;
         LocalDateTime endOfDay = end != null ? end.atTime(23, 59, 59, 999_999_999) : null;
 
+        // 支持多个标签筛选
+        Set<String> tagFilters = new HashSet<>();
+        if (!StringUtils.isEmpty(tagFilter)) {
+            tagFilters.addAll(Arrays.asList(tagFilter.split(",")));
+        }
+
         List<FileEntity> collect = fileEntitys.stream()
-                .filter(f -> StringUtils.isEmpty(tagFilter) || (f.getTags() != null && f.getTags().contains(tagFilter)))
+                .filter(f -> StringUtils.isEmpty(tagFilter) || (f.getTags() != null && f.getTags().stream().anyMatch(tagFilters::contains)))
                 .filter(f -> start == null || end == null || isWithinDateRange(f, startOfDay, endOfDay)) // 自定义方法判断是否在时间范围内
                 .collect(Collectors.toList());
         model.addAttribute("fileEntitys", collect);

@@ -90,7 +90,7 @@
                 </div>
                 <div class="col-md-3">
                     <label for="tagFilter" class="form-label">标签</label>
-                    <select class="form-select" id="tagFilter" name="tagFilter">
+                    <select class="form-select" id="tagFilter" name="tagFilter" multiple >
                         <option value="" >全部</option>
                     </select>
                 </div>
@@ -249,6 +249,9 @@
         var tagFilterParam = document.getElementById("tagFilterParam").value;
         console.log("Tag Filter Param: " + tagFilterParam);
 
+        // 将逗号分隔的 tag 字符串转为数组
+        const selectedTags = tagFilterParam ? tagFilterParam.split(',') : [];
+
         const tagSelect = document.getElementById('tagFilter');
         console.log("Tag Select: ", tagSelect);
 
@@ -262,8 +265,8 @@
                     option.value = tag;
                     option.textContent = tag;
 
-                    // 如果当前标签是上次选中的标签，则设置为选中状态
-                    if (tag === tagFilterParam) {
+                    // 如果当前标签是上次选中的标签，则设置为选中状态，匹配多个选中项
+                    if (selectedTags.includes(tag)) {
                         option.selected = true;
                     }
 
