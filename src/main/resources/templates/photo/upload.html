@@ -90,8 +90,8 @@
                 </div>
                 <div class="col-md-3">
                     <label for="tagFilter" class="form-label">标签</label>
-                    <select class="form-select" id="tagFilter" name="tagFilter" data-selected="${tagFilter != null ? tagFilter : ''}">
-                        <option value="" th:selected="${tagFilter == null or tagFilter == ''}">全部</option>
+                    <select class="form-select" id="tagFilter" name="tagFilter">
+                        <option value="" >全部</option>
                     </select>
                 </div>
                 <div class="col-md-3 d-flex align-items-end">
@@ -157,14 +157,18 @@
             </div>
         </div>
     </div>
+
+    <div>
+        <input type="hidden" id="tagFilterParam" th:value="${tagFilter}" />
+    </div>
 </div>
 <!-- 引入 flatpickr JS -->
 <!-- <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script> -->
 <script src="/photo/flatpickr.js"></script>
 <script>
-    // 页面加载完成后执行
     window.onload = function () {
-
+        // 等待页面完全加载（包括 HTML、CSS、图片、iframe 等所有资源下载完成）
+        console.log("window.onload = function () {}");
     }
 
     function setDefaultDate() {
@@ -187,6 +191,9 @@
     const longPressDuration = 3000; // 长按时间阈值，单位：毫秒
 
     document.addEventListener('DOMContentLoaded', function () {
+        // 仅等待 HTML DOM 树构建完成（不依赖样式表、图片等外部资源）
+        console.log("document.addEventListener('DOMContentLoaded', function () {})");
+
         document.querySelectorAll('.tag-item').forEach(function (element) {
             let tagName = element.getAttribute('data-tag');
             let fileName = element.getAttribute('data-filename');
@@ -239,8 +246,11 @@
             }
         });
 
+        var tagFilterParam = document.getElementById("tagFilterParam").value;
+        console.log("Tag Filter Param: " + tagFilterParam);
+
         const tagSelect = document.getElementById('tagFilter');
-        const selectedTag = tagSelect.getAttribute('data-selected');
+        console.log("Tag Select: ", tagSelect);
 
         // 调用后端接口获取标签列表
         fetch('/photo/tags')
@@ -253,7 +263,7 @@
                     option.textContent = tag;
 
                     // 如果当前标签是上次选中的标签，则设置为选中状态
-                    if (tag === selectedTag) {
+                    if (tag === tagFilterParam) {
                         option.selected = true;
                     }
 

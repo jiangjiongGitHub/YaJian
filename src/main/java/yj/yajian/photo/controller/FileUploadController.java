@@ -23,6 +23,7 @@ import java.nio.file.attribute.BasicFileAttributes;
 import java.nio.file.attribute.FileTime;
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
@@ -106,10 +107,12 @@ public class FileUploadController {
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
         LocalDate start = StringUtils.isEmpty(startDate) ? null : LocalDate.parse(startDate, formatter);
         LocalDate end = StringUtils.isEmpty(endDate) ? null : LocalDate.parse(endDate, formatter);
+        LocalDateTime startOfDay = start != null ? start.atStartOfDay() : null;
+        LocalDateTime endOfDay = end != null ? end.atTime(23, 59, 59, 999_999_999) : null;
 
         List<FileEntity> collect = fileEntitys.stream()
                 .filter(f -> StringUtils.isEmpty(tagFilter) || (f.getTags() != null && f.getTags().contains(tagFilter)))
-                .filter(f -> start == null || end == null || isWithinDateRange(f, start, end)) // 自定义方法判断是否在时间范围内
+                .filter(f -> start == null || end == null || isWithinDateRange(f, startOfDay, endOfDay)) // 自定义方法判断是否在时间范围内
                 .collect(Collectors.toList());
         model.addAttribute("fileEntitys", collect);
         model.addAttribute("startDate", startDate);
@@ -121,16 +124,28 @@ public class FileUploadController {
     @GetMapping("/tags")
     @ResponseBody
     public Map<String, List<String>> getTags() {
-        List<String> tags = Arrays.asList("风景", "人物", "动物", "建筑"); // 示例数据，实际可以从数据库获取
+        // 从dbService获取所有数据，遍历获取标签
+        Map<String, Object> all = dbService.getAll();
+        if (all == null) {
+            return new HashMap<>();
+        }
+        List<String> tags = all.values().stream()
+                // 判断是json，是字符串的过滤
+                .filter(value -> value instanceof String && value.toString().startsWith("{"))
+                .map(value -> JSONObject.parseObject(value.toString(), FileEntity.class).getTags())
+                .filter(Objects::nonNull)
+                .flatMap(List::stream)
+                .distinct()
+                .collect(Collectors.toList());
         Map<String, List<String>> response = new HashMap<>();
         response.put("tags", tags);
         return response;
     }
 
-    private boolean isWithinDateRange(FileEntity f, LocalDate start, LocalDate end) {
+    private boolean isWithinDateRange(FileEntity f, LocalDateTime start, LocalDateTime end) {
         try {
             FileTime fileTime = Files.getLastModifiedTime(Paths.get(UPLOADED_FOLDER + File.separator + f.getName()));
-            LocalDate fileDate = fileTime.toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
+            LocalDateTime fileDate = fileTime.toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime();
             return fileDate.isAfter(start) && fileDate.isBefore(end);
         } catch (IOException e) {
             e.printStackTrace();
