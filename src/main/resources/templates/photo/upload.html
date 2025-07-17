@@ -135,6 +135,11 @@
                         查看图片
                     </a>
                     <button type="button"
+                            class="btn btn-sm btn-outline-info"
+                            onclick="startSlideshow()">
+                        播放图片
+                    </button>
+                    <button type="button"
                             class="btn btn-sm btn-outline-warning"
                             th:attr="onclick='renameFile(\'' + ${file.name} + '\')'">
                         重命名
@@ -356,6 +361,158 @@
         }
     }
 
+    let slideshowInterval;
+    let currentIndex = 0;
+    let imagesArray = [];
+    let fullscreenImg, overlay; // 全局引用
+
+    function startSlideshow() {
+        // 检查是否已存在轮播（使用更可靠的检查方式）
+        if (overlay && document.body.contains(overlay)) {
+            return; // 轮播已存在，不再创建
+        } else {
+            // 重置为null以允许重新创建
+            fullscreenImg = null;
+            overlay = null;
+        }
+
+        // 收集所有图片路径
+        imagesArray = Array.from(document.querySelectorAll('.preview-img'))
+            .map(img => img.src);
+
+        if (imagesArray.length === 0) {
+            alert("没有可轮播的图片");
+            return;
+        }
+
+        currentIndex = 0;
+
+        // 创建全屏容器
+        overlay = document.createElement('div');
+        overlay.style.position = 'fixed';
+        overlay.style.top = '0';
+        overlay.style.left = '0';
+        overlay.style.width = '100vw';
+        overlay.style.height = '100vh';
+        overlay.style.backgroundColor = 'black';
+        overlay.style.display = 'flex';
+        overlay.style.justifyContent = 'center';
+        overlay.style.alignItems = 'center';
+        overlay.style.zIndex = '9999';
+        overlay.style.overflow = 'hidden';
+
+        // 创建图片元素
+        fullscreenImg = document.createElement('img');
+        fullscreenImg.id = 'slideshow-img';
+        fullscreenImg.src = imagesArray[currentIndex];
+        fullscreenImg.style.maxWidth = '90%';
+        fullscreenImg.style.maxHeight = '90%';
+        fullscreenImg.style.transition = 'opacity 0.5s ease-in-out';
+        overlay.appendChild(fullscreenImg);
+
+        // 创建关闭按钮
+        const closeBtn = document.createElement('button');
+        closeBtn.textContent = ' X ';
+        closeBtn.style.position = 'absolute';
+        closeBtn.style.top = '10px';
+        closeBtn.style.right = '10px';
+        closeBtn.style.fontSize = '24px';
+        closeBtn.style.background = 'none';
+        closeBtn.style.border = 'none';
+        closeBtn.style.color = 'white';
+        closeBtn.onclick = stopSlideshow;
+        overlay.appendChild(closeBtn);
+
+        document.body.appendChild(overlay);
+
+        // 修改后的轮播逻辑（添加初始化透明度）
+        fullscreenImg.style.opacity = '1'; // 确保初始可见
+        slideshowInterval = setInterval(() => {
+            currentIndex = (currentIndex + 1) % imagesArray.length;
+            fullscreenImg.style.opacity = '0';
+
+            setTimeout(() => {
+                fullscreenImg.src = imagesArray[currentIndex];
+                fullscreenImg.style.opacity = '1';
+            }, 300);
+        }, 3000);
+    }
+
+    // 新增：统一的轮播关闭方法
+    function stopSlideshow() {
+        if (slideshowInterval) {
+            clearInterval(slideshowInterval);
+            slideshowInterval = null;
+        }
+        if (overlay && overlay.parentNode) {
+            overlay.parentNode.removeChild(overlay);
+        }
+        fullscreenImg = null;
+        overlay = null;
+    }
+
+    // 修改后的键盘事件处理
+    document.addEventListener('keydown', function(event) {
+        // 仅在轮播激活时响应
+        if (!overlay || !document.body.contains(overlay)) return;
+
+        switch (event.key) {
+            case 'ArrowLeft': // ← 左箭头
+                clearInterval(slideshowInterval);
+                currentIndex = (currentIndex - 1 + imagesArray.length) % imagesArray.length;
+                updateSlideshowImage(fullscreenImg);
+                resumeSlideshow(); // 恢复轮播
+                break;
+
+            case 'ArrowRight': // → 右箭头
+                clearInterval(slideshowInterval);
+                currentIndex = (currentIndex + 1) % imagesArray.length;
+                updateSlideshowImage(fullscreenImg);
+                resumeSlideshow();
+                break;
+
+            case 'Escape': // Esc
+                stopSlideshow(); // 使用统一关闭方法
+                break;
+
+            case ' ': // 空格键
+            case 'Enter': // Enter键
+                if (slideshowInterval) {
+                    // 暂停轮播
+                    clearInterval(slideshowInterval);
+                    slideshowInterval = null;
+                } else {
+                    // 恢复轮播（立即显示当前图片）
+                    updateSlideshowImage(fullscreenImg);
+                    resumeSlideshow();
+                }
+                break;
+        }
+    });
+
+    // 修复的恢复轮播函数
+    function resumeSlideshow() {
+        if (!overlay || !document.body.contains(overlay)) return;
+
+        // 清除可能存在的旧定时器
+        if (slideshowInterval) clearInterval(slideshowInterval);
+
+        // 创建新定时器（立即显示当前图片）
+        fullscreenImg.style.opacity = '1';
+        slideshowInterval = setInterval(() => {
+            currentIndex = (currentIndex + 1) % imagesArray.length;
+            updateSlideshowImage(fullscreenImg);
+        }, 3000);
+    }
+
+    // 图片更新函数保持不变
+    function updateSlideshowImage(imgElement) {
+        imgElement.style.opacity = '0';
+        setTimeout(() => {
+            imgElement.src = imagesArray[currentIndex];
+            imgElement.style.opacity = '1';
+        }, 300);
+    }
 
 </script>
 </body>
