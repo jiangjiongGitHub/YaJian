@@ -252,13 +252,9 @@
         });
 
         var tagFilterParam = document.getElementById("tagFilterParam").value;
-        console.log("Tag Filter Param: " + tagFilterParam);
-
         // 将逗号分隔的 tag 字符串转为数组
         const selectedTags = tagFilterParam ? tagFilterParam.split(',') : [];
-
         const tagSelect = document.getElementById('tagFilter');
-        console.log("Tag Select: ", tagSelect);
 
         // 调用后端接口获取标签列表
         fetch('/photo/tags')
@@ -420,6 +416,7 @@
         closeBtn.style.background = 'none';
         closeBtn.style.border = 'none';
         closeBtn.style.color = 'white';
+        // 将函数 stopSlideshow 赋值给 onclick 属性，加括号变成立即执行了 stopSlideshow()
         closeBtn.onclick = stopSlideshow;
         overlay.appendChild(closeBtn);
 
@@ -457,18 +454,22 @@
         if (!overlay || !document.body.contains(overlay)) return;
 
         switch (event.key) {
+            case 'ArrowUp': // ← 左箭头
             case 'ArrowLeft': // ← 左箭头
                 clearInterval(slideshowInterval);
                 currentIndex = (currentIndex - 1 + imagesArray.length) % imagesArray.length;
                 updateSlideshowImage(fullscreenImg);
                 resumeSlideshow(); // 恢复轮播
+                console.log("上一张");
                 break;
 
+            case 'ArrowDown': // → 右箭头
             case 'ArrowRight': // → 右箭头
                 clearInterval(slideshowInterval);
                 currentIndex = (currentIndex + 1) % imagesArray.length;
                 updateSlideshowImage(fullscreenImg);
                 resumeSlideshow();
+                console.log("下一张");
                 break;
 
             case 'Escape': // Esc
@@ -481,10 +482,12 @@
                     // 暂停轮播
                     clearInterval(slideshowInterval);
                     slideshowInterval = null;
+                    console.log("暂停");
                 } else {
                     // 恢复轮播（立即显示当前图片）
                     updateSlideshowImage(fullscreenImg);
                     resumeSlideshow();
+                    console.log("继续");
                 }
                 break;
         }
