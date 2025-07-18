@@ -197,54 +197,58 @@
 
 <script>
     // 书签数据（实际应用中应从后端API获取）
-    const bookmarks = [
-        { id: 1, url: "https://github.com", title: "GitHub", count: 24 },
-        { id: 2, url: "https://stackoverflow.com", title: "Stack Overflow", count: 18 },
-        { id: 3, url: "https://developer.mozilla.org", title: "MDN Web Docs", count: 32 },
-        { id: 4, url: "https://leetcode.com", title: "LeetCode", count: 15 },
-        { id: 5, url: "https://css-tricks.com", title: "CSS-Tricks", count: 12 },
-        { id: 6, url: "https://dev.to", title: "DEV Community", count: 8 },
-        { id: 7, url: "https://medium.com", title: "Medium", count: 20 },
-        { id: 8, url: "https://www.freecodecamp.org", title: "freeCodeCamp", count: 16 },
-        { id: 9, url: "https://dribbble.com", title: "Dribbble", count: 10 },
-        { id: 10, url: "https://figma.com", title: "Figma", count: 22 },
-        { id: 11, url: "https://trello.com", title: "Trello", count: 14 },
-        { id: 12, url: "https://notion.so", title: "Notion", count: 19 }
+    const bookmarksBak = [
+        { id: 1, url: "https://github.com", title: "GitHub", count: 1 }
     ];
 
-    // 按count降序排序
-    bookmarks.sort((a, b) => b.count - a.count);
+    // 获取书签数据
+    function fetchBookmarks() {
+        fetch('/api/bookmarks')  // 后端接口地址
+            .then(response => response.json())
+            .then(data => {
+                // 排序并渲染
+                console.log(data)
+                const bookmarks = data;
+
+                // 按count降序排序
+                bookmarks.sort((a, b) => b.count - a.count);
+
+                renderBookmarksTable();
+                updateStats();
+
+                // 搜索功能
+                document.getElementById('searchInput').addEventListener('input', function(e) {
+                    const searchTerm = e.target.value.toLowerCase();
+                    const filtered = bookmarks.filter(bookmark =>
+                    bookmark.title.toLowerCase().includes(searchTerm) ||
+                    bookmark.url.toLowerCase().includes(searchTerm)
+                    );
+                    renderBookmarksTable(filtered);
+                });
+
+                // 刷新按钮
+                document.getElementById('refreshBtn').addEventListener('click', function() {
+                    document.getElementById('searchInput').value = '';
+                    renderBookmarksTable();
+                });
+            })
+            .catch(error => {
+                console.error('获取书签失败:', error);
+                alert('无法加载书签数据，请检查网络或后端服务');
+            });
+    }
 
     // 页面加载时初始化
     document.addEventListener('DOMContentLoaded', function() {
-        renderBookmarksTable();
-        updateStats();
-
-        // 搜索功能
-        document.getElementById('searchInput').addEventListener('input', function(e) {
-            const searchTerm = e.target.value.toLowerCase();
-            const filtered = bookmarks.filter(bookmark =>
-            bookmark.title.toLowerCase().includes(searchTerm) ||
-            bookmark.url.toLowerCase().includes(searchTerm)
-            );
-            renderBookmarksTable(filtered);
-        });
-
-        // 刷新按钮
-        document.getElementById('refreshBtn').addEventListener('click', function() {
-            document.getElementById('searchInput').value = '';
-            renderBookmarksTable();
-        });
+        fetchBookmarks();
     });
 
     // 渲染书签表格
     function renderBookmarksTable(data = bookmarks) {
         const tbody = document.getElementById('bookmarksTable');
         tbody.innerHTML = '';
-
         data.forEach((bookmark, index) => {
             const row = document.createElement('tr');
-
             row.innerHTML = `
                     <td>${index + 1}</td>
                     <td>
@@ -264,7 +268,6 @@
                         </button>
                     </td>
                 `;
-
             tbody.appendChild(row);
         });
 
@@ -289,7 +292,6 @@
     // 打开书签
     function openBookmark(id, newTab = false) {
         const bookmark = bookmarks.find(b => b.id == id);
-
         if (bookmark) {
             // 更新计数
             bookmark.count++;
