@@ -167,17 +167,17 @@
                     <input type="text" class="form-control ps-4" placeholder="搜索书签..." id="searchInput">
                 </div>
                 <!--
+                -->
                 <button class="btn btn-outline-primary" id="refreshBtn">
                     <i class="fas fa-sync-alt">搜索</i>
                 </button>
-                -->
             </div>
         </div>
         <div class="table-container">
             <table class="table table-hover mb-0">
                 <thead>
                 <tr>
-                    <th width="5%">#</th>
+                    <th width="5%">ID</th>
                     <th width="35%">标题</th>
                     <th width="40%">URL</th>
                     <th width="15%">
@@ -197,7 +197,7 @@
 
 <script>
     // 书签数据（实际应用中应从后端API获取）
-    const bookmarksBak = [
+    const bookmarks = [
         { id: 1, url: "https://github.com", title: "GitHub", count: 1 }
     ];
 
@@ -207,8 +207,10 @@
             .then(response => response.json())
             .then(data => {
                 // 排序并渲染
-                console.log(data)
-                const bookmarks = data;
+                console.log(bookmarks, data)
+                // bookmarks = data; // 将 const 改为 let 允许重新赋值
+                bookmarks.splice(0); // 清空原数组
+                bookmarks.push(...data); // 添加新数据
 
                 // 按count降序排序
                 bookmarks.sort((a, b) => b.count - a.count);
@@ -264,7 +266,7 @@
                     </td>
                     <td>
                         <button class="action-btn open-new" data-id="${bookmark.id}" title="在新标签页打开">
-                            <i class="fas fa-external-link-alt"></i>
+                            <i class="fas fa-external-link-alt">打开</i>
                         </button>
                     </td>
                 `;

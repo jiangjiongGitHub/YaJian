@@ -6,14 +6,14 @@ import lombok.Setter;
 @Getter
 @Setter
 public class Bookmark {
-    private int id;
+    private Long id;
     private String title;
     private String url;
-    private int count;
+    private Integer count;
 
     public Bookmark() {}
 
-    public Bookmark(int id, String title, String url, int count) {
+    public Bookmark(Long id, String title, String url, Integer count) {
         this.id = id;
         this.title = title;
         this.url = url;
