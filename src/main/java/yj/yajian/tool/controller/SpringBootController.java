@@ -280,18 +280,15 @@ public class SpringBootController {
 	}
 
 	public static void main(String[] args) {
-		System.out.println("系统默认语言：" + System.getProperty("user.language")); // 查询结果zh
-		System.out.println("系统默认编码：" + System.getProperty("file.encoding")); // 查询结果UTF-8
-		System.out.println("系统默认字符编码：" + Charset.defaultCharset()); // 查询结果UTF-8
-
-		System.out.println();
-		System.out.println();
+		log.info("系统默认语言：" + System.getProperty("user.language")); // 查询结果zh
+		log.info("系统默认编码：" + System.getProperty("file.encoding")); // 查询结果UTF-8
+		log.info("系统默认字符编码：" + Charset.defaultCharset()); // 查询结果UTF-8
 
 		String s1 = "hi, nice to meet you!";
 		String s2 = "hi, 我来了！";
 
-		System.out.println(getEncoding(s1));
-		System.out.println(getEncoding(s2));
+		log.info(getEncoding(s1));
+		log.info(getEncoding(s2));
 
 	}
 

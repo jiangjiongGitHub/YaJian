@@ -1,6 +1,8 @@
 package yj.yajian.db.service;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializationFeature;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.context.event.ApplicationReadyEvent;
 import org.springframework.context.event.EventListener;
@@ -28,6 +30,7 @@ import java.util.stream.Stream;
  * 项目启动时加载数据库目录最新的数据库文本文件，
  * 项目运行期间，每隔一段时间序列化Map，保存数据库文本文件到数据库目录，以时间为后缀并精确到毫秒。
  */
+@Slf4j
 @Service
 public class FileDatabaseService {
 
@@ -55,11 +58,11 @@ public class FileDatabaseService {
         try {
             File latestFile = findLatestDataFile();
             if (latestFile != null) {
-                System.out.println("Loading database from: " + latestFile.getAbsolutePath());
+                log.info("Loading database from: " + latestFile.getAbsolutePath());
                 loadDataFromFile(latestFile);
-                System.out.println("Loaded database from: " + latestFile.getAbsolutePath());
+                log.info("Loaded database from: " + latestFile.getAbsolutePath());
             } else {
-                System.out.println("No existing data files found. Starting with empty database.");
+                log.info("No existing data files found. Starting with empty database.");
             }
         } catch (Exception e) {
             e.printStackTrace();
@@ -72,9 +75,9 @@ public class FileDatabaseService {
      */
     @Scheduled(initialDelay = 60000, fixedDelay = 60000) // 60秒 fixedRate 改为 fixedDelay
     public void autoSave() {
-        System.out.println("Executing autoSave at: " + new Date()); // 添加日志输出
+        log.info("Executing autoSave at: " + new Date()); // 添加日志输出
         writerExecutor.submit(this::saveToFile);
-        deleteOldFiles();
+        writerExecutor.submit(this::deleteOldFiles);
     }
 
     private void deleteOldFiles() {
@@ -90,7 +93,7 @@ public class FileDatabaseService {
                         .forEach(p -> {
                             try {
                                 Files.delete(p);
-                                System.out.println("Deleted file: " + p);
+                                log.info("Deleted file: " + p);
                             } catch (Exception e) {
                                 e.printStackTrace();
                             }
@@ -107,7 +110,7 @@ public class FileDatabaseService {
     @PreDestroy
     public void onShutdown() {
         saveToFile();
-        System.out.println("Database saved during shutdown");
+        log.info("Database saved during shutdown");
     }
 
     // 核心数据库操作方法
@@ -172,10 +175,14 @@ public class FileDatabaseService {
             String fileName = "db-" + formatter.format(LocalDateTime.now()) + ".json";
             Path filePath = dirPath.resolve(fileName);
 
+            // 启用 Map Key 排序
+            objectMapper.enable(SerializationFeature.ORDER_MAP_ENTRIES_BY_KEYS);
+
+            // 写入文件（自动按 Key 排序）
             objectMapper.writerWithDefaultPrettyPrinter()
                     .writeValue(filePath.toFile(), DATABASE);
 
-            System.out.println("Database saved to: " + filePath);
+            log.info("Database saved to: " + filePath);
 
             // 把文件写到databak目录一份
             try {
@@ -183,7 +190,7 @@ public class FileDatabaseService {
                 Files.copy(filePath, Paths.get("./databak/db-data.json"),
                         StandardCopyOption.REPLACE_EXISTING,
                         StandardCopyOption.COPY_ATTRIBUTES);
-                System.out.println("Database saved to: " + "./databak/db-data.json");
+                log.info("Database saved to: " + "./databak/db-data.json");
             } catch (IOException e) {
                 e.printStackTrace();
             }

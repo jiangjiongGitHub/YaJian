@@ -3,6 +3,7 @@ package yj.yajian.db.controller;
 import cn.hutool.core.date.DateUtil;
 import com.alibaba.fastjson.JSONObject;
 import com.alibaba.fastjson.TypeReference;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.web.bind.annotation.*;
 import yj.yajian.tool.entity.DemoEntity;
@@ -17,6 +18,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
+@Slf4j
 @RestController
 @RequestMapping("/data")
 public class DataController {
@@ -30,7 +32,7 @@ public class DataController {
     @Scheduled(initialDelay = 30000, fixedDelay = 60000)
     public void autoSave() {
         dbService.put(DateUtil.today(), DateUtil.today());
-        System.out.println("Executing put at: " + new Date());
+        log.info("Executing put at: " + new Date());
     }
 
     private static final ThreadLocal<SecureRandom> RANDOM = ThreadLocal.withInitial(SecureRandom::new);
@@ -83,7 +85,6 @@ public class DataController {
             // 放入一个List<DemoEntity>对象，测试json序列化和反序列化
             List<DemoEntity> list = JSONObject.parseObject(dbService.get("list"), new TypeReference<List<DemoEntity>>() {
             });
-            System.out.println(list);
         }
         return dbService.get(key);
     }
