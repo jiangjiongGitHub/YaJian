@@ -14,9 +14,12 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
-import java.text.SimpleDateFormat;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 import java.util.stream.Stream;
 
 /**
@@ -31,12 +34,18 @@ public class FileDatabaseService {
     // 内存数据库
     private static final Map<String, String> DATABASE = new ConcurrentHashMap<>();
 
-    // 数据存储目录
-    @Value("${database.directory}") // ${database.directory:./data}
+    // 数据存储目录 ${database.directory:./data}
+    @Value("${database.directory}")
     private String dataDirectory;
 
+    // 序列化对象 Jackson vs Fastjson
     private final ObjectMapper objectMapper = new ObjectMapper();
-    private final SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy_MM_dd__HH_mm_ss");
+
+    // 线程安全处理
+    private final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy_MM_dd__HH_mm_ss");
+
+    // 异步线程池保存
+    private final ExecutorService writerExecutor = Executors.newSingleThreadExecutor();
 
     /**
      * 启动时加载最新数据文件
@@ -64,7 +73,7 @@ public class FileDatabaseService {
     @Scheduled(initialDelay = 60000, fixedDelay = 60000) // 60秒 fixedRate 改为 fixedDelay
     public void autoSave() {
         System.out.println("Executing autoSave at: " + new Date()); // 添加日志输出
-        saveToFile();
+        writerExecutor.submit(this::saveToFile);
         deleteOldFiles();
     }
 
@@ -144,8 +153,10 @@ public class FileDatabaseService {
 
             byte[] bytes = Files.readAllBytes(file.toPath());
             Map<?, ?> loaded = objectMapper.readValue(bytes, Map.class);
+            Map<String, String> temp = new HashMap<>();
+            loaded.forEach((k, v) -> temp.put(k.toString(), v.toString()));
             DATABASE.clear();
-            loaded.forEach((k, v) -> DATABASE.put(k.toString(), v.toString()));
+            DATABASE.putAll(temp);
         } catch (IOException e) {
             throw new RuntimeException("Failed to load database file", e);
         }
@@ -158,7 +169,7 @@ public class FileDatabaseService {
                 Files.createDirectories(dirPath);
             }
 
-            String fileName = "db-" + dateFormat.format(new Date()) + ".json";
+            String fileName = "db-" + formatter.format(LocalDateTime.now()) + ".json";
             Path filePath = dirPath.resolve(fileName);
 
             objectMapper.writerWithDefaultPrettyPrinter()
@@ -168,6 +179,7 @@ public class FileDatabaseService {
 
             // 把文件写到databak目录一份
             try {
+                // 使用 FileWriter 直接写入，避免创建临时文件。
                 Files.copy(filePath, Paths.get("./databak/db-data.json"),
                         StandardCopyOption.REPLACE_EXISTING,
                         StandardCopyOption.COPY_ATTRIBUTES);
