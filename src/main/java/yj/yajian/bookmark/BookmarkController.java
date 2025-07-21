@@ -19,26 +19,38 @@ public class BookmarkController {
 
     @GetMapping
     public List<Bookmark> getBookmarks() {
+        fixBookmark();
+
         // 新增一个书签
         addBookmark();
 
         String bookmarks = dbService.get("bookmarklist");
-        return JSONObject.parseObject(bookmarks, new TypeReference<List<Bookmark>>() {
+        if (bookmarks == null) {
+            return new ArrayList<>();
+        }
+        List<Long> idList = JSONObject.parseObject(bookmarks, new TypeReference<List<Long>>() {
         });
+        List<Bookmark> bookmarklist = new ArrayList<>();
+        for (Long id : idList) {
+            bookmarklist.add(JSONObject.parseObject(dbService.get("bookmark-" + id), Bookmark.class));
+        }
+
+        return bookmarklist;
     }
 
     private void addBookmark() {
         Bookmark bookmark = new Bookmark(Long.parseLong(new SimpleDateFormat("yyyyMMddHHmmss").format(new Date())), "百度", "https://www.baidu.com", 0);
         dbService.put("bookmark-" + bookmark.getId(), JSONObject.toJSONString(bookmark));
+
         String bookmarklist = dbService.get("bookmarklist");
-        List<Bookmark> bookmarks;
+        List<Long> bookmarks;
         if (bookmarklist == null) {
             bookmarks = new ArrayList<>();
-            bookmarks.add(bookmark);
+            bookmarks.add(bookmark.getId());
         } else {
-            bookmarks = JSONObject.parseObject(bookmarklist, new TypeReference<List<Bookmark>>() {
+            bookmarks = JSONObject.parseObject(bookmarklist, new TypeReference<List<Long>>() {
             });
-            bookmarks.add(bookmark);
+            bookmarks.add(bookmark.getId());
         }
         dbService.put("bookmarklist", JSONObject.toJSONString(bookmarks));
     }
@@ -55,9 +67,26 @@ public class BookmarkController {
         if (newCount == null) {
             return ResponseEntity.badRequest().build();
         }
+        if (newCount == bookmark.getCount() + 1) {
+            bookmark.setCount(newCount);
+        } else {
+            bookmark.setCount(bookmark.getCount() + 1);
+        }
 
-        bookmark.setCount(newCount);
+        dbService.put("bookmark-" + id, JSONObject.toJSONString(bookmark));
         return ResponseEntity.ok(bookmark);
+    }
+
+    private void fixBookmark() {
+        // 获取所有书签
+        List<Long> idList = new ArrayList<>();
+        dbService.getAll().forEach((key, value) -> {
+            if (key.startsWith("bookmark-")) {
+                Bookmark bookmark = JSONObject.parseObject(value.toString(), Bookmark.class);
+                idList.add(bookmark.getId());
+            }
+        });
+        dbService.put("bookmarklist", JSONObject.toJSONString(idList));
     }
 
 }
