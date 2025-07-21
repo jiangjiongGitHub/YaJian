@@ -48,7 +48,7 @@
             padding: 15px 20px;
         }
         .table td {
-            padding: 15px 20px;
+            padding: 8px 15px;
             vertical-align: middle;
         }
         .table-hover tbody tr:hover {
@@ -110,6 +110,7 @@
         }
         .search-container {
             position: relative;
+            min-width: 180px;
         }
         .search-icon {
             position: absolute;
@@ -118,6 +119,12 @@
             transform: translateY(-50%);
             color: #6c757d;
         }
+
+        .col-id { width: 8%; }
+        .col-title { width: 18%; }
+        .col-url { width: 42%; }
+        .col-count { width: 12%; }
+        .col-actions { width: 20%; }
     </style>
 </head>
 <body>
@@ -163,7 +170,7 @@
                     <i class="fas fa-search search-icon"></i>
                     <input type="text" class="form-control ps-4" placeholder="搜索书签..." id="searchInput">
                 </div>
-                <button class="btn btn-outline-primary" id="refreshBtn">
+                <button class="btn btn-outline-primary me-2" id="refreshBtn">
                     <i class="fas fa-sync-alt">搜索</i>
                 </button>
                 <button class="btn btn-success me-2" id="addBtn">
@@ -174,16 +181,16 @@
         <div class="table-container">
             <table class="table table-hover mb-0">
                 <thead>
-                <tr>
-                    <th width="5%">ID</th>
-                    <th width="25%">标题</th>
-                    <th width="45%">URL</th>
-                    <th width="5%">
-                        <span>使用次数</span>
-                        <i class="fas fa-sort-down sort-indicator"></i>
-                    </th>
-                    <th width="10%">操作</th>
-                </tr>
+                    <tr>
+                        <th class="col-id">ID</th>
+                        <th class="col-title">标题</th>
+                        <th class="col-url">URL</th>
+                        <th class="col-count">
+                            <span>次数</span>
+                            <i class="fas fa-sort-down sort-indicator"></i>
+                        </th>
+                        <th class="col-actions">操作</th>
+                    </tr>
                 </thead>
                 <tbody id="bookmarksTable">
                 <!-- 书签数据将通过JavaScript动态生成 -->
@@ -236,7 +243,7 @@
             .then(response => response.json())
             .then(data => {
                 // 排序并渲染
-                console.log(bookmarks, data)
+                // console.log(bookmarks, data)
                 // bookmarks = data; // 将 const 改为 let 允许重新赋值
                 bookmarks.splice(0); // 清空原数组
                 bookmarks.push(...data); // 添加新数据
@@ -251,16 +258,25 @@
                 document.getElementById('searchInput').addEventListener('input', function(e) {
                     const searchTerm = e.target.value.toLowerCase();
                     const filtered = bookmarks.filter(bookmark =>
-                    bookmark.title.toLowerCase().includes(searchTerm) ||
-                    bookmark.url.toLowerCase().includes(searchTerm)
+                        bookmark.title.toLowerCase().includes(searchTerm) ||
+                        bookmark.url.toLowerCase().includes(searchTerm)
                     );
                     renderBookmarksTable(filtered);
                 });
 
                 // 刷新按钮
+                // document.getElementById('refreshBtn').addEventListener('click', function() {
+                //     document.getElementById('searchInput').value = '';
+                //     renderBookmarksTable();
+                // });
+
                 document.getElementById('refreshBtn').addEventListener('click', function() {
-                    document.getElementById('searchInput').value = '';
-                    renderBookmarksTable();
+                    const searchTerm = document.getElementById('searchInput').value.toLowerCase();
+                    const filtered = bookmarks.filter(bookmark =>
+                        bookmark.title.toLowerCase().includes(searchTerm) ||
+                        bookmark.url.toLowerCase().includes(searchTerm)
+                    );
+                    renderBookmarksTable(filtered);
                 });
             })
             .catch(error => {

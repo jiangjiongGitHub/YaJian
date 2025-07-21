@@ -13,6 +13,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
 import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
@@ -164,6 +165,16 @@ public class FileDatabaseService {
                     .writeValue(filePath.toFile(), DATABASE);
 
             System.out.println("Database saved to: " + filePath);
+
+            // 把文件写到databak目录一份
+            try {
+                Files.copy(filePath, Paths.get("./databak/db-data.json"),
+                        StandardCopyOption.REPLACE_EXISTING,
+                        StandardCopyOption.COPY_ATTRIBUTES);
+                System.out.println("Database saved to: " + "./databak/db-data.json");
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
         } catch (IOException e) {
             e.printStackTrace();
             System.err.println("Error saving database: " + e.getMessage());
