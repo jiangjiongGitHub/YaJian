@@ -69,9 +69,10 @@ public class BookmarkController {
 
     // http://127.0.0.1:18888/api/bookmarks/init
     @GetMapping("/init")
-    public void init() {
+    public String initBookMark() {
         // 初始化书签列表
         initBookmark();
+        return "success";
     }
 
     @GetMapping
@@ -142,6 +143,50 @@ public class BookmarkController {
             }
         });
         dbService.put("bookmarklist", JSONObject.toJSONString(idList));
+    }
+
+    // 新增书签
+    @PostMapping
+    public ResponseEntity<Bookmark> createBookmark(@RequestBody Bookmark bookmark) {
+        if (bookmark.getId() == null) {
+            bookmark.setId(new Date().getTime()); // 使用时间戳生成唯一ID
+        }
+        bookmark.setCount(0);
+        dbService.put("bookmark-" + bookmark.getId(), JSONObject.toJSONString(bookmark));
+
+        // 更新 bookmarklist
+        fixBookmark();
+
+        return ResponseEntity.ok(bookmark);
+    }
+
+    // 修改书签
+    @PutMapping("/{id}")
+    public ResponseEntity<Bookmark> updateBookmark(@PathVariable Long id, @RequestBody Bookmark updated) {
+        Bookmark existing = JSONObject.parseObject(dbService.get("bookmark-" + id), Bookmark.class);
+        if (existing == null) {
+            return ResponseEntity.notFound().build();
+        }
+
+        existing.setTitle(updated.getTitle());
+        existing.setUrl(updated.getUrl());
+        dbService.put("bookmark-" + id, JSONObject.toJSONString(existing));
+
+        return ResponseEntity.ok(existing);
+    }
+
+    // 删除书签
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> deleteBookmark(@PathVariable Long id) {
+        if (dbService.get("bookmark-" + id) == null) {
+            return ResponseEntity.notFound().build();
+        }
+        dbService.remove("bookmark-" + id);
+
+        // 更新 bookmarklist
+        fixBookmark();
+
+        return ResponseEntity.ok().build();
     }
 
 }

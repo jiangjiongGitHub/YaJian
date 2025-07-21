@@ -6,8 +6,6 @@
     <title>书签管理系统</title>
     <!--
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link rel="stylesheet" href="all.min.css">
     -->
     <link rel="stylesheet" href="bootstrap.min.css">
     <style>
@@ -158,7 +156,6 @@
     <div class="card">
         <div class="card-header d-flex justify-content-between align-items-center">
             <div>
-                <h5 class="mb-0">书签列表</h5>
                 <small class="text-muted">按使用次数降序排列</small>
             </div>
             <div class="d-flex">
@@ -166,10 +163,11 @@
                     <i class="fas fa-search search-icon"></i>
                     <input type="text" class="form-control ps-4" placeholder="搜索书签..." id="searchInput">
                 </div>
-                <!--
-                -->
                 <button class="btn btn-outline-primary" id="refreshBtn">
                     <i class="fas fa-sync-alt">搜索</i>
+                </button>
+                <button class="btn btn-success me-2" id="addBtn">
+                    <i class="fas fa-plus">新增</i>
                 </button>
             </div>
         </div>
@@ -178,13 +176,13 @@
                 <thead>
                 <tr>
                     <th width="5%">ID</th>
-                    <th width="35%">标题</th>
-                    <th width="40%">URL</th>
-                    <th width="15%">
+                    <th width="25%">标题</th>
+                    <th width="45%">URL</th>
+                    <th width="5%">
                         <span>使用次数</span>
                         <i class="fas fa-sort-down sort-indicator"></i>
                     </th>
-                    <th width="5%">操作</th>
+                    <th width="10%">操作</th>
                 </tr>
                 </thead>
                 <tbody id="bookmarksTable">
@@ -193,8 +191,39 @@
             </table>
         </div>
     </div>
+
+    <!-- 模态框 -->
+    <div class="modal fade" id="bookmarkModal" tabindex="-1" aria-labelledby="bookmarkModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="bookmarkModalLabel">编辑书签</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <input type="hidden" id="bookmarkId">
+                    <div class="mb-3">
+                        <label for="bookmarkTitle" class="form-label">标题</label>
+                        <input type="text" class="form-control" id="bookmarkTitle" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="bookmarkUrl" class="form-label">URL</label>
+                        <input type="url" class="form-control" id="bookmarkUrl" required>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">取消</button>
+                    <button type="button" class="btn btn-primary" id="saveBookmarkBtn">保存</button>
+                </div>
+            </div>
+        </div>
+    </div>
 </div>
 
+<!--
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+-->
+<script src="bootstrap.bundle.min.js"></script>
 <script>
     // 书签数据（实际应用中应从后端API获取）
     const bookmarks = [
@@ -268,6 +297,12 @@
                         <button class="action-btn open-new" data-id="${bookmark.id}" title="在新标签页打开">
                             <i class="fas fa-external-link-alt">打开</i>
                         </button>
+                        <button class="action-btn edit-btn" data-id="${bookmark.id}" title="编辑">
+                            <i class="fas fa-edit">修改</i>
+                        </button>
+                        <button class="action-btn delete-btn" data-id="${bookmark.id}" title="删除">
+                            <i class="fas fa-trash">删除</i>
+                        </button>
                     </td>
                 `;
             tbody.appendChild(row);
@@ -289,6 +324,33 @@
                 openBookmark(id, true);
             });
         });
+
+        document.querySelectorAll('.edit-btn').forEach(button => {
+            button.addEventListener('click', function () {
+                const id = this.dataset.id;
+                const bookmark = bookmarks.find(b => b.id == id);
+                if (bookmark) {
+                    document.getElementById('bookmarkId').value = bookmark.id;
+                    document.getElementById('bookmarkTitle').value = bookmark.title;
+                    document.getElementById('bookmarkUrl').value = bookmark.url;
+                    new bootstrap.Modal(document.getElementById('bookmarkModal')).show();
+                }
+            });
+        });
+        document.querySelectorAll('.delete-btn').forEach(button => {
+            button.addEventListener('click', function () {
+                const id = this.dataset.id;
+                if (confirm('确定要删除该书签吗？')) {
+                    fetch(`/api/bookmarks/${id}`, { method: 'DELETE' })
+                        .then(() => fetchBookmarks()) // 删除后刷新列表
+                        .catch(err => {
+                            console.error('删除失败', err);
+                            alert('删除失败');
+                        });
+                }
+            });
+        });
+
     }
 
     // 打开书签
@@ -349,6 +411,52 @@
             console.error('更新计数失败:', error);
         });
     }
+
+    // 新增按钮点击
+    document.getElementById('addBtn').addEventListener('click', function () {
+        document.getElementById('bookmarkId').value = '';
+        document.getElementById('bookmarkTitle').value = '';
+        document.getElementById('bookmarkUrl').value = '';
+        new bootstrap.Modal(document.getElementById('bookmarkModal')).show();
+    });
+
+    // 保存书签
+    document.getElementById('saveBookmarkBtn').addEventListener('click', function () {
+        const id = document.getElementById('bookmarkId').value;
+        const title = document.getElementById('bookmarkTitle').value.trim();
+        const url = document.getElementById('bookmarkUrl').value.trim();
+
+        if (!title || !url) {
+            alert('请输入标题和URL');
+            return;
+        }
+
+        const bookmark = { title, url };
+
+        let urlPath = '/api/bookmarks';
+        let method = 'POST';
+
+        if (id) {
+            urlPath += '/' + id;
+            method = 'PUT';
+            bookmark.id = parseInt(id);
+        }
+
+        fetch(urlPath, {
+            method: method,
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(bookmark)
+        })
+        .then(res => res.json())
+        .then(data => {
+            fetchBookmarks(); // 刷新列表
+            bootstrap.Modal.getInstance(document.getElementById('bookmarkModal')).hide();
+        })
+        .catch(err => {
+            console.error('保存失败', err);
+            alert('保存失败');
+        });
+    });
 </script>
 </body>
 </html>
