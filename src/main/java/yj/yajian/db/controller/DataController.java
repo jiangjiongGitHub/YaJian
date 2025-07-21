@@ -29,7 +29,7 @@ public class DataController {
 
     @Scheduled(initialDelay = 30000, fixedDelay = 60000)
     public void autoSave() {
-        dbService.put(DateUtil.today(), generate());
+        dbService.put(DateUtil.today(), DateUtil.today());
         System.out.println("Executing put at: " + new Date());
     }
 

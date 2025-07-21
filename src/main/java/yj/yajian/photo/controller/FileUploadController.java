@@ -144,6 +144,7 @@ public class FileUploadController {
                 .filter(Objects::nonNull)
                 .flatMap(List::stream)
                 .distinct()
+                .sorted()
                 .collect(Collectors.toList());
         Map<String, List<String>> response = new HashMap<>();
         response.put("tags", tags);
