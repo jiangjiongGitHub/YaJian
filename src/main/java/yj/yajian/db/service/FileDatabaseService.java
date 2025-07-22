@@ -186,6 +186,10 @@ public class FileDatabaseService {
 
             // 把文件写到databak目录一份
             try {
+                Path bakPath = Paths.get("./databak");
+                if (!Files.exists(bakPath)) {
+                    Files.createDirectories(bakPath);
+                }
                 // 使用 FileWriter 直接写入，避免创建临时文件。
                 Files.copy(filePath, Paths.get("./databak/db-data.json"),
                         StandardCopyOption.REPLACE_EXISTING,
