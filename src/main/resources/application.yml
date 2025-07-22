@@ -28,4 +28,4 @@ database:
 
 app:
   upload:
-    folder: src/main/resources/static/uploads
+    folder: ./uploads

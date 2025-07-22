@@ -34,8 +34,8 @@ import java.util.stream.Collectors;
 @RequestMapping("/photo")
 public class FileUploadController {
 
-    // 上传文件存储目录
-    @Value("${app.upload.folder}") // ${app.upload.folder:src/main/resources/static/uploads}
+    // 上传文件存储目录 ${app.upload.folder:./uploads}
+    @Value("${app.upload.folder}")
     private String UPLOADED_FOLDER;
 
     @Resource
@@ -74,7 +74,7 @@ public class FileUploadController {
             fileEntitys.add(fileEntity);
         }
         model.addAttribute("fileEntitys", fileEntitys);
-        return "/photo/upload";
+        return "photo/upload";
     }
 
     @GetMapping("/indexSearch")
@@ -124,7 +124,7 @@ public class FileUploadController {
         model.addAttribute("startDate", startDate);
         model.addAttribute("endDate", endDate);
         model.addAttribute("tagFilter", tagFilter);
-        return "/photo/upload";
+        return "photo/upload";
     }
 
     @GetMapping("/tags")
@@ -387,8 +387,8 @@ public class FileUploadController {
                 if (!existingFiles.contains(k)) {
                     if (!k.startsWith("bookmark")) {
                         dbService.remove(k);
+                        log.info("RM = {}", k);
                     }
-                    log.info("RM = {}", k);
                 }
             });
         } catch (IOException e) {
