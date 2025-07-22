@@ -1,27 +1,27 @@
-
 server:
   port: 18888
 
-logging:
-  file: target/springboot.log
-  level:
-    root: info
-    YaJian: debug
+#logging:
+#  file: ./logs/springboot.log
+#  pattern:
+#    console: "%d{yyyy-MM-dd HH:mm:ss} [%thread] %-5level %logger{36} - %msg%n"
+#    file: "%d{yyyy-MM-dd HH:mm:ss} [%thread] %-5level %logger{36} - %msg%n"
+#  level:
+#    root: info
+#    YaJian: debug
 
-# Do not need below
 spring:
   thymeleaf:
     cache: false
     prefix: classpath:/templates/
     suffix: .html
-    mode: HTML                  # 模板模式
-    encoding: UTF-8             # 文件编码
+    mode: HTML
+    encoding: UTF-8
   servlet:
     multipart:
-      max-file-size: 50MB       # 单个文件大小限制
-      max-request-size: 80MB    # 总请求大小限制
-      enabled: true             # 启用文件上传
-      location:                 # 临时存储目录(可选)
+      max-file-size: 50MB
+      max-request-size: 80MB
+      enabled: true
 
 database:
   directory: ./data
