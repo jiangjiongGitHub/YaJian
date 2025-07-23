@@ -136,8 +136,8 @@
                     </a>
                     <button type="button"
                             class="btn btn-sm btn-outline-info"
-                            onclick="startSlideshow()">
-                        播放图片
+                            th:attr="onclick='startSlideshow(\'/uploads/' + ${file.name} + '\')'">
+                    播放图片
                     </button>
                     <button type="button"
                             class="btn btn-sm btn-outline-warning"
@@ -284,6 +284,11 @@
             console.error('获取标签失败:', error);
         });
 
+        document.querySelectorAll('.preview-img').forEach(img => {
+            img.addEventListener('click', () => {
+                startSlideshow(img.src); // 通过图片 src 指定起始图
+            });
+        });
     });
 
     function removeTag(fileName, tag, element) {
@@ -368,7 +373,7 @@
     let imagesArray = [];
     let fullscreenImg, overlay; // 全局引用
 
-    function startSlideshow() {
+    function startSlideshow(startSrc) {
         // 检查是否已存在轮播（使用更可靠的检查方式）
         if (overlay && document.body.contains(overlay)) {
             return; // 轮播已存在，不再创建
@@ -379,15 +384,28 @@
         }
 
         // 收集所有图片路径
-        imagesArray = Array.from(document.querySelectorAll('.preview-img'))
-            .map(img => img.src);
+        imagesArray = Array.from(document.querySelectorAll('.preview-img')).map(img => img.src);
 
         if (imagesArray.length === 0) {
             alert("没有可轮播的图片");
             return;
         }
 
-        currentIndex = 0;
+        console.log("startSrc:", imagesArray, startSrc);
+
+        // 先尝试直接匹配
+        currentIndex = imagesArray.indexOf(startSrc);
+
+        // 如果没找到，尝试路径匹配
+        if (currentIndex === -1) {
+            currentIndex = imagesArray.findIndex(img  => img.endsWith(startSrc));
+        }
+
+        // 如果还是没找到，默认为0
+        if (currentIndex === -1) {
+            currentIndex = 0;
+        }
+
 
         // 创建全屏容器
         overlay = document.createElement('div');
