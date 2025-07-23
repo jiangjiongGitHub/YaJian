@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>拼音匹配示例</title>
+    <script src="npm_pinyin.js"></script>
+</head>
+<body>
+    <script>
+        // 示例1：匹配拼音
+        const result1 = PinyinMatch.match("中文", "zhongwen");
+        console.log("匹配结果1:", result1); // [0, 1]
+
+        // 示例2：匹配拼音首字母
+        const result2 = PinyinMatch.match("中国", "zg");
+        console.log("匹配结果2:", result2); // [0, 1]
+
+        // 示例3：匹配失败
+        const result3 = PinyinMatch.match("你好", "abc");
+        console.log("匹配结果3:", result3); // false
+		
+		const result4 = PinyinMatch.match("你好小美女", "xm");
+        console.log("匹配结果4:", result4);
+		
+		const result5 = PinyinMatch.match("纳米AI".toLowerCase(), "nami");
+        console.log("匹配结果5:", result5);
+    </script>
+</body>
+</html>
