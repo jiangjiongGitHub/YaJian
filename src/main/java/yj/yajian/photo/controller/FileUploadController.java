@@ -203,7 +203,7 @@ public class FileUploadController {
         }
 
         // 获取创建时间或回退到当前时间
-        FileTime creationTime = attrs != null ? attrs.creationTime() : FileTime.fromMillis(System.currentTimeMillis());
+        FileTime creationTime = attrs != null ? attrs.lastModifiedTime() : FileTime.fromMillis(System.currentTimeMillis());
 
         // 时间格式化
         SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMdd.HHmmss.SSS");

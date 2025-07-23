@@ -149,7 +149,7 @@ public class BookmarkController {
     @PostMapping
     public ResponseEntity<Bookmark> createBookmark(@RequestBody Bookmark bookmark) {
         if (bookmark.getId() == null) {
-            bookmark.setId(new Date().getTime()); // 使用时间戳生成唯一ID
+            bookmark.setId(Long.parseLong(new SimpleDateFormat("yyyyMMddHHmmss").format(new Date())));
         }
         bookmark.setCount(0);
         dbService.put("bookmark-" + bookmark.getId(), JSONObject.toJSONString(bookmark));
