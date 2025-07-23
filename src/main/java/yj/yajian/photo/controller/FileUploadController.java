@@ -297,19 +297,25 @@ public class FileUploadController {
         Map<String, Object> response = new HashMap<>();
 
         String oldFileName = payload.get("oldFileName");
+        rename(response, oldFileName);
+
+        return ResponseEntity.ok(response);
+    }
+
+    private void rename(Map<String, Object> response, String oldFileName) {
+        File oldFile = new File(UPLOADED_FOLDER + File.separator + oldFileName);
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMdd.HHmmss.SSS");
 
         // 如果文件名符合规范，就不修改：规范为 yyyyMMdd.HHmmss.SSS.jpg 或 yyyyMMdd.HHmmss.SSS.XXX.jpg 除后缀名外，都是数字或小数点 其中 yyyyMMdd.HHmmss.SSS 为时间，XXX为随机数字，可以是1到3位，后缀名一般是常用图片格式
-        if (oldFileName.matches("^\\d{8}\\.\\d{6}\\.\\d{3}(\\.\\d{1,3})?\\.(?i)(jpg|jpeg|png|gif|bmp|webp)$")) {
+        if (oldFileName.matches("^\\d{8}\\.\\d{6}\\.\\d{3}(\\.\\d{1,3})?\\.(?i)(jpg|jpeg|png|gif|bmp|webp)$")
+                && oldFileName.substring(0, Math.min(oldFileName.length(), 19)).equals(sdf.format(new Date(oldFile.lastModified())))) {
             response.put("success", false);
             response.put("message", "文件名符合规范：" + oldFileName);
-            return ResponseEntity.ok(response);
+            return;
         }
 
-
-        File oldFile = new File(UPLOADED_FOLDER + File.separator + oldFileName);
         if (oldFile.exists()) {
             // 把名称改为 yyyyMMdd.HHmmss.SSS 格式，取文件创建日期，如果日期不存在，则取当前日期
-            SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMdd.HHmmss.SSS");
             String newFileName = sdf.format(new Date(oldFile.lastModified())) + oldFileName.substring(oldFileName.lastIndexOf(".")).toLowerCase();
             File newFile = new File(UPLOADED_FOLDER + File.separator + newFileName);
 
@@ -317,7 +323,7 @@ public class FileUploadController {
                 response.put("success", false);
                 response.put("message", "文件已存在：" + newFileName);
 
-                // 修改文件名为当前文件名后面加上三位随机数字名称，注意后缀名
+                // 修改文件名为：当前文件名后面加上三位随机数字
                 String newFileName2 = sdf.format(new Date(oldFile.lastModified())) + "." + (int) (Math.random() * 1000) + oldFileName.substring(oldFileName.lastIndexOf(".")).toLowerCase();
                 File newFile2 = new File(UPLOADED_FOLDER + File.separator + newFileName2);
                 if (oldFile.renameTo(newFile2)) {
@@ -340,8 +346,6 @@ public class FileUploadController {
             response.put("success", false);
             response.put("message", "文件不存在：" + oldFileName);
         }
-
-        return ResponseEntity.ok(response);
     }
 
     @PostMapping("/deleteFile")
@@ -394,6 +398,33 @@ public class FileUploadController {
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
+    }
+
+    // 请求URL：http://127.0.0.1:18888/photo/batchRename
+    @PostMapping("/batchRename")
+    @ResponseBody
+    public Map<String, Object> batchRename() {
+        Map<String, Object> result = new HashMap<>();
+        try {
+            // 获取文件列表
+            List<String> fileList = new ArrayList<>();
+            Files.walk(Paths.get(UPLOADED_FOLDER))
+                    .filter(Files::isRegularFile)
+                    .forEach(file -> fileList.add(file.getFileName().toString()));
+            fileList.forEach(fileName -> {
+                Map<String, Object> m = new HashMap<>();
+                rename(m, fileName);
+                log.info("修改文件名：{}", m);
+            });
+
+            result.put("success", true);
+            result.put("message", "成功：");
+        } catch (Exception e) {
+            result.put("success", false);
+            result.put("message", "失败：" + e.getMessage());
+        }
+
+        return result;
     }
 
 }
