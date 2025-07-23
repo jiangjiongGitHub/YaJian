@@ -77,6 +77,8 @@ public class BookmarkController {
 
     @GetMapping
     public List<Bookmark> getBookmarks() {
+        fixBookmark();
+
         List<Bookmark> bookmarklist = new ArrayList<>();
         String bookmarks = dbService.get("bookmarklist");
         if (bookmarks != null) {
@@ -88,13 +90,14 @@ public class BookmarkController {
         }
 
         if (bookmarklist.isEmpty()) {
-            addBookmark();
+            Bookmark bookmark = addBookmark();
+            bookmarklist.add(bookmark);
         }
 
         return bookmarklist;
     }
 
-    private void addBookmark() {
+    private Bookmark addBookmark() {
         Bookmark bookmark = new Bookmark(Long.parseLong(new SimpleDateFormat("yyyyMMddHHmmss").format(new Date())), "百度", "https://www.baidu.com", 0);
         dbService.put("bookmark-" + bookmark.getId(), JSONObject.toJSONString(bookmark));
 
@@ -109,6 +112,7 @@ public class BookmarkController {
             bookmarks.add(bookmark.getId());
         }
         dbService.put("bookmarklist", JSONObject.toJSONString(bookmarks));
+        return bookmark;
     }
 
     // 更新书签点击次数
