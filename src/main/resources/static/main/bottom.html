@@ -27,27 +27,16 @@
 		
 		<style type="text/css"></style>
 		<script type="text/javascript"></script>
-		
 	</head>
 	<body>
-		
-		<!-- 下部 -->
-		<!-- clear:both;清空上面的float效果 -->
-<!-- 		<div class="bottomDiv" style=""> -->
-		
-			<div class="bottomDiv1" style="">
-				<ul class="bottom_ul">
-<!-- 					<li class="bottom_li" th:each="top : ${ listBottom }" th:text="${ top.name }" th:onclick="'javascript:topClick('+${ top.id }+')'" ></li> -->
-						<li class="bottom_li" ><a href=# onclick="javascript:addFavorite2()" rel=sidebar>收藏</a></li>
-				</ul>
-			</div>
-			
-			<div class="bottomDiv2" style="">
-				<p onclick="contactUs()">联系我们</p>
-			</div>
-			
-<!-- 		</div> -->
+		<div class="bottomDiv1" style="">
+			<ul class="bottom_ul">
+				<li class="bottom_li" ><a href=# onclick="javascript:addFavorite2()" rel=sidebar>收藏</a></li>
+			</ul>
+		</div>
 
+		<div class="bottomDiv2" style="">
+			<p onclick="contactUs()">联系我们</p>
+		</div>
 	</body>
-
 </html>
