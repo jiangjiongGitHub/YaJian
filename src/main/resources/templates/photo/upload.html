@@ -156,7 +156,8 @@
                     </button>
 
                     <!-- 添加标签表单 -->
-                    <form th:action="@{/photo/addTag}" method="post" class="mt-3">
+                    <!-- <form th:action="@{/photo/addTag}" method="post" class="mt-3"> -->
+                    <form class="mt-3 add-tag-form">
                         <input type="hidden" name="fileName" th:value="${file.name}">
                         <div class="input-group mb-2">
                             <input type="text" class="form-control form-control-sm" name="tag" placeholder="输入新标签" required>
@@ -552,6 +553,47 @@
         });
     }
 
+    document.querySelectorAll('.add-tag-form').forEach(form => {
+        form.addEventListener('submit', function (e) {
+            e.preventDefault(); // 阻止默认的表单提交
+
+            const formData = new FormData(this);
+            const fileName = formData.get('fileName');
+            const tag = formData.get('tag');
+
+            fetch('/photo/addTag', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ fileName, tag })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    location.reload(); // 如果需要刷新，请保留此行
+                } else {
+                    alert('添加失败: ' + data.message);
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('网络异常，添加失败');
+            });
+        });
+    });
+
+    window.addEventListener('beforeunload', function () {
+        sessionStorage.setItem('scrollPosition', window.scrollY);
+    });
+
+    window.addEventListener('load', function () {
+        const scrollPosition = sessionStorage.getItem('scrollPosition');
+        if (scrollPosition) {
+            window.scrollTo(0, parseInt(scrollPosition));
+            sessionStorage.removeItem('scrollPosition');
+        }
+    });
 </script>
 </body>
 </html>

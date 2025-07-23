@@ -237,8 +237,11 @@ public class FileUploadController {
     }
 
     @PostMapping("/addTag")
-    public String addTag(@RequestParam("fileName") String fileName,
-                         @RequestParam("tag") String tag) {
+    @ResponseBody
+    public Map<String, Object> addTag(@RequestBody Map<String, String> payload) {
+        String fileName = payload.get("fileName");
+        String tag = payload.get("tag");
+
         // 获取现有 FileEntity
         String json = dbService.get(fileName);
         FileEntity fileEntity = JSONObject.parseObject(json, FileEntity.class);
@@ -259,7 +262,10 @@ public class FileUploadController {
         // 保存回数据库
         dbService.put(fileName, JSONObject.toJSONString(fileEntity));
 
-        return "redirect:/photo/index";
+        Map<String, Object> result = new HashMap<>();
+        result.put("success", true);
+        result.put("message", "操作成功");
+        return result;
     }
 
     @PostMapping("/removeTag")
