@@ -19,18 +19,19 @@ import java.util.*;
 @RequestMapping("/api/bookmarks")
 public class BookmarkController {
 
+    private static final String perfix = "bookmark-";
+
     @Resource
     private FileDatabaseService dbService;
 
     private void initBookmark() {
         // 清空数据库
         dbService.getAll().forEach((key, value) -> {
-            if (key.startsWith("bookmark-")) {
+            if (key.startsWith(perfix)) {
                 dbService.remove(key);
             }
         });
-
-        // 从resources/bookmark.md中获取书签列表，并写入数据库
+        // 从resources/bookmark.md中获取书签列表
         ClassPathResource resource = new ClassPathResource("bookmark.md");
         byte[] bytes = null;
         try {
@@ -39,114 +40,88 @@ public class BookmarkController {
             throw new RuntimeException(e);
         }
         String content = new String(bytes, StandardCharsets.UTF_8);
-
         String[] lines = content.split("\\r?\\n");
         // 跳过表头和分隔线（前两行）
         for (int i = 0; i < lines.length; i++) {
             String line = lines[i].trim();
             if (line.isEmpty())
                 continue;
-
             // 解析表格行格式：| 标题 | URL | 次数 |
             String[] parts = line.split("\\|");
             if (parts.length < 4)
-                continue;  // 确保有4个部分（首尾空列+3数据列）
-
+                continue;
+            // 获取标题和URL
             String title = parts[1].trim();
             String url = parts[2].trim();
+            // 获取访问次数
             int count = Integer.parseInt(StringUtils.isEmpty(parts[3].trim()) ? "0" : parts[3].trim());
-
+            // 构建实体类保存
             Bookmark bookmark = new Bookmark(Long.parseLong(new SimpleDateFormat("yyyyMMddHHmmss").format(new Date())), title, url, count);
-            while (dbService.get("bookmark-" + bookmark.getId()) != null) {
+            while (dbService.get(perfix + bookmark.getId()) != null) {
                 bookmark.setId(bookmark.getId() + 1);
             }
-            dbService.put("bookmark-" + bookmark.getId(), JSONObject.toJSONString(bookmark));
+            dbService.put(perfix + bookmark.getId(), JSONObject.toJSONString(bookmark));
         }
-
-        // 修复书签列表
-        fixBookmark();
     }
 
     // http://127.0.0.1:18888/api/bookmarks/init
     @GetMapping("/init")
-    public String initBookMark() {
+    public String initBookMark(String date) {
         // 初始化书签列表
-        initBookmark();
+        if (new SimpleDateFormat("yyyyMMdd").format(new Date()).equals(date)) {
+            initBookmark();
+        }
         return "success";
     }
 
     @GetMapping
     public List<Bookmark> getBookmarks() {
-        fixBookmark();
-
-        List<Bookmark> bookmarklist = new ArrayList<>();
-        String bookmarks = dbService.get("bookmarklist");
-        if (bookmarks != null) {
-            List<Long> idList = JSONObject.parseObject(bookmarks, new TypeReference<List<Long>>() {
-            });
-            for (Long id : idList) {
-                bookmarklist.add(JSONObject.parseObject(dbService.get("bookmark-" + id), Bookmark.class));
-            }
+        List<Bookmark> allWithPerfix = getAllWithPerfix(perfix);
+        if (allWithPerfix.isEmpty()) {
+            Bookmark bookmark = addOneBookmark();
+            allWithPerfix.add(bookmark);
         }
-
-        if (bookmarklist.isEmpty()) {
-            Bookmark bookmark = addBookmark();
-            bookmarklist.add(bookmark);
-        }
-
-        return bookmarklist;
+        return allWithPerfix;
     }
 
-    private Bookmark addBookmark() {
+    private Bookmark addOneBookmark() {
         Bookmark bookmark = new Bookmark(Long.parseLong(new SimpleDateFormat("yyyyMMddHHmmss").format(new Date())), "百度", "https://www.baidu.com", 0);
-        dbService.put("bookmark-" + bookmark.getId(), JSONObject.toJSONString(bookmark));
-
-        String bookmarklist = dbService.get("bookmarklist");
-        List<Long> bookmarks;
-        if (bookmarklist == null) {
-            bookmarks = new ArrayList<>();
-            bookmarks.add(bookmark.getId());
-        } else {
-            bookmarks = JSONObject.parseObject(bookmarklist, new TypeReference<List<Long>>() {
-            });
-            bookmarks.add(bookmark.getId());
-        }
-        dbService.put("bookmarklist", JSONObject.toJSONString(bookmarks));
+        dbService.put(perfix + bookmark.getId(), JSONObject.toJSONString(bookmark));
         return bookmark;
     }
 
     // 更新书签点击次数
     @PostMapping("/{id}/count")
     public ResponseEntity<Bookmark> updateBookmarkCount(@PathVariable Long id, @RequestBody Map<String, Integer> payload) {
-        Bookmark bookmark = JSONObject.parseObject(dbService.get("bookmark-" + id), Bookmark.class);
+        Bookmark bookmark = JSONObject.parseObject(dbService.get(perfix + id), Bookmark.class);
         if (bookmark == null) {
             return ResponseEntity.notFound().build();
         }
-
+        // 获取入参点击次数
         Integer newCount = payload.get("count");
         if (newCount == null) {
             return ResponseEntity.badRequest().build();
         }
+        // 判断前端参数是否正确
         if (newCount == bookmark.getCount() + 1) {
             bookmark.setCount(newCount);
         } else {
             bookmark.setCount(bookmark.getCount() + 1);
         }
-
-        dbService.put("bookmark-" + id, JSONObject.toJSONString(bookmark));
+        dbService.put(perfix + id, JSONObject.toJSONString(bookmark));
         return ResponseEntity.ok(bookmark);
     }
 
-    private void fixBookmark() {
+    private List<Bookmark> getAllWithPerfix(String perfix) {
         // 获取所有书签
-        List<Long> idList = new ArrayList<>();
+        List<Bookmark> list = new ArrayList<>();
         dbService.getAll().forEach((key, value) -> {
-            if (key.startsWith("bookmark-")) {
+            if (key.startsWith(perfix)) {
                 Bookmark bookmark = JSONObject.parseObject(value.toString(), Bookmark.class);
-                idList.add(bookmark.getId());
+                list.add(bookmark);
             }
         });
-        dbService.put("bookmarklist", JSONObject.toJSONString(idList));
+        return list;
     }
 
     // 新增书签
@@ -156,40 +131,30 @@ public class BookmarkController {
             bookmark.setId(Long.parseLong(new SimpleDateFormat("yyyyMMddHHmmss").format(new Date())));
         }
         bookmark.setCount(0);
-        dbService.put("bookmark-" + bookmark.getId(), JSONObject.toJSONString(bookmark));
-
-        // 更新 bookmarklist
-        fixBookmark();
-
+        dbService.put(perfix + bookmark.getId(), JSONObject.toJSONString(bookmark));
         return ResponseEntity.ok(bookmark);
     }
 
     // 修改书签
     @PutMapping("/{id}")
     public ResponseEntity<Bookmark> updateBookmark(@PathVariable Long id, @RequestBody Bookmark updated) {
-        Bookmark existing = JSONObject.parseObject(dbService.get("bookmark-" + id), Bookmark.class);
+        Bookmark existing = JSONObject.parseObject(dbService.get(perfix + id), Bookmark.class);
         if (existing == null) {
             return ResponseEntity.notFound().build();
         }
-
         existing.setTitle(updated.getTitle());
         existing.setUrl(updated.getUrl());
-        dbService.put("bookmark-" + id, JSONObject.toJSONString(existing));
-
+        dbService.put(perfix + id, JSONObject.toJSONString(existing));
         return ResponseEntity.ok(existing);
     }
 
     // 删除书签
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteBookmark(@PathVariable Long id) {
-        if (dbService.get("bookmark-" + id) == null) {
+        if (dbService.get(perfix + id) == null) {
             return ResponseEntity.notFound().build();
         }
-        dbService.remove("bookmark-" + id);
-
-        // 更新 bookmarklist
-        fixBookmark();
-
+        dbService.remove(perfix + id);
         return ResponseEntity.ok().build();
     }
 
