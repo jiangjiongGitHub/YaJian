@@ -110,7 +110,9 @@ public class FileDatabaseService {
      */
     @PreDestroy
     public void onShutdown() {
-        saveToFile();
+        if (!DATABASE.isEmpty()) {
+            saveToFile();
+        }
         log.info("Database saved during shutdown");
     }
 
