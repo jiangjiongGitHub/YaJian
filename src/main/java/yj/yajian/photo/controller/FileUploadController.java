@@ -128,7 +128,7 @@ public class FileUploadController {
         return "photo/upload";
     }
 
-    @Scheduled(initialDelay = 31000, fixedDelay = 60000)
+    @Scheduled(initialDelay = 45000, fixedDelay = 60000)
     public void autoSave() {
         deleteUnuseData();
         log.info("Executing delete unuse data at: " + new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date()));
