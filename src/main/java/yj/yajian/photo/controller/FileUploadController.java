@@ -200,7 +200,6 @@ public class FileUploadController {
 
         // 时间格式化
         SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMdd.HHmmss.SSS");
-        String formattedTime = sdf.format(new Date());
 
         // 构建新文件名（保留扩展名）
         String fileExt = "";
@@ -209,8 +208,13 @@ public class FileUploadController {
         }
 
         // 新文件名：年月日时分秒 + 扩展名
-        String newFileName = formattedTime + fileExt.toLowerCase();
+        int i = 0;
+        String newFileName = sdf.format(new Date()) + String.format("%05d", ++i) + fileExt.toLowerCase();
         Path path = Paths.get(UPLOADED_FOLDER + File.separator + newFileName);
+        while (Files.exists(path)) {
+            newFileName = sdf.format(new Date()) + String.format("%05d", ++i) + fileExt.toLowerCase();
+            path = Paths.get(UPLOADED_FOLDER + File.separator + newFileName);
+        }
 
         // 真正写入最终文件
         Files.write(path, bytes);
@@ -303,7 +307,7 @@ public class FileUploadController {
         SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMdd.HHmmss.SSS");
 
         // 如果文件名符合规范，就不修改：规范为 yyyyMMdd.HHmmss.SSS.jpg 或 yyyyMMdd.HHmmss.SSS.XXX.jpg 除后缀名外，都是数字或小数点 其中 yyyyMMdd.HHmmss.SSS 为时间，XXX为随机数字，可以是1到3位，后缀名一般是常用图片格式
-        if (oldFileName.matches("^\\d{8}\\.\\d{6}\\.\\d{3}(\\.\\d{1,3})?\\.(?i)(jpg|jpeg|png|gif|bmp|webp)$")
+        if (oldFileName.matches("^\\d{8}\\.\\d{6}\\.\\d{8}\\.(?i)(jpg|jpeg|png|gif|bmp|ico)$")
                 && oldFileName.substring(0, Math.min(oldFileName.length(), 19)).equals(sdf.format(new Date(oldFile.lastModified())))) {
             response.put("success", false);
             response.put("message", "文件名符合规范：" + oldFileName);
@@ -311,33 +315,19 @@ public class FileUploadController {
         }
 
         if (oldFile.exists()) {
+            int i = 0;
             // 把名称改为 yyyyMMdd.HHmmss.SSS 格式，取文件创建日期，如果日期不存在，则取当前日期
-            String newFileName = sdf.format(new Date(oldFile.lastModified())) + oldFileName.substring(oldFileName.lastIndexOf(".")).toLowerCase();
+            String newFileName = sdf.format(new Date(oldFile.lastModified())) + String.format("%05d", ++i) + oldFileName.substring(oldFileName.lastIndexOf(".")).toLowerCase();
             File newFile = new File(UPLOADED_FOLDER + File.separator + newFileName);
 
-            if (newFile.exists()) {
-                response.put("success", false);
-                response.put("message", "文件已存在：" + newFileName);
-
-                // 修改文件名为：当前文件名后面加上三位随机数字
-                String newFileName2 = sdf.format(new Date(oldFile.lastModified())) + "." + (int) (Math.random() * 1000) + oldFileName.substring(oldFileName.lastIndexOf(".")).toLowerCase();
-                File newFile2 = new File(UPLOADED_FOLDER + File.separator + newFileName2);
-                if (oldFile.renameTo(newFile2)) {
-                    response.put("success", true);
-                    response.put("message", response.get("message") + "，文件名已更改为：" + newFileName2);
-                } else {
-                    response.put("success", false);
-                    response.put("message", response.get("message") + "，无法更改文件名为：" + newFileName2);
-                }
-            } else {
-                if (oldFile.renameTo(newFile)) {
-                    response.put("success", true);
-                    response.put("message", "文件名已更改为：" + newFileName);
-                } else {
-                    response.put("success", false);
-                    response.put("message", "无法更改文件名为：" + newFileName);
-                }
+            while (newFile.exists()) {
+                newFileName = sdf.format(new Date(oldFile.lastModified())) + String.format("%05d", ++i) + oldFileName.substring(oldFileName.lastIndexOf(".")).toLowerCase();
+                newFile = new File(UPLOADED_FOLDER + File.separator + newFileName);
             }
+
+            oldFile.renameTo(newFile);
+            response.put("success", true);
+            response.put("message", "文件名已更改为：" + newFileName);
         } else {
             response.put("success", false);
             response.put("message", "文件不存在：" + oldFileName);
