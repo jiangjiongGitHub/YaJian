@@ -394,6 +394,9 @@ public class FileUploadController {
     public Map<String, Object> batchRename() {
         Map<String, Object> result = new HashMap<>();
         try {
+            result.put("success", true);
+            result.put("message", "成功：");
+
             // 获取文件列表
             List<String> fileList = new ArrayList<>();
             Files.walk(Paths.get(UPLOADED_FOLDER))
@@ -403,10 +406,8 @@ public class FileUploadController {
                 Map<String, Object> m = new HashMap<>();
                 rename(m, fileName);
                 log.info("修改文件名：{}", m);
+                result.put("message", result.get("message") + "\n" + m.get("message") + "; ");
             });
-
-            result.put("success", true);
-            result.put("message", "成功：");
         } catch (Exception e) {
             result.put("success", false);
             result.put("message", "失败：" + e.getMessage());
