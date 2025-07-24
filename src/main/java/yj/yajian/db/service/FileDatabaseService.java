@@ -16,6 +16,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
+import java.text.SimpleDateFormat;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
@@ -75,7 +76,7 @@ public class FileDatabaseService {
      */
     @Scheduled(initialDelay = 60000, fixedDelay = 60000) // 60秒 fixedRate 改为 fixedDelay
     public void autoSave() {
-        log.info("Executing autoSave at: " + new Date()); // 添加日志输出
+        log.info("Executing autoSave at: " + new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date())); // 添加日志输出
         writerExecutor.submit(this::saveToFile);
         writerExecutor.submit(this::deleteOldFiles);
     }

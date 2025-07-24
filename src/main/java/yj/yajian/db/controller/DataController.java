@@ -11,6 +11,7 @@ import yj.yajian.db.service.FileDatabaseService;
 
 import java.math.BigDecimal;
 import java.security.SecureRandom;
+import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Arrays;
@@ -31,8 +32,8 @@ public class DataController {
 
     @Scheduled(initialDelay = 30000, fixedDelay = 60000)
     public void autoSave() {
-        dbService.put(DateUtil.today(), DateUtil.today());
-        log.info("Executing put at: " + new Date());
+        dbService.put("DATE", DateUtil.today());
+        log.info("Executing put at: " + new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date()));
     }
 
     private static final ThreadLocal<SecureRandom> RANDOM = ThreadLocal.withInitial(SecureRandom::new);

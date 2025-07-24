@@ -4,6 +4,7 @@ import com.alibaba.fastjson.JSONObject;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -127,11 +128,15 @@ public class FileUploadController {
         return "photo/upload";
     }
 
+    @Scheduled(initialDelay = 31000, fixedDelay = 60000)
+    public void autoSave() {
+        deleteUnuseData();
+        log.info("Executing delete unuse data at: " + new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date()));
+    }
+
     @GetMapping("/tags")
     @ResponseBody
     public Map<String, List<String>> getTags() {
-        deleteUnuseData();
-
         // 从dbService获取所有数据，遍历获取标签
         Map<String, Object> all = dbService.getAll();
         if (all == null) {
@@ -175,7 +180,7 @@ public class FileUploadController {
             checkUploadFolder();
 
             // 保存文件
-            String name = uploadRenameSave(file);
+            String name = uploadSave(file);
 
             redirectAttributes.addFlashAttribute("message", "文件上传成功：" + name);
         } catch (IOException e) {
@@ -186,28 +191,16 @@ public class FileUploadController {
         return "redirect:/photo/index";
     }
 
-    private String uploadRenameSave(MultipartFile file) throws IOException {
+    private String uploadSave(MultipartFile file) throws IOException {
         // 获取原始文件名
         String originalFilename = file.getOriginalFilename();
 
         // 获取文件字节和临时路径
         byte[] bytes = file.getBytes();
-        Path tempPath = Files.createTempFile("upload-", ".tmp"); // 创建临时文件用于探测属性
-        Files.write(tempPath, bytes); // 写入内容以便获取属性
-
-        BasicFileAttributes attrs = null;
-        try {
-            attrs = Files.readAttributes(tempPath, BasicFileAttributes.class);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-
-        // 获取创建时间或回退到当前时间
-        FileTime creationTime = attrs != null ? attrs.lastModifiedTime() : FileTime.fromMillis(System.currentTimeMillis());
 
         // 时间格式化
         SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMdd.HHmmss.SSS");
-        String formattedTime = sdf.format(new Date(creationTime.toMillis()));
+        String formattedTime = sdf.format(new Date());
 
         // 构建新文件名（保留扩展名）
         String fileExt = "";
@@ -221,9 +214,6 @@ public class FileUploadController {
 
         // 真正写入最终文件
         Files.write(path, bytes);
-
-        // 删除临时文件
-        Files.deleteIfExists(tempPath);
 
         saveDB(newFileName);
         return newFileName;
@@ -395,7 +385,7 @@ public class FileUploadController {
 
             all.forEach((k, v) -> {
                 if (!existingFiles.contains(k)) {
-                    if (!k.startsWith("bookmark")) {
+                    if (!k.startsWith("DATE") && !k.startsWith("bookmark")) {
                         dbService.remove(k);
                         log.info("RM = {}", k);
                     }
