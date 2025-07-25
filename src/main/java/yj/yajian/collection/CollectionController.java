@@ -7,9 +7,10 @@ import org.thymeleaf.util.StringUtils;
 import yj.yajian.db.service.FileDatabaseService;
 
 import javax.annotation.Resource;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
-import java.util.Map;
 import java.util.stream.Collectors;
 
 // 控制器
@@ -54,6 +55,7 @@ public class CollectionController {
     @PostMapping
     public CollectionItem createCollection(@RequestBody CollectionItem item) {
         // 创建新收藏
+        item.setId(Long.parseLong(new SimpleDateFormat("yyyyMMddHHmmss").format(new Date())));
         dbService.put(perfix + item.getId(), JSONObject.toJSONString(item));
         return item;
     }

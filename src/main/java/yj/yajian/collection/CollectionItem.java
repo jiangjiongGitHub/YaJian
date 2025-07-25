@@ -12,5 +12,5 @@ public class CollectionItem {
     private String title;
     private String content; // 文本内容或文件路径
     private String type; // text, image, video, file
-    private LocalDateTime createTime;
+    private String time;
 }
