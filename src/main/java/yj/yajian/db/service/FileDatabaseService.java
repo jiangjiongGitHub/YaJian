@@ -194,10 +194,10 @@ public class FileDatabaseService {
                     Files.createDirectories(bakPath);
                 }
                 // 使用 FileWriter 直接写入，避免创建临时文件。
-                Files.copy(filePath, Paths.get("./databak/db-data.json"),
+                Files.copy(filePath, Paths.get("./databak/db-" + new SimpleDateFormat("yyyy_MM_dd").format(new Date()) + ".json"),
                         StandardCopyOption.REPLACE_EXISTING,
                         StandardCopyOption.COPY_ATTRIBUTES);
-                log.info("Database saved to: " + "./databak/db-data.json");
+                log.info("Database saved to: " + "./databak/db-" + new SimpleDateFormat("yyyy_MM_dd").format(new Date()) + ".json");
             } catch (IOException e) {
                 e.printStackTrace();
             }

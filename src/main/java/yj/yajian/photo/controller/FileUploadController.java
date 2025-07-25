@@ -377,7 +377,7 @@ public class FileUploadController {
 
             all.forEach((k, v) -> {
                 if (!existingFiles.contains(k)) {
-                    if (!k.startsWith("DATE") && !k.startsWith("bookmark")) {
+                    if (!k.startsWith("DATE") && !k.startsWith("bookmark") && !k.startsWith("collection")) {
                         dbService.remove(k);
                         log.info("RM = {}", k);
                     }
