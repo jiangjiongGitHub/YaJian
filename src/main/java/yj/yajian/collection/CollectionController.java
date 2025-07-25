@@ -39,6 +39,16 @@ public class CollectionController {
             return new ArrayList<>();
         }
 
+        if (false) {
+            CollectionItem c = new CollectionItem();
+            c.setId(Long.parseLong(new SimpleDateFormat("yyyyMMddHHmmss").format(new Date())));
+            c.setTitle("Title");
+            c.setContent("Content");
+            c.setType("Type");
+            c.setTime("Time");
+            dbService.put(perfix + c.getId(), JSONObject.toJSONString(c));
+        }
+
         return allItems.subList(fromIndex, toIndex);
     }
 
