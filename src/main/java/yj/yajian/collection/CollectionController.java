@@ -2,6 +2,7 @@ package yj.yajian.collection;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.thymeleaf.util.StringUtils;
 import yj.yajian.db.service.FileDatabaseService;
@@ -39,15 +40,13 @@ public class CollectionController {
             return new ArrayList<>();
         }
 
-        if (false) {
-            CollectionItem c = new CollectionItem();
-            c.setId(Long.parseLong(new SimpleDateFormat("yyyyMMddHHmmss").format(new Date())));
-            c.setTitle("Title");
-            c.setContent("Content");
-            c.setType("Type");
-            c.setTime("Time");
-            dbService.put(perfix + c.getId(), JSONObject.toJSONString(c));
-        }
+        // if (true) {
+        //     CollectionItem c = new CollectionItem();
+        //     c.setId(Long.parseLong(new SimpleDateFormat("yyyyMMddHHmmss").format(new Date())));
+        //     c.setType("文章");
+        //     c.setTime(new SimpleDateFormat("yyyyMMddHHmmss").format(new Date()));
+        //     dbService.put(perfix + c.getId(), JSONObject.toJSONString(c));
+        // }
 
         return allItems.subList(fromIndex, toIndex);
     }
@@ -79,8 +78,9 @@ public class CollectionController {
     }
 
     @DeleteMapping("/{id}")
-    public void deleteCollection(@PathVariable Long id) {
+    public ResponseEntity<Long> deleteCollection(@PathVariable Long id) {
         // 删除收藏
         dbService.remove(perfix + id);
+        return ResponseEntity.ok(id);
     }
 }

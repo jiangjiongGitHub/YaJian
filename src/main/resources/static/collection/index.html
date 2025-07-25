@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>微信收藏</title>
+    <title>收藏</title>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -293,7 +293,8 @@
         </div>
     </div>
 
-    <script>        // 模拟数据存储
+    <script>
+        // 模拟数据存储
         const mockData = [];
         const pageSize = 100;
         let currentPage = 0;
@@ -519,28 +520,26 @@
                 });
         }
 
-        // 删除操作
         function deleteItem(id) {
             if (confirm(`确定要删除ID为 ${id} 的收藏项吗？`)) {
                 fetch(`/api/collections/${id}`, {
                     method: 'DELETE'
                 })
-                    .then(response => {
-                        if (response.ok) {
-                            alert(`已删除ID为 ${id} 的收藏项`);
-                            // 从DOM中移除该行
-                            const row = event.target.closest('tr');
-                            if (row) {
-                                row.remove();
-                            }
-                        } else {
-                            throw new Error('删除失败');
-                        }
-                    })
-                    .catch(error => {
-                        console.error('删除失败:', error);
-                        alert('删除失败');
-                    });
+                .then(response => {
+                    if (response.ok) {
+                        alert(`已删除ID为 ${id} 的收藏项`);
+                        // 重新加载数据而不是手动删除行
+                        currentPage = 0;
+                        document.getElementById('tableBody').innerHTML = '';
+                        loadMoreData();
+                    } else {
+                        throw new Error('删除失败');
+                    }
+                })
+                .catch(error => {
+                    console.error('删除失败:', error);
+                    alert('删除失败');
+                });
             }
         }
 
