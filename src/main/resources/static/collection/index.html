@@ -64,8 +64,16 @@
         }
 
         .actions {
-            display: flex;
-            gap: 10px;
+            height: 100%;
+            box-sizing: border-box;
+        }
+
+        .actions .btn {
+            margin-right: 10px;
+        }
+
+        .actions .btn:last-child {
+            margin-right: 0;
         }
 
         .btn {
@@ -133,6 +141,16 @@
             overflow-y: auto;
         }
 
+        .modal-content pre {
+            white-space: pre-wrap;
+            word-break: break-word;
+            max-height: 400px;
+            overflow-y: auto;
+            background-color: #f8f8f8;
+            padding: 10px;
+            border-radius: 4px;
+        }
+
         .modal-header {
             display: flex;
             justify-content: space-between;
@@ -182,6 +200,8 @@
         .form-group textarea {
             min-height: 300px;
             resize: vertical;
+            font-family: inherit;
+            line-height: 1.5;
         }
 
         .modal-footer {
@@ -345,7 +365,7 @@
                 <tr>
                     <td>${item.id}</td>
                     <td>${item.title}</td>
-                    <td class="content-cell">${item.content}</td>
+                    <td class="content-cell" title="${item.content}">${item.content}</td>
                     <td>${item.type}</td>
                     <td>${item.time}</td>
                     <td class="actions">
@@ -414,7 +434,7 @@
                         </div>
                         <div class="form-group">
                             <label>内容:</label>
-                            <div>${data.content}</div>
+                            <div style="white-space: pre-wrap; word-break: break-word; max-height: 400px; overflow-y: auto;">${data.content}</div>
                         </div>
                         <div class="form-group">
                             <label>类型:</label>
@@ -553,12 +573,15 @@
             // 初始加载第一页数据
             loadMoreData();
 
-            // 点击弹出框外部关闭弹出框
-            window.onclick = function (event) {
+            // 改进的点击事件处理
+            window.addEventListener('click', function (event) {
+                // 只有点击模态框背景时才关闭
                 if (event.target.classList.contains('modal')) {
-                    event.target.style.display = 'none';
+                    closeModal('viewModal');
+                    // closeModal('editModal');
+                    console.log('closeModal for editModal is off');
                 }
-            }
+            });
         });
     </script>
 </body>

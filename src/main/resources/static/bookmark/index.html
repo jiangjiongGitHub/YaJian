@@ -333,7 +333,10 @@
                             ${bookmark.title}
                         </a>
                     </td>
-                    <td class="url-cell">
+                    <td class="url-cell"
+                        data-bs-toggle="tooltip"
+                        data-bs-placement="top"
+                        title="${bookmark.url}">
                         <small class="text-muted">${bookmark.url}</small>
                     </td>
                     <td>
@@ -396,7 +399,11 @@
                 }
             });
         });
-
+        // 初始化 Bootstrap tooltips
+        const tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
+        tooltipTriggerList.map(function (tooltipTriggerEl) {
+            return new bootstrap.Tooltip(tooltipTriggerEl);
+        });
     }
 
     // 打开书签
