@@ -63,6 +63,14 @@
             white-space: nowrap;
         }
 
+        .content-truncate {
+            max-width: 300px; /* 限制最大宽度 */
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+            cursor: pointer;
+        }
+
         .actions {
             height: 100%;
             box-sizing: border-box;
@@ -266,12 +274,6 @@
             visibility: visible;
             opacity: 1;
         }
-
-        .content-cell {
-            position: relative;
-            cursor: pointer;
-            overflow: visible;
-        }
     </style>
 </head>
 
@@ -397,19 +399,19 @@
                 });
         }
 
-        // 渲染表格行
+        // 渲染表格行 ${item.content.substring(0, 30)}${item.content.length > 30 ? '...' : ''}
         function renderRows(data) {
             const tableBody = document.getElementById('tableBody');
             const rows = data.map(item => `
                 <tr>
                     <td>${item.id}</td>
                     <td>${item.title}</td>
-                     <td class="content-cell">
+                    <td class="content-cell">
                         <div class="tooltip">
-                          ${item.content.substring(0, 30)}${item.content.length > 30 ? '...' : ''}
-                          <span class="tooltiptext">${item.content}</span>
+                            <div class="content-truncate">${item.content}</div>
+                            <span class="tooltiptext">${item.content}</span>
                         </div>
-                     </td>
+                    </td>
                     <td>${item.type}</td>
                     <td>${item.time}</td>
                     <td class="actions">
