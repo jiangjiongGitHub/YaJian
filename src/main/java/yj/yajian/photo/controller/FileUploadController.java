@@ -54,35 +54,13 @@ public class FileUploadController {
         }
     }
 
-    // http://127.0.0.1:18888/photo/index
-    @GetMapping("/index")
-    public String index(Model model) throws IOException {
-        checkUploadFolder();
+    @GetMapping("/files")
+    @ResponseBody
+    public Map<String, Object> getFiles(
+            @RequestParam(required = false) String startDate,
+            @RequestParam(required = false) String endDate,
+            @RequestParam(required = false) String tagFilter) throws IOException {
 
-        // 获取已上传文件列表
-        List<String> files = new ArrayList<>();
-        Files.walk(Paths.get(UPLOADED_FOLDER))
-                .filter(Files::isRegularFile)
-                .forEach(file -> files.add(file.getFileName().toString()));
-
-        List<FileEntity> fileEntitys = new ArrayList<>();
-        // 循环files转换为FileEntity实体添加到fileEntitys
-        for (String file : files) {
-            FileEntity fileEntity = JSONObject.parseObject(dbService.get(file) == null ? "{}" : dbService.get(file), FileEntity.class);
-            if (fileEntity.getName() == null) {
-                fileEntity.setName(file);
-            }
-            fileEntitys.add(fileEntity);
-        }
-        model.addAttribute("fileEntitys", fileEntitys);
-        return "photo/upload";
-    }
-
-    @GetMapping("/indexSearch")
-    public String indexSearch(@RequestParam(required = false) String startDate,
-                              @RequestParam(required = false) String endDate,
-                              @RequestParam(required = false) String tagFilter,
-                              Model model) throws IOException {
         // 打印参数
         log.info("startDate: {}, endDate: {}, tagFilter: {}", startDate, endDate, tagFilter);
 
@@ -97,7 +75,9 @@ public class FileUploadController {
         List<FileEntity> fileEntitys = new ArrayList<>();
         // 循环files转换为FileEntity实体添加到fileEntitys
         for (String file : files) {
-            FileEntity fileEntity = JSONObject.parseObject(dbService.get(file) == null ? "{}" : dbService.get(file), FileEntity.class);
+            FileEntity fileEntity = JSONObject.parseObject(
+                    dbService.get(file) == null ? "{}" : dbService.get(file),
+                    FileEntity.class);
             if (fileEntity.getName() == null) {
                 fileEntity.setName(file);
             }
@@ -118,14 +98,18 @@ public class FileUploadController {
         }
 
         List<FileEntity> collect = fileEntitys.stream()
-                .filter(f -> StringUtils.isEmpty(tagFilter) || (f.getTags() != null && f.getTags().stream().anyMatch(tagFilters::contains)))
-                .filter(f -> start == null || end == null || isWithinDateRange(f, startOfDay, endOfDay)) // 自定义方法判断是否在时间范围内
+                .filter(f -> StringUtils.isEmpty(tagFilter) ||
+                        (f.getTags() != null && f.getTags().stream().anyMatch(tagFilters::contains)))
+                .filter(f -> start == null || end == null || isWithinDateRange(f, startOfDay, endOfDay))
                 .collect(Collectors.toList());
-        model.addAttribute("fileEntitys", collect);
-        model.addAttribute("startDate", startDate);
-        model.addAttribute("endDate", endDate);
-        model.addAttribute("tagFilter", tagFilter);
-        return "photo/upload";
+
+        Map<String, Object> response = new HashMap<>();
+        response.put("fileEntitys", collect);
+        response.put("startDate", startDate);
+        response.put("endDate", endDate);
+        response.put("tagFilter", tagFilter);
+
+        return response;
     }
 
     @Scheduled(initialDelay = 45000, fixedDelay = 60000)
@@ -169,11 +153,14 @@ public class FileUploadController {
 
     // 请求URL：http://127.0.0.1:18888/photo/upload
     @PostMapping("/upload")
-    public String singleFileUpload(@RequestParam("file") MultipartFile file,
-                                   RedirectAttributes redirectAttributes) {
+    @ResponseBody
+    public Map<String, Object> singleFileUpload(@RequestParam("file") MultipartFile file) {
+        Map<String, Object> response = new HashMap<>();
+
         if (file.isEmpty()) {
-            redirectAttributes.addFlashAttribute("message", "请选择一个文件上传");
-            return "redirect:/photo/index";
+            response.put("success", false);
+            response.put("message", "请选择一个文件上传");
+            return response;
         }
 
         try {
@@ -182,13 +169,16 @@ public class FileUploadController {
             // 保存文件
             String name = uploadSave(file);
 
-            redirectAttributes.addFlashAttribute("message", "文件上传成功：" + name);
+            response.put("success", true);
+            response.put("message", "文件上传成功：" + name);
+            response.put("fileName", name);
         } catch (IOException e) {
-            e.printStackTrace();
-            redirectAttributes.addFlashAttribute("message", "文件上传失败");
+            log.error("文件上传失败", e);
+            response.put("success", false);
+            response.put("message", "文件上传失败: " + e.getMessage());
         }
 
-        return "redirect:/photo/index";
+        return response;
     }
 
     private String uploadSave(MultipartFile file) throws IOException {
