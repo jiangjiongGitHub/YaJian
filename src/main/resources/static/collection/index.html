@@ -44,7 +44,7 @@
 
         th,
         td {
-            padding: 12px 15px;
+            padding: 5px 10px;
             text-align: left;
             border-bottom: 1px solid #eee;
         }
@@ -56,6 +56,21 @@
             top: 0;
             z-index: 10;
         }
+
+        .id-col { width: 10%; }
+        .title-col { width: 12%; }
+        .content-col { width: 35%; }
+        .type-col { width: 10%; }
+        .time-col { width: 10%; }
+        .actions-col { width: 20%; }
+
+        /* 确保表头也应用相同的宽度 */
+        thead th:nth-child(1) { width: 10%; }   /* ID列 */
+        thead th:nth-child(2) { width: 12%; }  /* 标题列 */
+        thead th:nth-child(3) { width: 35%; }  /* 内容列 */
+        thead th:nth-child(4) { width: 10%; }  /* 类型列 */
+        thead th:nth-child(5) { width: 10%; }  /* 时间列 */
+        thead th:nth-child(6) { width: 20%; }  /* 操作列 */
 
         .content-cell {
             max-width: 35vw;
@@ -333,14 +348,14 @@
     <div class="list-container" id="listContainer">
         <table>
             <thead>
-            <tr>
-                <th>ID</th>
-                <th>标题</th>
-                <th>内容</th>
-                <th>类型</th>
-                <th>时间</th>
-                <th>操作</th>
-            </tr>
+                <tr>
+                    <th class="id-col">ID</th>
+                    <th class="title-col">标题</th>
+                    <th class="content-col">内容</th>
+                    <th class="type-col">类型</th>
+                    <th class="time-col">时间</th>
+                    <th class="actions-col">操作</th>
+                </tr>
             </thead>
             <tbody id="tableBody">
             <!-- 数据将通过JavaScript动态加载 -->
@@ -456,14 +471,14 @@
         const tableBody = document.getElementById('tableBody');
         const rows = data.map(item => `
             <tr>
-                <td>${item.id}</td>
-                <td>${item.title}</td>
-                <td class="content-cell">
+                <td class="id-col">${item.id}</td>
+                <td class="title-col">${item.title}</td>
+                <td class="content-col content-cell">
                     <div class="content-truncate" data-content="${item.content.replace(/"/g, '&quot;')}">${item.content}</div>
                 </td>
-                <td>${item.type}</td>
-                <td>${item.time}</td>
-                <td class="actions">
+                <td class="type-col">${item.type}</td>
+                <td class="time-col">${item.time}</td>
+                <td class="actions-col actions">
                     <button class="btn btn-view" onclick="openViewModal(${item.id})">查看</button>
                     <button class="btn btn-edit" onclick="openEditModal(${item.id})">编辑</button>
                     <button class="btn btn-delete" onclick="deleteItem(${item.id})">删除</button>
