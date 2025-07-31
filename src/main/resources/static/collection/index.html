@@ -61,15 +61,15 @@
         .title-col { width: 12%; }
         .content-col { width: 35%; }
         .type-col { width: 10%; }
-        .time-col { width: 10%; }
+        .time-col { width: 12%; }
         .actions-col { width: 20%; }
 
         /* 确保表头也应用相同的宽度 */
-        thead th:nth-child(1) { width: 10%; }   /* ID列 */
+        thead th:nth-child(1) { width: 10%; }  /* ID列 */
         thead th:nth-child(2) { width: 12%; }  /* 标题列 */
         thead th:nth-child(3) { width: 35%; }  /* 内容列 */
         thead th:nth-child(4) { width: 10%; }  /* 类型列 */
-        thead th:nth-child(5) { width: 10%; }  /* 时间列 */
+        thead th:nth-child(5) { width: 12%; }  /* 时间列 */
         thead th:nth-child(6) { width: 20%; }  /* 操作列 */
 
         .content-cell {
@@ -87,16 +87,16 @@
         }
 
         .actions {
-            height: 100%;
+            display: flex;
+            gap: 5px;
+            width: 100%;
             box-sizing: border-box;
         }
 
         .actions .btn {
-            margin-right: 10px;
-        }
-
-        .actions .btn:last-child {
-            margin-right: 0;
+            flex: 1;
+            margin: 0px 10px 0px 0px;
+            min-width: 0;
         }
 
         .btn {
