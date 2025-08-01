@@ -22,41 +22,8 @@ public class SpringBootInteceptor implements HandlerInterceptor {
 
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws IOException {
-        String requestUri = request.getRequestURI();
-        log.info("requestUri:" + requestUri);
-
-        HttpSession httpSession = request.getSession();
-        String contractorUser = (String) httpSession.getAttribute("user");
-        if (contractorUser == null) {
-            log.warn("未登录：{}", requestUri);
-
-            // 未登录或者session过期在这里执行跳转登录页面
-            if (false) {
-                response.sendRedirect("/login");
-                return false;
-            }
-        }
-
-        Map<?, ?> map = request.getParameterMap();
-        Set<?> keSet = map.entrySet();
-        for (Iterator<?> itr = keSet.iterator(); itr.hasNext(); ) {
-            @SuppressWarnings("rawtypes")
-            Map.Entry me = (Map.Entry) itr.next();
-
-            Object ok = me.getKey();
-            Object ov = me.getValue();
-            String[] value = new String[1];
-            if (ov instanceof String[]) {
-                value = (String[]) ov;
-            } else {
-                value[0] = ov.toString();
-            }
-
-            for (int k = 0; k < value.length; k++) {
-                log.info("参数：" + ok + "=" + value[k]);
-            }
-        }
-
+        // preHandle → Controller方法 → postHandle → 视图渲染 → afterCompletion
+        log.info("requestUri:" + request.getRequestURI());
         return true;
     }
 
