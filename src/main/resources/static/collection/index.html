@@ -74,9 +74,20 @@
 
         .content-cell {
             max-width: 35vw;
+            max-height: 80px;
             overflow: hidden;
             text-overflow: ellipsis;
             white-space: nowrap;
+            align-items: center;
+        }
+
+        .content-cell img {
+            max-width: 100px;
+            max-height: 60px;
+            width: auto;
+            height: auto;
+            object-fit: contain;
+            vertical-align: middle;
         }
 
         .content-truncate {
@@ -87,7 +98,6 @@
         }
 
         .actions {
-            display: flex;
             gap: 5px;
             width: 100%;
             box-sizing: border-box;
@@ -391,7 +401,7 @@
             <span class="close" onclick="closeModal('editModal')">&times;</span>
         </div>
         <div id="editModalBody">
-            <form id="collectionForm">
+            <form id="collectionForm" enctype="multipart/form-data">
                 <input type="hidden" id="editId">
                 <div class="form-group">
                     <label for="editTitle">标题:</label>
@@ -403,13 +413,15 @@
                 </div>
                 <div class="form-group">
                     <label for="editType">类型:</label>
-                    <select id="editType" required>
+                    <select id="editType" required onchange="toggleFileUpload()">
                         <option value="文章">文章</option>
                         <option value="链接">链接</option>
                         <option value="图片">图片</option>
-                        <option value="语音">语音</option>
-                        <option value="视频">视频</option>
                     </select>
+                </div>
+                <div class="form-group" id="fileUploadGroup" style="display: none;">
+                    <label for="editFile">上传文件:</label>
+                    <input type="file" id="editFile" accept="image/*">
                 </div>
             </form>
         </div>
@@ -469,25 +481,35 @@
     // 渲染表格行
     function renderRows(data) {
         const tableBody = document.getElementById('tableBody');
-        const rows = data.map(item => `
-            <tr>
-                <td class="id-col">${item.id}</td>
-                <td class="title-col">${item.title}</td>
-                <td class="content-col content-cell">
-                    <div class="content-truncate" data-content="${item.content.replace(/"/g, '&quot;')}">${item.content}</div>
-                </td>
-                <td class="type-col">${item.type}</td>
-                <td class="time-col">${item.time}</td>
-                <td class="actions-col actions">
-                    <button class="btn btn-view" onclick="openViewModal(${item.id})">查看</button>
-                    <button class="btn btn-edit" onclick="openEditModal(${item.id})">编辑</button>
-                    <button class="btn btn-delete" onclick="deleteItem(${item.id})">删除</button>
-                </td>
-            </tr>
-        `).join('');
+        const rows = data.map(item => {
+            // 处理内容显示，如果是图片则显示缩略图或限制尺寸
+            let displayContent = item.content;
+            if (item.type === '图片' && (item.content.includes('<img') || item.content.includes('src='))) {
+                // 如果是图片类型且内容包含图片标签，限制图片尺寸
+                displayContent = item.content.replace(/<img([^>]*?)>/g, '<img$1 style="max-width: 100px; max-height: 60px; width: auto; height: auto; object-fit: contain;" />');
+            }
+
+            return `
+                <tr>
+                    <td class="id-col">${item.id}</td>
+                    <td class="title-col">${item.title}</td>
+                    <td class="content-col content-cell">
+                        <div class="content-truncate" data-content="${item.content.replace(/"/g, '&quot;')}">${item.content}</div>
+                    </td>
+                    <td class="type-col">${item.type}</td>
+                    <td class="time-col">${item.time}</td>
+                    <td class="actions-col actions">
+                        <button class="btn btn-view" onclick="openViewModal(${item.id})">查看</button>
+                        <button class="btn btn-edit" onclick="openEditModal(${item.id})">编辑</button>
+                        <button class="btn btn-delete" onclick="deleteItem(${item.id})">删除</button>
+                    </td>
+                </tr>
+            `;
+        }).join('');
 
         tableBody.innerHTML += rows;
     }
+
 
     // 显示全局tooltip
     function showTooltip(element, content) {
@@ -612,7 +634,7 @@
             });
     }
 
-    // 打开编辑弹出框
+    // 修改打开编辑弹出框函数
     function openEditModal(id) {
         fetch(`/api/collections/${id}`)
             .then(response => response.json())
@@ -623,6 +645,9 @@
                 document.getElementById('editTitle').value = data.title;
                 document.getElementById('editContent').value = data.content;
                 document.getElementById('editType').value = data.type;
+
+                // 如果是图片类型，显示预览
+                toggleFileUpload();
                 document.getElementById('editModal').style.display = 'block';
             })
             .catch(error => {
@@ -631,7 +656,7 @@
             });
     }
 
-    // 打开添加弹出框
+    // 修改打开添加弹出框函数
     function openAddModal() {
         currentEditItem = null;
         document.getElementById('editModalTitle').textContent = '添加收藏';
@@ -639,6 +664,8 @@
         document.getElementById('editTitle').value = '';
         document.getElementById('editContent').value = '';
         document.getElementById('editType').value = '文章';
+        document.getElementById('editFile').value = ''; // 清空文件选择
+        toggleFileUpload(); // 根据类型显示/隐藏文件上传
         document.getElementById('editModal').style.display = 'block';
     }
 
@@ -647,52 +674,66 @@
         document.getElementById(modalId).style.display = 'none';
     }
 
-    // 保存收藏项
+    // 修改保存收藏项函数
     function saveCollection() {
         const id = document.getElementById('editId').value;
         const title = document.getElementById('editTitle').value;
         const content = document.getElementById('editContent').value;
         const type = document.getElementById('editType').value;
+        const fileInput = document.getElementById('editFile');
 
         if (!title || !content || !type) {
             alert('请填写所有必填字段');
             return;
         }
 
-        const collectionData = {
-            title: title,
-            content: content,
-            type: type,
-            time: new Date().toLocaleString()
-        };
+        const formData = new FormData();
+        formData.append('title', title);
+        formData.append('content', content);
+        formData.append('type', type);
 
-        let url = '/api/collections';
-        let method = 'POST';
+        // 对于图片类型，如果已有图片路径且未选择新文件，则保留原内容
+        if (type === '图片') {
+            const file = fileInput.files[0];
+            if (file) {
+                formData.append('file', file);
+            } else if (!id) {
+                // 新增图片但未选择文件
+                alert('请选择要上传的图片文件');
+                return;
+            }
+        }
 
+        let url, method;
         if (id) {
-            url = `/api/collections/${id}`;
+            url = `/api/collections/with-file/${id}`;
             method = 'PUT';
-            collectionData.id = id;
+        } else {
+            url = '/api/collections/with-file';
+            method = 'POST';
         }
 
         fetch(url, {
             method: method,
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify(collectionData)
+            body: formData
         })
-            .then(response => response.json())
-            .then(data => {
-                alert(id ? '更新成功' : '添加成功');
-                closeModal('editModal');
-                // 重新加载数据
-                resetAndReloadData();
-            })
-            .catch(error => {
-                console.error('保存失败:', error);
-                alert('保存失败');
-            });
+        .then(response => {
+            if (response.ok) {
+                return response.json();
+            } else {
+                throw new Error('保存失败');
+            }
+        })
+        .then(data => {
+            alert(id ? '更新成功' : '添加成功');
+            closeModal('editModal');
+            // 重新加载数据
+            resetAndReloadData();
+        })
+        .catch(error => {
+            console.error('保存失败:', error);
+            alert('保存失败');
+        });
     }
 
     function resetAndReloadData() {
@@ -790,6 +831,17 @@
             }
         });
     });
+
+    // 根据类型切换文件上传显示
+    function toggleFileUpload() {
+        const type = document.getElementById('editType').value;
+        const fileUploadGroup = document.getElementById('fileUploadGroup');
+        if (type === '图片') {
+            fileUploadGroup.style.display = 'block';
+        } else {
+            fileUploadGroup.style.display = 'none';
+        }
+    }
 </script>
 </body>
 
