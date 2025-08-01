@@ -8,6 +8,8 @@ import org.springframework.core.env.Environment;
 import org.springframework.scheduling.annotation.EnableScheduling;
 
 import java.io.File;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 
 @Slf4j
 @SpringBootApplication
@@ -17,6 +19,9 @@ public class SpringBootMainApplication {
     public static void main(String[] args) {
         new File("./logs").mkdirs();
         log.info("SpringBootMainApplication starting");
+
+        // 设置日志文件名的时间戳部分
+        System.setProperty("bySecond", new SimpleDateFormat("yyyy_MM_dd__HH_mm_ss").format(new Date()));
 
         // 启动应用并获取上下文
         ConfigurableApplicationContext context = SpringApplication.run(SpringBootMainApplication.class, args);
