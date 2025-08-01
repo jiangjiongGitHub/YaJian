@@ -9,10 +9,8 @@
 		
 		<style type="text/css"></style>
 		<script type="text/javascript"></script>
-		
 	</head>
 	<body>
-	
 		<input th:value="${ list }" >
 		
 		<div id="app1">
@@ -25,8 +23,7 @@
 				}
 			})
 		</script>
-		
-		
+
 		<hr>
 		<div id="app2">
 			<span v-for="n in 10">{{ n }} </span>
@@ -38,8 +35,7 @@
 				}
 			})
 		</script>
-		
-		
+
 		<hr>
 		<div id="app3">
 			<input v-model="newTodo" v-on:keyup.enter="add" placeholder="Add todo" >
@@ -76,6 +72,5 @@
 				}
 			})
 		</script>
-
 	</body>
 </html>
