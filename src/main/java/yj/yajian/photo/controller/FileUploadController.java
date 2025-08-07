@@ -304,6 +304,12 @@ public class FileUploadController {
             return;
         }
 
+        if(oldFileName.startsWith("collection-")){
+            response.put("success", false);
+            response.put("message", "文件名符合规范：" + oldFileName);
+            return;
+        }
+
         if (oldFile.exists()) {
             int i = 0;
             // 把名称改为 yyyyMMdd.HHmmss.SSS 格式，取文件创建日期，如果日期不存在，则取当前日期

@@ -78,14 +78,26 @@ public class BookmarkController {
     public List<Bookmark> getBookmarks() {
         List<Bookmark> allWithPerfix = getAllWithPerfix(perfix);
         if (allWithPerfix.isEmpty()) {
-            Bookmark bookmark = addOneBookmark();
-            allWithPerfix.add(bookmark);
+            allWithPerfix.add(addPhotoBookmark());
+            allWithPerfix.add(addCollectionBookmark());
         }
         return allWithPerfix;
     }
 
-    private Bookmark addOneBookmark() {
-        Bookmark bookmark = new Bookmark(Long.parseLong(new SimpleDateFormat("yyyyMMddHHmmss").format(new Date())), "百度", "https://www.baidu.com", 0);
+    private Bookmark addPhotoBookmark() {
+        Bookmark bookmark = new Bookmark(Long.parseLong(new SimpleDateFormat("yyyyMMddHHmmss").format(new Date())), "照片管理", "http://127.0.0.1:18888/photo/upload.html", 0);
+        while (dbService.get(perfix + bookmark.getId()) != null) {
+            bookmark.setId(bookmark.getId() + 1);
+        }
+        dbService.put(perfix + bookmark.getId(), JSONObject.toJSONString(bookmark));
+        return bookmark;
+    }
+
+    private Bookmark addCollectionBookmark() {
+        Bookmark bookmark = new Bookmark(Long.parseLong(new SimpleDateFormat("yyyyMMddHHmmss").format(new Date())), "收藏管理", "http://127.0.0.1:18888/collection/index.html", 0);
+        while (dbService.get(perfix + bookmark.getId()) != null) {
+            bookmark.setId(bookmark.getId() + 1);
+        }
         dbService.put(perfix + bookmark.getId(), JSONObject.toJSONString(bookmark));
         return bookmark;
     }

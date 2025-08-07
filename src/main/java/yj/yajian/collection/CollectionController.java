@@ -168,13 +168,14 @@ public class CollectionController {
         if (originalFileName != null && originalFileName.contains(".")) {
             extension = originalFileName.substring(originalFileName.lastIndexOf("."));
         }
-        String fileName = System.currentTimeMillis() + extension;
+        String fileName = "collection-" + System.currentTimeMillis() + extension;
 
         // 保存文件
         Path filePath = uploadPath.resolve(fileName);
         Files.write(filePath, file.getBytes());
         // 根据 UPLOADED_FOLDER + "/" + fileName 构造html img标签
-        String imgHtml = "<img src=\"" + UPLOADED_FOLDER.replace(".","") + "/" + fileName + "\" alt=\"" + fileName + "\" style=\"max-width: 60%; height: auto; max-height: 300px; margin: 10px; border: 1px solid #ddd; border-radius: 4px; object-fit: contain;\" >";
-        return imgHtml;
+        String filePathName = UPLOADED_FOLDER.replace(".", "") + "/" + fileName;
+        // style="max-width: 60%; height: auto; max-height: 300px; margin: 10px; border: 1px solid #ddd; border-radius: 4px; object-fit: contain;"
+        return "<img src=\"" + filePathName + "\" alt=\"" + fileName + "\" class=\"img-collection\">";
     }
 }
