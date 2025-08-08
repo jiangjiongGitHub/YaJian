@@ -198,6 +198,9 @@ public class FileDatabaseService {
                         StandardCopyOption.REPLACE_EXISTING,
                         StandardCopyOption.COPY_ATTRIBUTES);
                 log.info("Database saved to: " + "./databak/db-" + new SimpleDateFormat("yyyy_MM_dd").format(new Date()) + ".json");
+                // 打印文件大小
+                long fileSize = Files.size(filePath);
+                log.info("File size: " + fileSize + " bytes");
             } catch (IOException e) {
                 e.printStackTrace();
             }

@@ -46,7 +46,7 @@
         td {
             padding: 5px 10px;
             text-align: left;
-            border-bottom: 1px solid #eee;
+            border: 1px solid #eee;
         }
 
         th {
@@ -57,20 +57,12 @@
             z-index: 10;
         }
 
-        .id-col { width: 10%; }
+        .id-col { width: 8%; }
         .title-col { width: 12%; }
-        .content-col { width: 35%; }
-        .type-col { width: 10%; }
-        .time-col { width: 12%; }
-        .actions-col { width: 20%; }
-
-        /* 确保表头也应用相同的宽度 */
-        thead th:nth-child(1) { width: 10%; }  /* ID列 */
-        thead th:nth-child(2) { width: 12%; }  /* 标题列 */
-        thead th:nth-child(3) { width: 35%; }  /* 内容列 */
-        thead th:nth-child(4) { width: 10%; }  /* 类型列 */
-        thead th:nth-child(5) { width: 12%; }  /* 时间列 */
-        thead th:nth-child(6) { width: 20%; }  /* 操作列 */
+        .content-col { width: 50%; }
+        .type-col { width: 6%; }
+        .time-col { width: 10%; }
+        .actions-col { width: 12%; }
 
         .content-cell {
             max-width: 35vw;
@@ -99,7 +91,6 @@
 
         .actions {
             gap: 5px;
-            width: 100%;
             box-sizing: border-box;
         }
 
@@ -491,13 +482,6 @@
     function renderRows(data) {
         const tableBody = document.getElementById('tableBody');
         const rows = data.map(item => {
-            // 处理内容显示，如果是图片则显示缩略图或限制尺寸
-            let displayContent = item.content;
-            if (item.type === '图片' && (item.content.includes('<img') || item.content.includes('src='))) {
-                // 如果是图片类型且内容包含图片标签，限制图片尺寸
-                displayContent = item.content.replace(/<img([^>]*?)>/g, '<img$1 style="max-width: 100px; max-height: 60px; width: auto; height: auto; object-fit: contain;" />');
-            }
-
             return `
                 <tr>
                     <td class="id-col">${item.id}</td>

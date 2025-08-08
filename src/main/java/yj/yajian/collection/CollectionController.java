@@ -40,22 +40,15 @@ public class CollectionController {
         List<CollectionItem> allItems = dbService.getAll().entrySet().stream()
                 .filter(entry -> entry.getKey().startsWith(perfix))
                 .map(entry -> JSONObject.parseObject(entry.getValue().toString(), CollectionItem.class))
+                .sorted((item1, item2) -> Long.compare(item2.getId(), item1.getId())) // 按ID倒序排序
                 .collect(Collectors.toList());
 
         int fromIndex = page * size;
         int toIndex = Math.min(fromIndex + size, allItems.size());
 
-        if (fromIndex > allItems.size()) {
+        if (fromIndex >= allItems.size()) {
             return new ArrayList<>();
         }
-
-        // if (true) {
-        //     CollectionItem c = new CollectionItem();
-        //     c.setId(Long.parseLong(new SimpleDateFormat("yyyyMMddHHmmss").format(new Date())));
-        //     c.setType("文章");
-        //     c.setTime(new SimpleDateFormat("yyyyMMddHHmmss").format(new Date()));
-        //     dbService.put(perfix + c.getId(), JSONObject.toJSONString(c));
-        // }
 
         return allItems.subList(fromIndex, toIndex);
     }
