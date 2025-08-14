@@ -58,7 +58,7 @@
         <div class="card-body">
             <form method="POST" action="/photo/upload" enctype="multipart/form-data" class="d-flex align-items-end gap-3">
                 <div>
-                    <input class="form-control" type="file" id="file" name="file" accept=".jpg,.jpeg,.png,.gif,.bmp,.webp" />
+                    <input class="form-control" type="file" id="file" name="file" accept=".jpg,.jpeg,.png,.gif,.bmp,.ico,.svg,.webp" />
                 </div>
                 <div>
                     <button type="submit" class="btn btn-primary">上传图片</button>
@@ -411,7 +411,7 @@
 
     // 判断是否为图片文件
     function isImageFile(fileName) {
-        const imageExtensions = ['.jpg', '.jpeg', '.png', '.gif'];
+        const imageExtensions = ['.jpg', '.jpeg', '.png', '.gif', '.bmp', '.ico', '.svg', '.webp'];
         return imageExtensions.some(ext => fileName.toLowerCase().endsWith(ext));
     }
 

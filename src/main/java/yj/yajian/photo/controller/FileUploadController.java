@@ -297,7 +297,7 @@ public class FileUploadController {
         SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMdd.HHmmss.SSS");
 
         // 如果文件名符合规范，就不修改：规范为 yyyyMMdd.HHmmss.SSS.jpg 或 yyyyMMdd.HHmmss.SSS.XXX.jpg 除后缀名外，都是数字或小数点 其中 yyyyMMdd.HHmmss.SSS 为时间，XXX为随机数字，可以是1到3位，后缀名一般是常用图片格式
-        if (oldFileName.matches("^\\d{8}\\.\\d{6}\\.\\d{8}\\.(?i)(jpg|jpeg|png|gif|bmp|ico)$")
+        if (oldFileName.matches("^\\d{8}\\.\\d{6}\\.\\d{8}\\.(?i)(jpg|jpeg|png|gif|bmp|ico|svg|webp)$")
                 && oldFileName.substring(0, Math.min(oldFileName.length(), 19)).equals(sdf.format(new Date(oldFile.lastModified())))) {
             response.put("success", false);
             response.put("message", "文件名符合规范：" + oldFileName);
