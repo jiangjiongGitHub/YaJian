@@ -2,6 +2,7 @@
 *.log
 *.jar
 *.war
+*.iml
 
 /.idea/
 

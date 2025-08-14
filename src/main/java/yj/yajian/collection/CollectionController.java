@@ -64,14 +64,6 @@ public class CollectionController {
         return JSON.parseObject(s, CollectionItem.class);
     }
 
-    @PostMapping
-    public CollectionItem createCollection(@RequestBody CollectionItem item) {
-        // 创建新收藏
-        item.setId(Long.parseLong(new SimpleDateFormat("yyyyMMddHHmmss").format(new Date())));
-        dbService.put(perfix + item.getId(), JSONObject.toJSONString(item));
-        return item;
-    }
-
     // 添加支持文件上传的创建方法
     @PostMapping("/with-file")
     public ResponseEntity<CollectionItem> createCollectionWithFile(
@@ -101,14 +93,6 @@ public class CollectionController {
         dbService.put(perfix + item.getId(), JSONObject.toJSONString(item));
         dbService.autoSave();
         return ResponseEntity.ok(item);
-    }
-
-    @PutMapping("/{id}")
-    public CollectionItem updateCollection(@PathVariable Long id, @RequestBody CollectionItem item) {
-        // 更新收藏（主要用于文本编辑）
-        item.setId(id);
-        dbService.put(perfix + item.getId(), JSONObject.toJSONString(item));
-        return item;
     }
 
     // 添加支持文件上传的更新方法
@@ -174,4 +158,29 @@ public class CollectionController {
         // style="max-width: 60%; height: auto; max-height: 300px; margin: 10px; border: 1px solid #ddd; border-radius: 4px; object-fit: contain;"
         return "<img src=\"" + filePathName + "\" alt=\"" + fileName + "\" class=\"img-collection\">";
     }
+
+    @PutMapping("/{id}/pin")
+    public ResponseEntity<CollectionItem> pinCollection(@PathVariable Long id) {
+        // 获取原始收藏项
+        String s = dbService.get(perfix + id);
+        if (StringUtils.isEmpty(s)) {
+            return ResponseEntity.notFound().build();
+        }
+
+        CollectionItem item = JSON.parseObject(s, CollectionItem.class);
+
+        // 生成新的ID（当前时间戳），实现置顶效果
+        Long newId = Long.parseLong(new SimpleDateFormat("yyyyMMddHHmmss").format(new Date()));
+        item.setId(newId);
+
+        // 更新时间
+        item.setTime(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date()));
+
+        // 保存更新后的项
+        dbService.put(perfix + item.getId(), JSONObject.toJSONString(item));
+        dbService.autoSave();
+
+        return ResponseEntity.ok(item);
+    }
+
 }
