@@ -2,10 +2,14 @@
 *.log
 *.jar
 *.war
+
+/.idea/
+
 /build/
 /target/
-/.idea/
+
 /data/
 /databak/
 /uploads/
 
+/sync.ffs_db
