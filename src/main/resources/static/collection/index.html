@@ -57,12 +57,12 @@
             z-index: 10;
         }
 
-        .id-col { width: 8%; }
-        .title-col { width: 12%; }
+        .id-col { width: 9%; }
+        .title-col { width: 11%; }
         .content-col { width: 48%; }
-        .type-col { width: 6%; }
+        .type-col { width: 5%; }
         .time-col { width: 10%; }
-        .actions-col { width: 16%; }
+        .actions-col { width: 17%; }
 
         .content-cell {
             max-width: 35vw;
@@ -755,9 +755,7 @@
                 if (response.ok) {
                     alert(`已删除ID为 ${id} 的收藏项`);
                     // 重新加载数据而不是手动删除行
-                    currentPage = 0;
-                    document.getElementById('tableBody').innerHTML = '';
-                    loadMoreData();
+                    resetAndReloadData();
                 } else {
                     throw new Error('删除失败');
                 }
