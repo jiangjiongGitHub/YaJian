@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+		<title>Main String</title>
+
+		<!-- jQuery文件。务必在bootstrap.min.js 之前引入 -->
+		<!-- <script src="https://cdn.staticfile.org/jquery/3.2.1/jquery.min.js"></script> -->
+		<script src="/main/jquery.min.js"></script>
+
+		<!-- 新 Bootstrap4 核心 CSS 文件 -->
+		<!-- <link rel="stylesheet" href="https://cdn.staticfile.org/twitter-bootstrap/4.1.0/css/bootstrap.min.css"> -->
+		<link rel="stylesheet" href="/main/bootstrap.min.css">
+		<!-- 最新的 Bootstrap4 核心 JavaScript 文件 -->
+		<!-- <script src="https://cdn.staticfile.org/twitter-bootstrap/4.1.0/js/bootstrap.min.js"></script> -->
+		<script src="/main/bootstrap.min.js"></script>
+		<!-- popper.min.js 用于弹窗、提示、下拉菜单 -->
+		<!-- <script src="https://cdn.staticfile.org/popper.js/1.12.5/umd/popper.min.js"></script> -->
+		<script src="/main/popper.min.js"></script>
+
+		<!-- 菜鸟教程找的cdn链接,https://unpkg.com/vue -->
+		<!-- <script src="https://cdn.staticfile.org/vue/2.5.17/vue.min.js"></script> -->
+		<script src="/main/vue.min.js"></script>
+		
+		<link rel="stylesheet" href="/main/bootstrapTest.css">
+		<script src="/main/bootstrapTest.js"></script>
+		
+		<style type="text/css"></style>
+		
+		<script type="text/javascript">
+			$(document).ready(function() {
+				$('.topDiv').load('main/top.html');
+				$('.middleDiv1').load('main/left.html');
+				$('.middleDiv3').load('main/right.html');
+				$('.bottomDiv').load('main/bottom.html');
+			});
+		</script>
+		
+		<script type="text/javascript">
+			function log1(div){
+				//console.log(div);
+				console.log($("#text1").val());
+				
+				//$("#text2").val($("#text1").val());
+				if(!isIntNum($("#input").val())){
+					alert("请输入数字");
+					return;
+				}
+				
+				// 127.0.0.1:8080/cron
+				$.post("set",{str:$("#text1").val(),key:$("#input").val()},function(result){
+					 console.log(result);
+					
+					var parsedJson = jQuery.parseJSON(result);
+					$("#text2").val(parsedJson.sb_);
+				});
+			}
+			function log2(div){
+				//console.log(div);
+				console.log($("#text2").val());
+				
+				// $("#text1").val($("#text2").val());
+				if(!isIntNum($("#input").val())){
+					alert("请输入数字");
+					return;
+				}
+				
+				// 127.0.0.1:8080/cron
+				$.post("get",{str:$("#text2").val(),key:$("#input").val()},function(result){
+					 console.log(result);
+					
+					var parsedJson = jQuery.parseJSON(result);
+					$("#text1").val(parsedJson.sb_);
+				});
+			}
+		</script>
+		
+	</head>
+	<body>
+		<!-- 127.0.0.1:8080/main/main.html -->
+		<!-- 127.0.0.1:8080/main.html -->
+		
+		<!-- 上部 -->
+		<div class="topDiv" style="">
+		
+			
+		</div>
+		
+		
+		
+		<!-- 中部 -->
+		<div class="middleDiv" style="">
+			
+			<div>
+				<!-- 中间左侧菜单 -->
+				<div class="middleDiv1" style="">
+				</div>
+				
+				<!-- 中间板块 -->
+				<div id="middleHtml" class="middleDiv2" style="">
+					<p>欢迎访问此网站！</p>
+<!-- 					<iframe src="/tools/CanvasTime.html" width="100%" height="440px;" scrolling="no" frameborder="0"> </iframe> -->
+						
+						http://127.0.0.1:8080/div2.html static <br><br>
+						<input id="input" value="0"> <br><br>
+						
+						<div style="width: 100%; border: 0px solid red;" onclick="log1(this)">
+							<textarea rows="3" cols="" style="width: 98%;" id="text1">click me</textarea>
+						</div><br>
+						
+						<div style="width: 100%; border: 0px solid red;" onclick="log2(this)">
+							<textarea rows="3" cols="" style="width: 98%;" id="text2"></textarea>
+						</div><br>
+	
+				</div>
+				
+				
+				<!-- 中间右侧跳转 -->
+				<div class="middleDiv3" style="">
+				</div>
+			</div>
+		</div>
+		
+		
+		
+		<!-- 下部 -->
+		<!-- clear:both;清空上面的float效果 -->
+		<div class="bottomDiv" style="">
+		</div>
+		
+
+
+
+
+
+	</body>
+
+</html>

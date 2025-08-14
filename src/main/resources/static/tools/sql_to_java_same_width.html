@@ -1,0 +1,76 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<HTML>
+<HEAD>
+<TITLE>SQL2StringBuffer</TITLE>
+<META NAME="Generator" CONTENT="EditPlus">
+<script>
+	/*表达式/：表示表达式的开始和结束的定界符*/
+	/*表达式\：反斜杠是表示转义字符*/
+	/*表达式g：表示全文匹配, 而不是找到一个就停止*/
+	/*表达式.：匹配任意单个字符, 匹配除换行符 \n 之外的任何单字符*/
+	/*表达式?：匹配其前面的字符1次或0次*/
+	/*表达式+：匹配其前面一个字符出现至少一次*/
+	/*表达式*：匹配其前面一个字符出现任意次*/
+
+	var ie = !-[ 1, ]; // 是否是IE
+
+	function changeSQL() {
+		try {
+			var srcSQL = document.getElementById("srcSQL");
+			var srcInner = srcSQL.value;
+
+			var newSrc = "";
+			if (ie) {
+				var newSrc = srcInner.split("\r\n");
+			} else {
+				var patt = new RegExp(/.+/g);
+				var newSrc = srcInner.match(patt);
+			}
+			
+			var maxLen=0;
+			if (newSrc != null) {
+				for (var i = 0; i < newSrc.length; i++) {
+					var temp = newSrc[i];
+					temp = temp.replace(/	/g,"    ");
+					
+					var tempLen = temp.length;
+					if(tempLen > maxLen) maxLen = tempLen;
+				}
+			}
+
+			if (newSrc != null) {
+				var sqlBuf = "StringBuffer sql = new StringBuffer();" + "\r\n";
+				for (var i = 0; i < newSrc.length; i++) {
+					var temp = newSrc[i];
+					temp = temp.replace(/	/g,"    ");
+					
+					var tempLen = temp.length;
+					for(var j = tempLen; j < maxLen; j++) {
+						temp+=" ";
+					}
+					
+					sqlBuf += "sql.append(\" " + temp + " \");" + "\r\n";
+				}
+				sqlBuf += "System.out.println(sql.toString());";
+
+				var showSQL = document.getElementById("showSQL");
+				showSQL.value = sqlBuf;
+			}
+		} catch (err) {
+			var showSQL = document.getElementById("showSQL");
+			showSQL.value = err;
+		}
+	}
+</script>
+</HEAD>
+<BODY>
+	<table border="1" width="100%">
+		<tr align="center">
+			<td width="41%"><textarea id="srcSQL" rows="40" cols="78"></textarea></td>
+			<td><input type="button" value="转换" onclick="changeSQL()"
+				style="width: 80px; height: 30px; cursor: hand;" /></td>
+			<td width="51%"><textarea id="showSQL" rows="40" cols="98"></textarea></td>
+		</tr>
+	</table>
+</BODY>
+</HTML>

@@ -1,0 +1,515 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>书签</title>
+    <!--
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+    -->
+    <link rel="stylesheet" href="bootstrap.min.css">
+    <style>
+        body {
+            background-color: #f8f9fa;
+            padding: 20px;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        .header {
+            background: linear-gradient(135deg, #6a11cb 0%, #2575fc 100%);
+            color: white;
+            border-radius: 10px;
+            padding: 25px;
+            margin-bottom: 30px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        }
+        .container {
+            max-width: 1200px;
+        }
+        .card {
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.08);
+            border: none;
+            margin-bottom: 30px;
+        }
+        .card-header {
+            background-color: #fff;
+            border-bottom: 1px solid rgba(0,0,0,0.05);
+            font-weight: 600;
+            padding: 15px 20px;
+            border-radius: 10px 10px 0 0 !important;
+        }
+        .table-container {
+            overflow: hidden;
+            border-radius: 0 0 10px 10px;
+        }
+        .table th {
+            background-color: #f8f9fa;
+            font-weight: 600;
+            padding: 15px 20px;
+        }
+        .table td {
+            padding: 8px 15px;
+            vertical-align: middle;
+        }
+        .table-hover tbody tr:hover {
+            background-color: rgba(37, 117, 252, 0.03);
+        }
+        .count-badge {
+            font-size: 0.85rem;
+            font-weight: 600;
+            padding: 5px 10px;
+            border-radius: 50px;
+            background-color: rgba(37, 117, 252, 0.1);
+            color: #2575fc;
+        }
+        .bookmark-title {
+            font-weight: 500;
+            color: #2c3e50;
+            transition: all 0.2s;
+        }
+        .bookmark-title:hover {
+            color: #2575fc;
+            text-decoration: none;
+        }
+        .stats-card {
+            text-align: center;
+            padding: 20px;
+            border-radius: 10px;
+            background-color: white;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+        }
+        .stats-value {
+            font-size: 2.2rem;
+            font-weight: 700;
+            color: #2575fc;
+            margin: 10px 0;
+        }
+        .stats-label {
+            color: #6c757d;
+            font-size: 0.9rem;
+        }
+        .action-btn {
+            padding: 5px 12px;
+            border-radius: 5px;
+            background: #f8f9fa;
+            border: 1px solid #e9ecef;
+            transition: all 0.2s;
+        }
+        .action-btn:hover {
+            background: #e9ecef;
+        }
+        .sort-indicator {
+            margin-left: 5px;
+            color: #2575fc;
+        }
+        .url-cell {
+            max-width: 250px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+        .search-container {
+            position: relative;
+            min-width: 180px;
+        }
+        .search-icon {
+            position: absolute;
+            left: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #6c757d;
+        }
+
+        .col-id { width: 8%; }
+        .col-title { width: 18%; }
+        .col-url { width: 42%; }
+        .col-count { width: 12%; }
+        .col-actions { width: 20%; }
+    </style>
+</head>
+<body>
+<div class="container">
+    <!--
+    <div class="header text-center">
+        <h1 class="mb-3"><i class="fas fa-bookmark me-2"></i>书签管理系统</h1>
+        <p class="lead mb-0">高效管理您的书签，按使用频率智能排序</p>
+    </div>
+    -->
+
+    <div class="row mb-4">
+        <div class="col-md-4 mb-3">
+            <div class="stats-card">
+                <i class="fas fa-bookmark fa-2x text-primary"></i>
+                <div class="stats-value" id="totalBookmarks">0</div>
+                <div class="stats-label">总书签数</div>
+            </div>
+        </div>
+        <div class="col-md-4 mb-3">
+            <div class="stats-card">
+                <i class="fas fa-mouse-pointer fa-2x text-primary"></i>
+                <div class="stats-value" id="totalClicks">0</div>
+                <div class="stats-label">总点击次数</div>
+            </div>
+        </div>
+        <div class="col-md-4 mb-3">
+            <div class="stats-card">
+                <i class="fas fa-fire fa-2x text-primary"></i>
+                <div class="stats-value" id="topCount">0</div>
+                <div class="stats-label">最高使用次数</div>
+            </div>
+        </div>
+    </div>
+
+    <div class="card">
+        <div class="card-header d-flex justify-content-between align-items-center">
+            <div>
+                <small class="text-muted">按使用次数降序排列</small>
+            </div>
+            <div class="d-flex">
+                <div class="search-container me-2">
+                    <i class="fas fa-search search-icon"></i>
+                    <label for="searchInput" class="visually-hidden">搜索书签</label>
+                    <input type="text" class="form-control ps-4" placeholder="搜索书签..." id="searchInput">
+                </div>
+                <button class="btn btn-outline-primary me-2" id="refreshBtn">
+                    <i class="fas fa-sync-alt">搜索</i>
+                </button>
+                <button class="btn btn-success me-2" id="addBtn">
+                    <i class="fas fa-plus">新增</i>
+                </button>
+            </div>
+        </div>
+        <div class="table-container">
+            <table class="table table-hover mb-0">
+                <thead>
+                    <tr>
+                        <th class="col-id">ID</th>
+                        <th class="col-title">标题</th>
+                        <th class="col-url">URL</th>
+                        <th class="col-count">
+                            <span>次数</span>
+                            <i class="fas fa-sort-down sort-indicator"></i>
+                        </th>
+                        <th class="col-actions">操作</th>
+                    </tr>
+                </thead>
+                <tbody id="bookmarksTable">
+                <!-- 书签数据将通过JavaScript动态生成 -->
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- 模态框 -->
+    <div class="modal fade" id="bookmarkModal" tabindex="-1" aria-labelledby="bookmarkModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="bookmarkModalLabel">编辑书签</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <input type="hidden" id="bookmarkId">
+                    <div class="mb-3">
+                        <label for="bookmarkTitle" class="form-label">标题</label>
+                        <input type="text" class="form-control" id="bookmarkTitle" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="bookmarkUrl" class="form-label">URL</label>
+                        <input type="url" class="form-control" id="bookmarkUrl" required>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">取消</button>
+                    <button type="button" class="btn btn-primary" id="saveBookmarkBtn">保存</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!--
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+-->
+<script src="bootstrap.bundle.min.js"></script>
+<script src="pinyin-match-mhxy.js"></script>
+
+<script>
+    // 书签数据（实际应用中应从后端API获取）
+    const bookmarks = [
+        { id: 1, url: "https://github.com", title: "GitHub", count: 1 }
+    ];
+
+    // 获取书签数据
+    function fetchBookmarks() {
+        fetch('/api/bookmarks')  // 后端接口地址
+            .then(response => response.json())
+            .then(data => {
+                // 排序并渲染
+                // console.log(bookmarks, data)
+                // bookmarks = data; // 将 const 改为 let 允许重新赋值
+                bookmarks.splice(0); // 清空原数组
+                bookmarks.push(...data); // 添加新数据
+
+                // 按count降序排序
+                bookmarks.sort((a, b) => b.count - a.count);
+
+                renderBookmarksTable();
+                updateStats();
+
+                // 搜索功能
+                document.getElementById('searchInput').addEventListener('input', function(e) {
+                    const searchTerm = e.target.value.toLowerCase();
+                    const filtered = bookmarks.filter(bookmark => {
+                        // bookmark.title.toLowerCase().includes(searchTerm) ||
+                        // bookmark.url.toLowerCase().includes(searchTerm)
+
+                        // 判断是否匹配中文、拼音或首字母
+                        return (
+                            bookmark.title.toLowerCase().includes(searchTerm) ||
+                            bookmark.url.toLowerCase().includes(searchTerm) ||
+                            checkPinyinMatch(bookmark.title, searchTerm)
+                        );
+                    });
+                    renderBookmarksTable(filtered);
+                });
+
+                // 刷新按钮
+                // document.getElementById('refreshBtn').addEventListener('click', function() {
+                //     document.getElementById('searchInput').value = '';
+                //     renderBookmarksTable();
+                // });
+
+                document.getElementById('refreshBtn').addEventListener('click', function() {
+                    const searchTerm = document.getElementById('searchInput').value.toLowerCase();
+                    const filtered = bookmarks.filter(bookmark =>
+                        bookmark.title.toLowerCase().includes(searchTerm) ||
+                        bookmark.url.toLowerCase().includes(searchTerm) ||
+                        checkPinyinMatch(bookmark.title, searchTerm)
+                    );
+                    renderBookmarksTable(filtered);
+                });
+            })
+            .catch(error => {
+                console.error('获取书签失败:', error);
+                alert('无法加载书签数据，请检查网络或后端服务');
+            });
+    }
+
+    /**
+     * 拼音匹配工具（基于 PinyinMatch）
+     * @param {string} chineseText 中文文本
+     * @param {string} targetPinyin 目标拼音（全拼或首字母）
+     * @returns {boolean} 是否匹配
+     */
+    function checkPinyinMatch(chineseText, targetPinyin) {
+        if (typeof PinyinMatch === "undefined") {
+            console.error("PinyinMatch 未加载，请确保已引入 pinyin-match.js");
+            return false;
+        }
+        if (!chineseText || typeof chineseText !== "string") return false;
+        if (!targetPinyin || typeof targetPinyin !== "string") return false;
+
+        // 转换为小写（PinyinMatch 不区分大小写）
+        const matchResult = PinyinMatch.match(chineseText.toLowerCase(), targetPinyin.toLowerCase());
+        return matchResult !== false;
+    }
+
+    // 页面加载时初始化
+    document.addEventListener('DOMContentLoaded', function() {
+        fetchBookmarks();
+    });
+
+    // 渲染书签表格
+    function renderBookmarksTable(data = bookmarks) {
+        const tbody = document.getElementById('bookmarksTable');
+        tbody.innerHTML = '';
+        data.forEach((bookmark, index) => {
+            const row = document.createElement('tr');
+            row.innerHTML = `
+                    <td>${index + 1}</td>
+                    <td>
+                        <a href="#" class="bookmark-title" data-id="${bookmark.id}">
+                            ${bookmark.title}
+                        </a>
+                    </td>
+                    <td class="url-cell"
+                        data-bs-toggle="tooltip"
+                        data-bs-placement="top"
+                        title="${bookmark.url}">
+                        <small class="text-muted">${bookmark.url}</small>
+                    </td>
+                    <td>
+                        <span class="count-badge">${bookmark.count}</span>
+                    </td>
+                    <td>
+                        <button class="action-btn open-new" data-id="${bookmark.id}" title="在新标签页打开">
+                            <i class="fas fa-external-link-alt">打开</i>
+                        </button>
+                        <button class="action-btn edit-btn" data-id="${bookmark.id}" title="编辑">
+                            <i class="fas fa-edit">修改</i>
+                        </button>
+                        <button class="action-btn delete-btn" data-id="${bookmark.id}" title="删除">
+                            <i class="fas fa-trash">删除</i>
+                        </button>
+                    </td>
+                `;
+            tbody.appendChild(row);
+        });
+
+        // 添加书签点击事件
+        document.querySelectorAll('.bookmark-title').forEach(link => {
+            link.addEventListener('click', function(e) {
+                e.preventDefault();
+                const id = this.dataset.id;
+                openBookmark(id);
+            });
+        });
+
+        // 添加新标签页打开按钮事件
+        document.querySelectorAll('.open-new').forEach(button => {
+            button.addEventListener('click', function() {
+                const id = this.dataset.id;
+                openBookmark(id, true);
+            });
+        });
+
+        document.querySelectorAll('.edit-btn').forEach(button => {
+            button.addEventListener('click', function () {
+                const id = this.dataset.id;
+                const bookmark = bookmarks.find(b => b.id == id);
+                if (bookmark) {
+                    document.getElementById('bookmarkId').value = bookmark.id;
+                    document.getElementById('bookmarkTitle').value = bookmark.title;
+                    document.getElementById('bookmarkUrl').value = bookmark.url;
+                    new bootstrap.Modal(document.getElementById('bookmarkModal')).show();
+                }
+            });
+        });
+        document.querySelectorAll('.delete-btn').forEach(button => {
+            button.addEventListener('click', function () {
+                const id = this.dataset.id;
+                if (confirm('确定要删除该书签吗？')) {
+                    fetch(`/api/bookmarks/${id}`, { method: 'DELETE' })
+                        .then(() => fetchBookmarks()) // 删除后刷新列表
+                        .catch(err => {
+                            console.error('删除失败', err);
+                            alert('删除失败');
+                        });
+                }
+            });
+        });
+        // 初始化 Bootstrap tooltips
+        const tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
+        tooltipTriggerList.map(function (tooltipTriggerEl) {
+            return new bootstrap.Tooltip(tooltipTriggerEl);
+        });
+    }
+
+    // 打开书签
+    function openBookmark(id, newTab = false) {
+        const bookmark = bookmarks.find(b => b.id == id);
+        if (bookmark) {
+            // 更新计数
+            bookmark.count++;
+
+            // 模拟发送请求到后端更新计数
+            updateBookmarkCount(id, bookmark.count);
+
+            // 重新排序并刷新表格
+            bookmarks.sort((a, b) => b.count - a.count);
+            renderBookmarksTable();
+            updateStats();
+
+            // 打开书签
+            if (newTab) {
+                window.open(bookmark.url, '_blank');
+            } else {
+                window.location.href = bookmark.url;
+            }
+        }
+    }
+
+    // 更新统计数据
+    function updateStats() {
+        // 计算总书签数
+        document.getElementById('totalBookmarks').textContent = bookmarks.length;
+
+        // 计算总点击次数
+        const totalClicks = bookmarks.reduce((sum, bookmark) => sum + bookmark.count, 0);
+        document.getElementById('totalClicks').textContent = totalClicks;
+
+        // 获取最高使用次数
+        const topCount = Math.max(...bookmarks.map(bookmark => bookmark.count));
+        document.getElementById('topCount').textContent = topCount;
+    }
+
+    // 模拟发送更新计数请求到后端
+    function updateBookmarkCount(id, newCount) {
+        console.log(`更新书签ID: ${id} 计数为: ${newCount}`);
+
+        // 实际应用中应使用fetch API
+        fetch(`/api/bookmarks/${id}/count`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ count: newCount })
+        })
+        .then(response => response.json())
+        .then(data => {
+            console.log('计数更新成功', data);
+        })
+        .catch(error => {
+            console.error('更新计数失败:', error);
+        });
+    }
+
+    // 新增按钮点击
+    document.getElementById('addBtn').addEventListener('click', function () {
+        document.getElementById('bookmarkId').value = '';
+        document.getElementById('bookmarkTitle').value = '';
+        document.getElementById('bookmarkUrl').value = '';
+        new bootstrap.Modal(document.getElementById('bookmarkModal')).show();
+    });
+
+    // 保存书签
+    document.getElementById('saveBookmarkBtn').addEventListener('click', function () {
+        const id = document.getElementById('bookmarkId').value;
+        const title = document.getElementById('bookmarkTitle').value.trim();
+        const url = document.getElementById('bookmarkUrl').value.trim();
+
+        if (!title || !url) {
+            alert('请输入标题和URL');
+            return;
+        }
+
+        const bookmark = { title, url };
+
+        let urlPath = '/api/bookmarks';
+        let method = 'POST';
+
+        if (id) {
+            urlPath += '/' + id;
+            method = 'PUT';
+            bookmark.id = parseInt(id);
+        }
+
+        fetch(urlPath, {
+            method: method,
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(bookmark)
+        })
+        .then(res => res.json())
+        .then(data => {
+            fetchBookmarks(); // 刷新列表
+            bootstrap.Modal.getInstance(document.getElementById('bookmarkModal')).hide();
+        })
+        .catch(err => {
+            console.error('保存失败', err);
+            alert('保存失败');
+        });
+    });
+</script>
+</body>
+</html>

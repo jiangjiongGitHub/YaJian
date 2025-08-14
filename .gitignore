@@ -1,0 +1,11 @@
+*.class
+*.log
+*.jar
+*.war
+/build/
+/target/
+/.idea/
+/data/
+/databak/
+/uploads/
+

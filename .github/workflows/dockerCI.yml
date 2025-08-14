@@ -1,0 +1,63 @@
+name: dockerCI
+
+on:
+  push:
+    branches: [ "master" ]
+  # pull_request:
+    # branches: [ "master" ]
+  workflow_dispatch:
+  schedule:
+  - cron: "0 2 * * 1-5"
+
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: ubuntu-latest-env
+      run: |
+        echo "--> docker pull nginx"
+        docker pull nginx
+        echo "--> java -version"
+        java -version
+        echo "--> mvn -v"
+        mvn -v
+        echo "--> pwd"
+        pwd
+        echo "--> ls -al ../"
+        ls -al ../
+        echo "--> ls -al"
+        ls -al
+
+    - name: ubuntu-latest-build
+      run: |
+        echo "--> mvn clean package"
+        mvn clean package
+
+    - name: ubuntu-latest-ls
+      run: |
+        echo "--> ls -al"
+        ls -al
+        echo "--> ls -al ./target"
+        ls -al ./target
+
+    - name: ubuntu-latest-start
+      run: |
+        echo "--> java -jar ./target/YaJian-0.0.1.jar &"
+        java -jar ./target/YaJian-0.0.1.jar &
+
+    - name: ubuntu-latest-kill
+      run: |
+        echo "--> sleep 30"
+        sleep 30
+        echo "--> ps -ef | grep YaJian-0.0.1.jar"
+        ps -ef | grep YaJian-0.0.1.jar
+        echo "--> pkill -f 'YaJian-0.0.1.jar'"
+        pkill -f 'YaJian-0.0.1.jar'
+        echo "--> sleep 10"
+        sleep 10
+        echo "--> ps -ef | grep YaJian-0.0.1.jar"
+        ps -ef | grep YaJian-0.0.1.jar

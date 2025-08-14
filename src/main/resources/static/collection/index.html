@@ -1,0 +1,841 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>收藏</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background-color: #f5f5f5;
+        }
+
+        .container {
+            max-width: 98vw;
+            margin: 0 auto;
+            background-color: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+        }
+
+        .header {
+            background-color: #68756e;
+            color: white;
+            padding: 20px;
+            font-size: 24px;
+            font-weight: bold;
+            position: relative;
+        }
+
+        .list-container {
+            height: 87vh;
+            overflow-y: auto;
+            position: relative;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        th,
+        td {
+            padding: 5px 10px;
+            text-align: left;
+            border: 1px solid #eee;
+        }
+
+        th {
+            background-color: #f8f8f8;
+            font-weight: bold;
+            position: sticky;
+            top: 0;
+            z-index: 10;
+        }
+
+        .id-col { width: 8%; }
+        .title-col { width: 12%; }
+        .content-col { width: 50%; }
+        .type-col { width: 6%; }
+        .time-col { width: 10%; }
+        .actions-col { width: 12%; }
+
+        .content-cell {
+            max-width: 35vw;
+            max-height: 80px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+            align-items: center;
+        }
+
+        .content-cell img {
+            max-width: 100px;
+            max-height: 60px;
+            width: auto;
+            height: auto;
+            object-fit: contain;
+            vertical-align: middle;
+        }
+
+        .content-truncate {
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+            cursor: pointer;
+        }
+
+        .actions {
+            gap: 5px;
+            box-sizing: border-box;
+        }
+
+        .actions .btn {
+            flex: 1;
+            margin: 0px 10px 0px 0px;
+            min-width: 0;
+        }
+
+        .btn {
+            padding: 6px 12px;
+            border-radius: 4px;
+            cursor: pointer;
+            border: none;
+            font-size: 14px;
+        }
+
+        .btn-view {
+            background-color: #0f6370;
+            color: white;
+        }
+
+        .btn-edit {
+            background-color: #a7800d;
+            color: #212529;
+        }
+
+        .btn-delete {
+            background-color: #9c212d;
+            color: white;
+        }
+
+        .btn-add {
+            float: right;
+            background-color: #4CAF50;
+            color: white;
+        }
+
+        .loading {
+            text-align: center;
+            padding: 20px;
+            font-size: 16px;
+            color: #666;
+        }
+
+        .no-more {
+            text-align: center;
+            padding: 20px;
+            color: #999;
+        }
+
+        /* 弹出框样式 */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.4);
+        }
+
+        .modal-content {
+            background-color: #fefefe;
+            margin: 5% auto;
+            padding: 20px;
+            border: 1px solid #888;
+            border-radius: 8px;
+            width: 80%;
+            max-height: 80vh;
+            overflow-y: auto;
+        }
+
+        .modal-content pre {
+            white-space: pre-wrap;
+            word-break: break-word;
+            max-height: 400px;
+            overflow-y: auto;
+            background-color: #f8f8f8;
+            padding: 10px;
+            border-radius: 4px;
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid #eee;
+        }
+
+        .modal-title {
+            font-size: 20px;
+            font-weight: bold;
+        }
+
+        .close {
+            color: #aaa;
+            font-size: 28px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        .close:hover,
+        .close:focus {
+            color: black;
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+
+        .form-group input,
+        .form-group textarea,
+        .form-group select {
+            width: 100%;
+            padding: 8px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            box-sizing: border-box;
+        }
+
+        .form-group textarea {
+            min-height: 300px;
+            resize: vertical;
+            font-family: inherit;
+            line-height: 1.5;
+        }
+
+        .modal-footer {
+            margin-top: 20px;
+            text-align: right;
+        }
+
+        .btn-primary {
+            background-color: #4CAF50;
+            color: white;
+            padding: 8px 16px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            margin-left: 10px;
+        }
+
+        .btn-secondary {
+            background-color: #ccc;
+            color: #333;
+            padding: 8px 16px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            margin-left: 10px;
+        }
+
+        .btn-primary:hover,
+        .btn-secondary:hover {
+            opacity: 0.9;
+        }
+
+        /* 优化后的tooltip样式 */
+        .global-tooltip {
+            position: fixed;
+            z-index: 9999;
+            background-color: #555;
+            color: #fff;
+            text-align: center;
+            border-radius: 6px;
+            padding: 12px;
+            max-width: 50vw;
+            word-wrap: break-word;
+            font-size: 14px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+            display: none;
+            pointer-events: none;
+        }
+
+        /* 添加箭头指示器 */
+        .global-tooltip::after {
+            content: "";
+            position: absolute;
+            border-width: 6px;
+            border-style: solid;
+        }
+
+        /* 默认箭头位置（下方） */
+        .global-tooltip.top::after {
+            top: 100%;
+            left: 50%;
+            margin-left: -6px;
+            border-color: #555 transparent transparent transparent;
+        }
+
+        .global-tooltip.bottom::after {
+            bottom: 100%;
+            left: 50%;
+            margin-left: -6px;
+            border-color: transparent transparent #555 transparent;
+        }
+
+        .global-tooltip.left::after {
+            top: 50%;
+            left: 100%;
+            margin-top: -6px;
+            border-color: transparent transparent transparent #555;
+        }
+
+        .global-tooltip.right::after {
+            top: 50%;
+            right: 100%;
+            margin-top: -6px;
+            border-color: transparent #555 transparent transparent;
+        }
+
+        .img-collection {
+            max-width: 60%;
+            height: auto;
+            margin: 10px 0px 10px 0px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            object-fit: contain;
+        }
+
+        /* 响应式调整 */
+        @media (max-width: 768px) {
+            .list-container {
+                height: 80vh;
+            }
+
+            th, td {
+                padding: 8px 10px;
+                font-size: 14px;
+            }
+
+            .btn {
+                padding: 4px 8px;
+                font-size: 13px;
+            }
+
+            .content-cell {
+                max-width: 150px;
+            }
+
+            .global-tooltip {
+                max-width: 300px;
+                padding: 10px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+<div class="container">
+    <div class="header">
+        <span>收藏</span>
+        <button class="btn btn-add" onclick="openAddModal()">添加</button>
+    </div>
+    <div class="list-container" id="listContainer">
+        <table>
+            <thead>
+                <tr>
+                    <th class="id-col">ID</th>
+                    <th class="title-col">标题</th>
+                    <th class="content-col">内容</th>
+                    <th class="type-col">类型</th>
+                    <th class="time-col">时间</th>
+                    <th class="actions-col">操作</th>
+                </tr>
+            </thead>
+            <tbody id="tableBody">
+            <!-- 数据将通过JavaScript动态加载 -->
+            </tbody>
+        </table>
+        <div id="loadingIndicator" class="loading" style="display: none;">加载中...</div>
+        <div id="noMoreData" class="no-more" style="display: none;">没有更多数据了</div>
+    </div>
+</div>
+
+<!-- 全局Tooltip -->
+<div id="globalTooltip" class="global-tooltip">
+</div>
+
+<!-- 查看详情弹出框 -->
+<div id="viewModal" class="modal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <div class="modal-title">查看详情</div>
+            <span class="close" onclick="closeModal('viewModal')">&times;</span>
+        </div>
+        <div id="viewModalBody">
+            <!-- 详情内容将通过JavaScript动态加载 -->
+        </div>
+    </div>
+</div>
+
+<!-- 添加/编辑弹出框 -->
+<div id="editModal" class="modal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <div class="modal-title" id="editModalTitle">添加收藏</div>
+            <span class="close" onclick="closeModal('editModal')">&times;</span>
+        </div>
+        <div id="editModalBody">
+            <form id="collectionForm" enctype="multipart/form-data">
+                <input type="hidden" id="editId">
+                <div class="form-group">
+                    <label for="editTitle">标题:</label>
+                    <input type="text" id="editTitle" required>
+                </div>
+                <div class="form-group">
+                    <label for="editContent">内容:</label>
+                    <textarea id="editContent" required></textarea>
+                </div>
+                <div class="form-group">
+                    <label for="editType">类型:</label>
+                    <select id="editType" required onchange="toggleFileUpload()">
+                        <option value="文章">文章</option>
+                        <option value="链接">链接</option>
+                        <option value="图片">图片</option>
+                    </select>
+                </div>
+                <div class="form-group" id="fileUploadGroup" style="display: none;">
+                    <label for="editFile">上传文件:</label>
+                    <input type="file" id="editFile" accept="image/*">
+                </div>
+            </form>
+        </div>
+        <div class="modal-footer">
+            <button class="btn btn-secondary" onclick="closeModal('editModal')">取消</button>
+            <button class="btn btn-primary" onclick="saveCollection()">保存</button>
+        </div>
+    </div>
+</div>
+
+<script>
+    // 模拟数据存储
+    const mockData = [];
+    const pageSize = 100;
+    let currentPage = 0;
+    let isLoading = false;
+    let hasMoreData = true;
+    let currentEditItem = null;
+    let activeTooltipElement = null;
+
+    // 初始化模拟数据
+    function initializeMockData() {
+        for (let i = 1; i <= 1000; i++) {
+            mockData.push({
+                id: i,
+                title: `收藏标题 ${i}`,
+                content: `这是收藏内容的详细描述信息，内容可能比较长，这里只显示部分内容... ${i}`,
+                type: ['文章', '链接', '图片', '语音', '视频'][Math.floor(Math.random() * 5)],
+                time: new Date(Date.now() - Math.floor(Math.random() * 365) * 24 * 60 * 60 * 1000).toLocaleString()
+            });
+        }
+    }
+
+    // 获取数据
+    function fetchDataMock(page) {
+        return new Promise((resolve) => {
+            // 模拟网络请求延迟
+            setTimeout(() => {
+                const start = page * pageSize;
+                const end = start + pageSize;
+                const data = mockData.slice(start, end);
+                resolve(data);
+            }, 500);
+        });
+    }
+
+    // 获取数据
+    function fetchData(page) {
+        return fetch(`/api/collections?page=${page}&size=100`)
+            .then(response => response.json())
+            .catch(error => {
+                console.error('获取数据失败:', error);
+                return []; // 返回空数组作为降级处理
+            });
+    }
+
+    // 渲染表格行
+    function renderRows(data) {
+        const tableBody = document.getElementById('tableBody');
+        const rows = data.map(item => {
+            return `
+                <tr>
+                    <td class="id-col">${item.id}</td>
+                    <td class="title-col">${item.title}</td>
+                    <td class="content-col content-cell">
+                        <div class="content-truncate" data-content="${item.content.replace(/"/g, '&quot;')}">${item.content}</div>
+                    </td>
+                    <td class="type-col">${item.type}</td>
+                    <td class="time-col">${item.time}</td>
+                    <td class="actions-col actions">
+                        <button class="btn btn-view" onclick="openViewModal(${item.id})">查看</button>
+                        <button class="btn btn-edit" onclick="openEditModal(${item.id})">编辑</button>
+                        <button class="btn btn-delete" onclick="deleteItem(${item.id})">删除</button>
+                    </td>
+                </tr>
+            `;
+        }).join('');
+
+        tableBody.innerHTML += rows;
+    }
+
+
+    // 显示全局tooltip
+    function showTooltip(element, content) {
+        const tooltip = document.getElementById('globalTooltip');
+        tooltip.textContent = content;
+        tooltip.style.display = 'block';
+
+        // 计算位置
+        const rect = element.getBoundingClientRect();
+        const tooltipWidth = tooltip.offsetWidth;
+        const tooltipHeight = tooltip.offsetHeight;
+
+        // 默认位置 - 在元素下方
+        let top = rect.bottom + 10;
+        let left = rect.left;
+        let positionClass = 'bottom';
+
+        // 检查是否有足够的空间在下方显示
+        const windowHeight = window.innerHeight;
+        if (top + tooltipHeight > windowHeight) {
+            // 如果下方空间不足，改为在上方显示
+            top = rect.top - tooltipHeight - 10;
+            positionClass = 'top';
+        }
+
+        // 检查水平位置是否超出窗口
+        if (left + tooltipWidth > window.innerWidth) {
+            left = window.innerWidth - tooltipWidth - 10;
+        } else if (left < 10) {
+            left = 10;
+        }
+
+        // 应用位置
+        tooltip.style.top = `${top}px`;
+        tooltip.style.left = `${left}px`;
+
+        // 设置位置类以显示正确的箭头
+        tooltip.className = `global-tooltip ${positionClass}`;
+
+        // 存储当前激活的tooltip元素
+        activeTooltipElement = element;
+    }
+
+    // 隐藏全局tooltip
+    function hideTooltip() {
+        const tooltip = document.getElementById('globalTooltip');
+        tooltip.style.display = 'none';
+        activeTooltipElement = null;
+    }
+
+    // 加载数据
+    async function loadMoreData() {
+        if (isLoading || !hasMoreData) return;
+
+        isLoading = true;
+        document.getElementById('loadingIndicator').style.display = 'block';
+
+        try {
+            const data = await fetchData(currentPage);
+
+            if (data.length > 0) {
+                renderRows(data);
+                currentPage++;
+            } else {
+                hasMoreData = false;
+                document.getElementById('noMoreData').style.display = 'block';
+            }
+        } catch (error) {
+            console.error('加载数据失败:', error);
+        } finally {
+            isLoading = false;
+            document.getElementById('loadingIndicator').style.display = 'none';
+        }
+    }
+
+    // 检查是否需要加载更多数据
+    function checkScroll() {
+        const container = document.getElementById('listContainer');
+        const scrollTop = container.scrollTop;
+        const scrollHeight = container.scrollHeight;
+        const clientHeight = container.clientHeight;
+
+        // 当滚动到底部附近时加载更多数据
+        if (scrollHeight - scrollTop - clientHeight < 100) {
+            loadMoreData();
+        }
+    }
+
+    // 打开查看弹出框
+    function openViewModal(id) {
+        fetch(`/api/collections/${id}`)
+            .then(response => response.json())
+            .then(data => {
+                const viewModalBody = document.getElementById('viewModalBody');
+                viewModalBody.innerHTML = `
+                    <div class="form-group">
+                        <label>ID:</label>
+                        <div>${data.id}</div>
+                    </div>
+                    <div class="form-group">
+                        <label>标题:</label>
+                        <div>${data.title}</div>
+                    </div>
+                    <div class="form-group">
+                        <label>内容:</label>
+                        <div style="white-space: pre-wrap; word-break: break-word; max-height: 400px; overflow-y: auto;">${data.content}</div>
+                    </div>
+                    <div class="form-group">
+                        <label>类型:</label>
+                        <div>${data.type}</div>
+                    </div>
+                    <div class="form-group">
+                        <label>时间:</label>
+                        <div>${data.time}</div>
+                    </div>
+                `;
+                document.getElementById('viewModal').style.display = 'block';
+            })
+            .catch(error => {
+                console.error('获取详情失败:', error);
+                alert('获取详情失败');
+            });
+    }
+
+    // 修改打开编辑弹出框函数
+    function openEditModal(id) {
+        fetch(`/api/collections/${id}`)
+            .then(response => response.json())
+            .then(data => {
+                currentEditItem = data;
+                document.getElementById('editModalTitle').textContent = '编辑收藏';
+                document.getElementById('editId').value = data.id;
+                document.getElementById('editTitle').value = data.title;
+                document.getElementById('editContent').value = data.content;
+                document.getElementById('editType').value = data.type;
+
+                // 如果是图片类型，显示预览
+                toggleFileUpload();
+                document.getElementById('editModal').style.display = 'block';
+            })
+            .catch(error => {
+                console.error('获取详情失败:', error);
+                alert('获取详情失败');
+            });
+    }
+
+    // 修改打开添加弹出框函数
+    function openAddModal() {
+        currentEditItem = null;
+        document.getElementById('editModalTitle').textContent = '添加收藏';
+        document.getElementById('editId').value = '';
+        document.getElementById('editTitle').value = '';
+        document.getElementById('editContent').value = '';
+        document.getElementById('editType').value = '文章';
+        document.getElementById('editFile').value = ''; // 清空文件选择
+        toggleFileUpload(); // 根据类型显示/隐藏文件上传
+        document.getElementById('editModal').style.display = 'block';
+    }
+
+    // 关闭弹出框
+    function closeModal(modalId) {
+        document.getElementById(modalId).style.display = 'none';
+    }
+
+    // 修改保存收藏项函数
+    function saveCollection() {
+        const id = document.getElementById('editId').value;
+        const title = document.getElementById('editTitle').value;
+        const content = document.getElementById('editContent').value;
+        const type = document.getElementById('editType').value;
+        const fileInput = document.getElementById('editFile');
+
+        if (!title || !content || !type) {
+            alert('请填写所有必填字段');
+            return;
+        }
+
+        const formData = new FormData();
+        formData.append('title', title);
+        formData.append('content', content);
+        formData.append('type', type);
+
+        // 对于图片类型，如果已有图片路径且未选择新文件，则保留原内容
+        if (type === '图片') {
+            const file = fileInput.files[0];
+            if (file) {
+                formData.append('file', file);
+            } else if (!id) {
+                // 新增图片但未选择文件
+                alert('请选择要上传的图片文件');
+                return;
+            }
+        }
+
+        let url, method;
+        if (id) {
+            url = `/api/collections/with-file/${id}`;
+            method = 'PUT';
+        } else {
+            url = '/api/collections/with-file';
+            method = 'POST';
+        }
+
+        fetch(url, {
+            method: method,
+            body: formData
+        })
+        .then(response => {
+            if (response.ok) {
+                return response.json();
+            } else {
+                throw new Error('保存失败');
+            }
+        })
+        .then(data => {
+            alert(id ? '更新成功' : '添加成功');
+            closeModal('editModal');
+            // 重新加载数据
+            resetAndReloadData();
+        })
+        .catch(error => {
+            console.error('保存失败:', error);
+            alert('保存失败');
+        });
+    }
+
+    function resetAndReloadData() {
+        currentPage = 0;
+        hasMoreData = true; // 重置 hasMoreData 状态
+        document.getElementById('tableBody').innerHTML = '';
+        document.getElementById('noMoreData').style.display = 'none'; // 隐藏"没有更多数据"提示
+        loadMoreData();
+    }
+
+    function deleteItem(id) {
+        if (confirm(`确定要删除ID为 ${id} 的收藏项吗？`)) {
+            fetch(`/api/collections/${id}`, {
+                method: 'DELETE'
+            })
+            .then(response => {
+                if (response.ok) {
+                    alert(`已删除ID为 ${id} 的收藏项`);
+                    // 重新加载数据而不是手动删除行
+                    currentPage = 0;
+                    document.getElementById('tableBody').innerHTML = '';
+                    loadMoreData();
+                } else {
+                    throw new Error('删除失败');
+                }
+            })
+            .catch(error => {
+                console.error('删除失败:', error);
+                alert('删除失败');
+            });
+        }
+    }
+
+    // 初始化
+    document.addEventListener('DOMContentLoaded', function () {
+        initializeMockData();
+
+        const listContainer = document.getElementById('listContainer');
+        listContainer.addEventListener('scroll', checkScroll);
+
+        // 初始加载第一页数据
+        loadMoreData();
+
+        // 改进的点击事件处理
+        window.addEventListener('click', function (event) {
+            // 只有点击模态框背景时才关闭
+            if (event.target.classList.contains('modal')) {
+                closeModal('viewModal');
+            }
+        });
+
+        // 添加tooltip事件委托
+        document.getElementById('tableBody').addEventListener('mouseover', function(e) {
+            if (e.target.classList.contains('content-truncate')) {
+                const content = e.target.getAttribute('data-content') || e.target.textContent;
+                showTooltip(e.target, content);
+            }
+        });
+
+        document.getElementById('tableBody').addEventListener('mouseout', function(e) {
+            if (e.target.classList.contains('content-truncate')) {
+                hideTooltip();
+            }
+        });
+
+        // 添加全局mousemove事件来更新tooltip位置
+        document.addEventListener('mousemove', function(e) {
+            if (activeTooltipElement) {
+                const tooltip = document.getElementById('globalTooltip');
+                const rect = activeTooltipElement.getBoundingClientRect();
+
+                // 重新计算位置
+                let top = rect.bottom + 10;
+                let left = rect.left;
+
+                // 检查是否有足够的空间在下方显示
+                const windowHeight = window.innerHeight;
+                if (top + tooltip.offsetHeight > windowHeight) {
+                    top = rect.top - tooltip.offsetHeight - 10;
+                    tooltip.className = 'global-tooltip top';
+                } else {
+                    tooltip.className = 'global-tooltip bottom';
+                }
+
+                // 检查水平位置是否超出窗口
+                if (left + tooltip.offsetWidth > window.innerWidth) {
+                    left = window.innerWidth - tooltip.offsetWidth - 10;
+                } else if (left < 10) {
+                    left = 10;
+                }
+
+                // 应用位置
+                tooltip.style.top = `${top}px`;
+                tooltip.style.left = `${left}px`;
+            }
+        });
+    });
+
+    // 根据类型切换文件上传显示
+    function toggleFileUpload() {
+        const type = document.getElementById('editType').value;
+        const fileUploadGroup = document.getElementById('fileUploadGroup');
+        if (type === '图片') {
+            fileUploadGroup.style.display = 'block';
+        } else {
+            fileUploadGroup.style.display = 'none';
+        }
+    }
+</script>
+</body>
+
+</html>

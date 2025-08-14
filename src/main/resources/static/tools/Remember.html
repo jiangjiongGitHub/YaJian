@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+
+<html>
+<head>
+
+
+<meta http-equiv="refresh" content="1200">
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<title>记忆</title>
+
+
+<!-- jQuery文件。务必在bootstrap.min.js 之前引入 -->
+<!-- <script src="https://cdn.staticfile.org/jquery/3.2.1/jquery.min.js"></script> -->
+<script src="/main/jquery.min.js"></script>
+
+<!-- 新 Bootstrap4 核心 CSS 文件 -->
+<!-- <link rel="stylesheet" href="https://cdn.staticfile.org/twitter-bootstrap/4.1.0/css/bootstrap.min.css"> -->
+<link rel="stylesheet" href="/main/bootstrap.min.css">
+<!-- 最新的 Bootstrap4 核心 JavaScript 文件 -->
+<!-- <script src="https://cdn.staticfile.org/twitter-bootstrap/4.1.0/js/bootstrap.min.js"></script> -->
+<script src="/main/bootstrap.min.js"></script>
+<!-- popper.min.js 用于弹窗、提示、下拉菜单 -->
+<!-- <script src="https://cdn.staticfile.org/popper.js/1.12.5/umd/popper.min.js"></script> -->
+<script src="/main/popper.min.js"></script>
+
+<!-- 菜鸟教程找的cdn链接,https://unpkg.com/vue -->
+<!-- <script src="https://cdn.staticfile.org/vue/2.5.17/vue.min.js"></script> -->
+<script src="/main/vue.min.js"></script>
+
+
+
+<link rel="stylesheet" href="">
+<script src=""></script>
+
+<style type="text/css"></style>
+<script type="text/javascript"></script>
+
+
+</head>
+<!-- bootstrap.min.css里定义了body的back-ground属性为白色color #FF0000 -->
+<body bgcolor="rgb(255,0,0)" style="background-color: rgb(200,230,200);" >
+
+
+<div>
+	2019-04-08 <br>
+	<ul>
+		<li>1</li>
+		<li>2</li>
+	</ul>
+	<hr>
+</div>
+
+
+<div>
+	2019-02-19 10:15 <br>
+	<p style="white-space: pre;">这是一个可编辑的段落。
+	这是一个可编辑的段落。
+	这是一个可编辑的段落。
+	</p>
+	<hr>
+</div>
+
+
+<div>
+	2019-02-19 10:15 <br>
+	<p style="white-space: pre;">这是一个可编辑的段落。
+	这是一个可编辑的段落。
+	这是一个可编辑的段落。
+	</p>
+	<hr>
+</div>
+
+
+<div>
+	2019-02-19 10:10 <br>
+	<p contenteditable="true">这是一个可编辑的段落。</p>
+	<hr>
+</div>
+
+
+
+
+<div>
+	2019-02-15 15:45 <br>
+	<p id="nowTime">同学记忆</p>
+
+	<table width="400" border="1" cellspacing="0" cellpadding="0" style="border:1px solid #F00">
+		<tr><td>语录照片</td><td>12</td></tr>
+		<tr><td>当年照片</td><td>22</td></tr>
+		<tr><td>以往照片</td><td>32</td></tr>
+	</table>
+
+	<hr>
+</div>
+
+<script>
+	$(function() {
+		console.log(window.top.location.href)
+		console.log(console)
+		/**
+		$.ajax({
+			url:'http://quan.suning.com/getSysTime.do',
+			type:'get',
+			data:'',
+			async : true, //默认为true异步
+			//dataType: "jsonp",
+			//jsonp:"callback",
+			error:function(){
+			   console.log('Error:http://quan.suning.com/getSysTime.do');
+			},
+			success:function(data){
+			   console.log(data);
+			}
+		});
+		**/
+		
+		$.getJSON('http://quan.suning.com/getSysTime.do',function(json){
+           console.log(json.sysTime2)
+		   $('#nowTime').html($('#nowTime').html()+' -- '+json.sysTime2)
+		});
+
+	})
+
+	
+	var console = console || { log : function(){ return false; } };
+	
+</script>
+
+
+
+
+
+
+
+<div>
+	2019-02-15 15:30  <br>
+	end
+</div>
+
+
+</body>
+</html>
