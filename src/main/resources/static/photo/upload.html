@@ -19,6 +19,13 @@
             margin-bottom: 5px;
             border-radius: 4px;
         }
+        .file-item .btn {
+            margin-right: 6px;
+        }
+
+        .file-item .btn:last-child {
+            margin-right: 0;
+        }
         .preview-img {
             max-width: 200px;
             max-height: 200px;
@@ -48,20 +55,15 @@
 </head>
 <body>
 <div class="container mt-5">
-    <div class="mb-4">
-        <a href="/main.html" class="btn btn-primary me-3">回首页</a>
-        <h2 class="m-0 d-inline-block align-middle">文件管理</h2>
-    </div>
-
     <!-- 上传表单 -->
     <div class="card mb-4">
         <div class="card-body">
             <form method="POST" action="/photo/upload" enctype="multipart/form-data" class="d-flex align-items-end gap-3">
-                <div>
+                <div class="flex-grow-1">
                     <input class="form-control" type="file" id="file" name="file" accept=".jpg,.jpeg,.png,.gif,.bmp,.ico,.svg,.webp" />
                 </div>
                 <div>
-                    <button type="submit" class="btn btn-primary">上传图片</button>
+                    <button type="submit" class="btn btn-primary">上传</button>
                 </div>
             </form>
         </div>
@@ -73,7 +75,7 @@
     <!-- 筛选表单 -->
     <div class="card mb-4">
         <div class="card-body">
-            <form id="filterForm" action="" class="row g-3">
+            <form id="filterForm" action="" class="row g-3 align-items-start">
                 <div class="col-md-3">
                     <label for="startDate" class="form-label">开始日期</label>
                     <input type="text" id="startDate" name="startDate" class="form-control" placeholder="yyyy-mm-dd" />
@@ -88,8 +90,8 @@
                         <option value="">全部</option>
                     </select>
                 </div>
-                <div class="col-md-3 d-flex align-items-end">
-                    <button type="submit" class="btn btn-primary w-50">筛选</button>
+                <div class="col-md-3 d-flex justify-content-end">
+                    <button type="submit" class="btn btn-primary" style="margin-top: 33px;">筛选</button>
                 </div>
             </form>
         </div>
