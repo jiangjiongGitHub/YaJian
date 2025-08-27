@@ -30,13 +30,12 @@ public class DataController {
         this.dbService = dbService;
     }
 
-    @Scheduled(initialDelay = 30000, fixedDelay = 60000)
+    @Scheduled(initialDelay = 75000, fixedDelay = 60000) // 记录日期
     public void autoSave() {
         dbService.put("DATE", DateUtil.today());
         log.info("Executing put at: " + new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date()));
     }
 
-    // @Scheduled(initialDelay = 15000, fixedDelay = 60000)
     @Scheduled(cron = "0 0 18 * * ?")
     public void autoKill() {
         log.info("Executing kill at: " + new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date()));

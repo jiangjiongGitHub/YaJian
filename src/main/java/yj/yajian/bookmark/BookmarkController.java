@@ -8,6 +8,7 @@ import org.springframework.util.FileCopyUtils;
 import org.springframework.web.bind.annotation.*;
 import org.thymeleaf.util.StringUtils;
 import yj.yajian.db.service.FileDatabaseService;
+import yj.yajian.dbtemp.TempFileDatabaseService;
 
 import javax.annotation.Resource;
 import java.io.IOException;
@@ -23,6 +24,9 @@ public class BookmarkController {
 
     @Resource
     private FileDatabaseService dbService;
+
+    @Resource
+    private TempFileDatabaseService tempService;
 
     private void initBookmark() {
         // 清空数据库
@@ -145,6 +149,7 @@ public class BookmarkController {
         bookmark.setCount(0);
         dbService.put(perfix + bookmark.getId(), JSONObject.toJSONString(bookmark));
         dbService.autoSave();
+        tempSave(bookmark);
         return ResponseEntity.ok(bookmark);
     }
 
@@ -159,6 +164,7 @@ public class BookmarkController {
         existing.setUrl(updated.getUrl());
         dbService.put(perfix + id, JSONObject.toJSONString(existing));
         dbService.autoSave();
+        tempSave(existing);
         return ResponseEntity.ok(existing);
     }
 
@@ -170,6 +176,16 @@ public class BookmarkController {
         }
         dbService.remove(perfix + id);
         return ResponseEntity.ok().build();
+    }
+
+    private synchronized void tempSave(Bookmark item) {
+        Set<String> keys = new HashSet<>();
+        keys.add(TempFileDatabaseService.key);
+        item.setKeys(keys);
+
+        tempService.loadDataFromFile();
+        tempService.put(perfix + item.getId(), JSONObject.toJSONString(item));
+        tempService.saveToFile();
     }
 
 }

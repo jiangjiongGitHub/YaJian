@@ -112,7 +112,7 @@ public class FileUploadController {
         return response;
     }
 
-    @Scheduled(initialDelay = 45000, fixedDelay = 60000)
+    @Scheduled(initialDelay = 45000, fixedDelay = 60000) // 删除脏数据
     public void autoSave() {
         deleteUnuseData();
         log.info("Executing delete unuse data at: " + new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date()));
@@ -388,7 +388,8 @@ public class FileUploadController {
                     if (!k.startsWith("DATE")
                             && !k.startsWith("bookmark-")
                             && !k.startsWith("collection-")
-                            && !k.startsWith("collection_upload-")) {
+                            && !k.startsWith("collection_upload-")
+                            && !k.startsWith("keep-alive")) {
                         dbService.remove(k);
                         log.info("RM = {}", k);
                     }

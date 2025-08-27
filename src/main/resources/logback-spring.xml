@@ -1,6 +1,6 @@
 <configuration>
     <!-- 定义默认日志路径 -->
-    <property name="LOG_FILE" value="./logs/yajian-${bySecond}.log"  />
+    <property name="LOG_FILE" value="./../../logs/yajian-${bySecond}.log"  />
 
     <!-- 控制台输出 -->
     <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">

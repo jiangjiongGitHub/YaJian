@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import org.thymeleaf.util.StringUtils;
 import yj.yajian.db.service.FileDatabaseService;
+import yj.yajian.dbtemp.TempFileDatabaseService;
 
 import javax.annotation.Resource;
 import java.io.IOException;
@@ -15,9 +16,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 import java.util.stream.Collectors;
 
 // 控制器
@@ -29,6 +28,9 @@ public class CollectionController {
 
     @Resource
     private FileDatabaseService dbService;
+
+    @Resource
+    private TempFileDatabaseService tempService;
 
     // 上传文件存储目录 ${app.upload.folder:./uploads}
     @Value("${app.upload.folder}")
@@ -92,6 +94,7 @@ public class CollectionController {
         item.setId(Long.parseLong(new SimpleDateFormat("yyyyMMddHHmmss").format(new Date())));
         dbService.put(perfix + item.getId(), JSONObject.toJSONString(item));
         dbService.autoSave();
+        tempSave(item);
         return ResponseEntity.ok(item);
     }
 
@@ -124,6 +127,7 @@ public class CollectionController {
 
         dbService.put(perfix + item.getId(), JSONObject.toJSONString(item));
         dbService.autoSave();
+        tempSave(item);
         return ResponseEntity.ok(item);
     }
 
@@ -181,6 +185,16 @@ public class CollectionController {
         dbService.autoSave();
 
         return ResponseEntity.ok(item);
+    }
+
+    private synchronized void tempSave(CollectionItem item) {
+        Set<String> keys = new HashSet<>();
+        keys.add(TempFileDatabaseService.key);
+        item.setKeys(keys);
+
+        tempService.loadDataFromFile();
+        tempService.put(perfix + item.getId(), JSONObject.toJSONString(item));
+        tempService.saveToFile();
     }
 
 }

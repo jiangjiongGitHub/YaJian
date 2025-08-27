@@ -72,9 +72,9 @@ public class FileDatabaseService {
     }
 
     /**
-     * 定期保存数据（每分钟）
+     * 定期保存数据 fixedRate 改为 fixedDelay
      */
-    @Scheduled(initialDelay = 60000, fixedDelay = 600000) // 60秒 fixedRate 改为 fixedDelay
+    @Scheduled(initialDelay = 60000, fixedDelay = 600000) // 保存数据库文件
     public void autoSave() {
         log.info("Executing autoSave at: " + new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date())); // 添加日志输出
         writerExecutor.submit(this::saveToFile);
