@@ -360,7 +360,7 @@
 <body>
 <div class="container">
     <div class="header">
-        <span>收藏</span>
+        <span>收藏 <span id="totalCount" style="font-size: 16px;">(加载中...)</span></span>
         <button class="btn btn-add" onclick="openAddModal()">添加</button>
     </div>
     <div class="list-container" id="listContainer">
@@ -755,6 +755,7 @@
         document.getElementById('tableBody').innerHTML = '';
         document.getElementById('noMoreData').style.display = 'none'; // 隐藏"没有更多数据"提示
         loadMoreData();
+        fetchTotalCount();
     }
 
     function deleteItem(id) {
@@ -810,6 +811,9 @@
 
         // 初始加载第一页数据
         loadMoreData();
+
+        // 获取并显示总条数
+        fetchTotalCount();
 
         // 改进的点击事件处理
         window.addEventListener('click', function (event) {
@@ -875,6 +879,19 @@
         } else {
             fileUploadGroup.style.display = 'none';
         }
+    }
+
+    // 添加获取总条数的函数
+    function fetchTotalCount() {
+        fetch('/api/collections/count')
+            .then(response => response.text())
+            .then(count => {
+                document.getElementById('totalCount').textContent = `(${count})`;
+            })
+            .catch(error => {
+                console.error('获取总条数失败:', error);
+                document.getElementById('totalCount').textContent = '(获取失败)';
+            });
     }
 </script>
 </body>

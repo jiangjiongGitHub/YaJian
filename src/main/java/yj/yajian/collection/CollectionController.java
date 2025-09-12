@@ -197,4 +197,12 @@ public class CollectionController {
         tempService.saveToFile();
     }
 
+    @GetMapping("/count")
+    public int getCollectionCount() {
+        // 返回收藏总数
+        return (int) dbService.getAll().entrySet().stream()
+                .filter(entry -> entry.getKey().startsWith(perfix))
+                .count();
+    }
+
 }

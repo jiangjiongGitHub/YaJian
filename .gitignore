@@ -1,16 +1,9 @@
-*.class
-*.log
-*.jar
-*.war
-*.iml
-
-/.idea/
-
-/build/
-/target/
+target
 
 /data/
 /databak/
 /uploads/
 
-/sync.ffs_db
+sync.ffs_db
+*.iml
+*.log
