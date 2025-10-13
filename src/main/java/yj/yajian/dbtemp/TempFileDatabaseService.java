@@ -128,6 +128,20 @@ public class TempFileDatabaseService {
         if (map == null) {
             map = new HashMap<>();
         }
+
+        // 优化：只有当添加新key且map已满时才删除最旧的
+        if (map.size() >= 15 && !map.containsKey(key)) {
+            // 先获取要删除的key，然后单独删除
+            Optional<String> oldestKey = map.entrySet().stream()
+                    .min(Map.Entry.comparingByValue())
+                    .map(Map.Entry::getKey);
+
+            if (oldestKey.isPresent()) {
+                map.remove(oldestKey.get());
+                log.info("删除了最旧的key: " + oldestKey.get());
+            }
+        }
+
         map.put(key, new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date(System.currentTimeMillis() + 300000)));
         TEMPDATABASE.put("keep-alive", JSONObject.toJSONString(map));
         saveToFile();
