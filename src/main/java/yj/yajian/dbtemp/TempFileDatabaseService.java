@@ -119,7 +119,7 @@ public class TempFileDatabaseService {
     @Resource
     private FileDatabaseService dbService;
 
-    @Scheduled(initialDelay = 15000, fixedDelay = 60000) // 更新心跳
+    @Scheduled(initialDelay = 15000, fixedDelay = 120000) // 更新心跳
     public void autoKeepAlive() {
         log.info("Executing keep alive at: " + new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date())); // 添加日志输出
         loadDataFromFile();
@@ -147,7 +147,7 @@ public class TempFileDatabaseService {
         saveToFile();
     }
 
-    @Scheduled(initialDelay = 30000, fixedDelay = 60000) // 同步：收藏、书签
+    @Scheduled(initialDelay = 30000, fixedDelay = 120000) // 同步：收藏、书签
     public synchronized void autoRead() {
         log.info("Executing sync temp data at: " + new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date())); // 添加日志输出
         loadDataFromFile();

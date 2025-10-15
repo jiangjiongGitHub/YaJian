@@ -38,22 +38,7 @@ public class DataController {
 
     @Scheduled(cron = "0 0 18 * * ?")
     public void autoKill() {
-        log.info("Executing kill at: " + new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date()));
-
-        // 在Windows系统中执行命令杀死指定的Java进程
-        try {
-            String command = "for /f \"tokens=1\" %i in ('jps -l ^| findstr YaJian-0.0.1.jar') do taskkill /PID %i";
-            Runtime.getRuntime().exec("cmd /c " + command);
-            log.info("Successfully sent termination signal to YaJian-0.0.1.jar");
-
-            Thread.sleep(9000);
-
-            command = "for /f \"tokens=1\" %i in ('jps -l ^| findstr YaJian-0.0.1.jar') do taskkill /F /PID %i";
-            Runtime.getRuntime().exec("cmd /c " + command);
-            log.info("Successfully executed process kill command for YaJian-0.0.1.jar");
-        } catch (Exception e) {
-            log.error("Failed to execute process kill command", e);
-        }
+        log.info("Executing autoKill at: " + new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date()) + ", but do nothing.");
     }
 
     private static final ThreadLocal<SecureRandom> RANDOM = ThreadLocal.withInitial(SecureRandom::new);
