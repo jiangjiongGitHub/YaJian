@@ -46,7 +46,8 @@ public class FileDatabaseService {
     private final ObjectMapper objectMapper = new ObjectMapper();
 
     // 线程安全处理
-    private final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy_MM_dd__HH_mm_ss");
+    // private final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy_MM_dd__HH_mm_ss");
+    private final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy_MM_dd");
 
     // 异步线程池保存
     private final ExecutorService writerExecutor = Executors.newSingleThreadExecutor();
