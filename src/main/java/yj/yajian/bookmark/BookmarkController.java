@@ -1,7 +1,6 @@
 package yj.yajian.bookmark;
 
 import com.alibaba.fastjson.JSONObject;
-import com.alibaba.fastjson.TypeReference;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.http.ResponseEntity;
 import org.springframework.util.FileCopyUtils;
@@ -23,16 +22,16 @@ public class BookmarkController {
     private static final String perfix = "bookmark-";
 
     @Resource
-    private FileDatabaseService dbService;
+    private FileDatabaseService fileDatabaseService;
 
     @Resource
-    private TempFileDatabaseService tempService;
+    private TempFileDatabaseService tempFileDatabaseService;
 
     private void initBookmark() {
         // 清空数据库
-        dbService.getAll().forEach((key, value) -> {
+        fileDatabaseService.getAll().forEach((key, value) -> {
             if (key.startsWith(perfix)) {
-                dbService.remove(key);
+                fileDatabaseService.remove(key);
             }
         });
         // 从resources/bookmark.md中获取书签列表
@@ -61,10 +60,10 @@ public class BookmarkController {
             int count = Integer.parseInt(StringUtils.isEmpty(parts[3].trim()) ? "0" : parts[3].trim());
             // 构建实体类保存
             Bookmark bookmark = new Bookmark(Long.parseLong(new SimpleDateFormat("yyyyMMddHHmmss").format(new Date())), title, url, count);
-            while (dbService.get(perfix + bookmark.getId()) != null) {
+            while (fileDatabaseService.get(perfix + bookmark.getId()) != null) {
                 bookmark.setId(bookmark.getId() + 1);
             }
-            dbService.put(perfix + bookmark.getId(), JSONObject.toJSONString(bookmark));
+            fileDatabaseService.put(perfix + bookmark.getId(), JSONObject.toJSONString(bookmark));
         }
     }
 
@@ -90,26 +89,26 @@ public class BookmarkController {
 
     private Bookmark addPhotoBookmark() {
         Bookmark bookmark = new Bookmark(Long.parseLong(new SimpleDateFormat("yyyyMMddHHmmss").format(new Date())), "照片管理", "http://127.0.0.1:18888/photo/upload.html", 0);
-        while (dbService.get(perfix + bookmark.getId()) != null) {
+        while (fileDatabaseService.get(perfix + bookmark.getId()) != null) {
             bookmark.setId(bookmark.getId() + 1);
         }
-        dbService.put(perfix + bookmark.getId(), JSONObject.toJSONString(bookmark));
+        fileDatabaseService.put(perfix + bookmark.getId(), JSONObject.toJSONString(bookmark));
         return bookmark;
     }
 
     private Bookmark addCollectionBookmark() {
         Bookmark bookmark = new Bookmark(Long.parseLong(new SimpleDateFormat("yyyyMMddHHmmss").format(new Date())), "收藏管理", "http://127.0.0.1:18888/collection/index.html", 0);
-        while (dbService.get(perfix + bookmark.getId()) != null) {
+        while (fileDatabaseService.get(perfix + bookmark.getId()) != null) {
             bookmark.setId(bookmark.getId() + 1);
         }
-        dbService.put(perfix + bookmark.getId(), JSONObject.toJSONString(bookmark));
+        fileDatabaseService.put(perfix + bookmark.getId(), JSONObject.toJSONString(bookmark));
         return bookmark;
     }
 
     // 更新书签点击次数
     @PostMapping("/{id}/count")
     public ResponseEntity<Bookmark> updateBookmarkCount(@PathVariable Long id, @RequestBody Map<String, Integer> payload) {
-        Bookmark bookmark = JSONObject.parseObject(dbService.get(perfix + id), Bookmark.class);
+        Bookmark bookmark = JSONObject.parseObject(fileDatabaseService.get(perfix + id), Bookmark.class);
         if (bookmark == null) {
             return ResponseEntity.notFound().build();
         }
@@ -124,14 +123,14 @@ public class BookmarkController {
         } else {
             bookmark.setCount(bookmark.getCount() + 1);
         }
-        dbService.put(perfix + id, JSONObject.toJSONString(bookmark));
+        fileDatabaseService.put(perfix + id, JSONObject.toJSONString(bookmark));
         return ResponseEntity.ok(bookmark);
     }
 
     private List<Bookmark> getAllWithPerfix(String perfix) {
         // 获取所有书签
         List<Bookmark> list = new ArrayList<>();
-        dbService.getAll().forEach((key, value) -> {
+        fileDatabaseService.getAll().forEach((key, value) -> {
             if (key.startsWith(perfix)) {
                 Bookmark bookmark = JSONObject.parseObject(value.toString(), Bookmark.class);
                 list.add(bookmark);
@@ -147,8 +146,8 @@ public class BookmarkController {
             bookmark.setId(Long.parseLong(new SimpleDateFormat("yyyyMMddHHmmss").format(new Date())));
         }
         bookmark.setCount(0);
-        dbService.put(perfix + bookmark.getId(), JSONObject.toJSONString(bookmark));
-        dbService.autoSave();
+        fileDatabaseService.put(perfix + bookmark.getId(), JSONObject.toJSONString(bookmark));
+        fileDatabaseService.autoSave();
         tempSave(bookmark);
         return ResponseEntity.ok(bookmark);
     }
@@ -156,14 +155,14 @@ public class BookmarkController {
     // 修改书签
     @PutMapping("/{id}")
     public ResponseEntity<Bookmark> updateBookmark(@PathVariable Long id, @RequestBody Bookmark updated) {
-        Bookmark existing = JSONObject.parseObject(dbService.get(perfix + id), Bookmark.class);
+        Bookmark existing = JSONObject.parseObject(fileDatabaseService.get(perfix + id), Bookmark.class);
         if (existing == null) {
             return ResponseEntity.notFound().build();
         }
         existing.setTitle(updated.getTitle());
         existing.setUrl(updated.getUrl());
-        dbService.put(perfix + id, JSONObject.toJSONString(existing));
-        dbService.autoSave();
+        fileDatabaseService.put(perfix + id, JSONObject.toJSONString(existing));
+        fileDatabaseService.autoSave();
         tempSave(existing);
         return ResponseEntity.ok(existing);
     }
@@ -171,10 +170,10 @@ public class BookmarkController {
     // 删除书签
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteBookmark(@PathVariable Long id) {
-        if (dbService.get(perfix + id) == null) {
+        if (fileDatabaseService.get(perfix + id) == null) {
             return ResponseEntity.notFound().build();
         }
-        dbService.remove(perfix + id);
+        fileDatabaseService.remove(perfix + id);
         return ResponseEntity.ok().build();
     }
 
@@ -183,9 +182,9 @@ public class BookmarkController {
         keys.add(TempFileDatabaseService.key);
         item.setKeys(keys);
 
-        tempService.loadDataFromFile();
-        tempService.put(perfix + item.getId(), JSONObject.toJSONString(item));
-        tempService.saveToFile();
+        tempFileDatabaseService.loadDataFromFile();
+        tempFileDatabaseService.put(perfix + item.getId(), JSONObject.toJSONString(item));
+        tempFileDatabaseService.saveToFile();
     }
 
 }

@@ -4,12 +4,9 @@ import com.alibaba.fastjson.JSONObject;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
-import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Controller;
-import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
-import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import org.thymeleaf.util.StringUtils;
 import yj.yajian.db.service.FileDatabaseService;
 import yj.yajian.photo.entity.FileEntity;
@@ -20,7 +17,6 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.nio.file.attribute.BasicFileAttributes;
 import java.nio.file.attribute.FileTime;
 import java.text.SimpleDateFormat;
 import java.time.LocalDate;
@@ -40,7 +36,7 @@ public class FileUploadController {
     private String UPLOADED_FOLDER;
 
     @Resource
-    private FileDatabaseService dbService;
+    private FileDatabaseService fileDatabaseService;
 
     private void checkUploadFolder() {
         // 创建上传目录(如果不存在)
@@ -76,7 +72,7 @@ public class FileUploadController {
         // 循环files转换为FileEntity实体添加到fileEntitys
         for (String file : files) {
             FileEntity fileEntity = JSONObject.parseObject(
-                    dbService.get(file) == null ? "{}" : dbService.get(file),
+                    fileDatabaseService.get(file) == null ? "{}" : fileDatabaseService.get(file),
                     FileEntity.class);
             if (fileEntity.getName() == null) {
                 fileEntity.setName(file);
@@ -112,8 +108,7 @@ public class FileUploadController {
         return response;
     }
 
-    @Scheduled(initialDelay = 45000, fixedDelay = 60000) // 删除脏数据
-    public void autoSave() {
+    public void autoDelete() {
         deleteUnuseData();
         log.info("Executing delete unuse data at: " + new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date()));
     }
@@ -122,7 +117,7 @@ public class FileUploadController {
     @ResponseBody
     public Map<String, List<String>> getTags() {
         // 从dbService获取所有数据，遍历获取标签
-        Map<String, Object> all = dbService.getAll();
+        Map<String, Object> all = fileDatabaseService.getAll();
         if (all == null) {
             return new HashMap<>();
         }
@@ -217,7 +212,7 @@ public class FileUploadController {
         FileEntity build = FileEntity.builder().name(newFileName).build();
         List<String> tags = Arrays.asList(newFileName.substring(0, 4));
         build.setTags(tags);
-        dbService.put(newFileName, JSONObject.toJSONString(build));
+        fileDatabaseService.put(newFileName, JSONObject.toJSONString(build));
     }
 
     @PostMapping("/addTag")
@@ -227,7 +222,7 @@ public class FileUploadController {
         String tag = payload.get("tag");
 
         // 获取现有 FileEntity
-        String json = dbService.get(fileName);
+        String json = fileDatabaseService.get(fileName);
         FileEntity fileEntity = JSONObject.parseObject(json, FileEntity.class);
 
         if (fileEntity == null) {
@@ -244,7 +239,7 @@ public class FileUploadController {
         }
 
         // 保存回数据库
-        dbService.put(fileName, JSONObject.toJSONString(fileEntity));
+        fileDatabaseService.put(fileName, JSONObject.toJSONString(fileEntity));
 
         Map<String, Object> result = new HashMap<>();
         result.put("success", true);
@@ -259,7 +254,7 @@ public class FileUploadController {
         String tag = payload.get("tag");
 
         // 获取现有 FileEntity
-        String json = dbService.get(fileName);
+        String json = fileDatabaseService.get(fileName);
         FileEntity fileEntity = JSONObject.parseObject(json, FileEntity.class);
 
         if (fileEntity == null) {
@@ -274,7 +269,7 @@ public class FileUploadController {
         fileEntity.getTags().remove(tag);
 
         // 保存回数据库
-        dbService.put(fileName, JSONObject.toJSONString(fileEntity));
+        fileDatabaseService.put(fileName, JSONObject.toJSONString(fileEntity));
 
         Map<String, Object> result = new HashMap<>();
         result.put("success", true);
@@ -311,7 +306,7 @@ public class FileUploadController {
         }
 
         // 获取 oldFileName 的数据库数据
-        String json = dbService.get(oldFileName);
+        String json = fileDatabaseService.get(oldFileName);
         FileEntity fileEntity = JSONObject.parseObject(json, FileEntity.class);
         if (fileEntity == null) {
             fileEntity = FileEntity.builder().name(oldFileName).build();
@@ -332,7 +327,7 @@ public class FileUploadController {
 
             // 保存 newFileName 的数据库数据
             fileEntity.setName(newFileName);
-            dbService.put(newFileName, JSONObject.toJSONString(fileEntity));
+            fileDatabaseService.put(newFileName, JSONObject.toJSONString(fileEntity));
 
             response.put("success", true);
             response.put("message", "文件名已更改为：" + newFileName);
@@ -360,7 +355,7 @@ public class FileUploadController {
             Files.delete(fileToDelete.toPath());
 
             // 从数据库中移除记录
-            dbService.remove(fileName);
+            fileDatabaseService.remove(fileName);
 
             result.put("success", true);
             result.put("message", "文件删除成功：" + fileName);
@@ -374,7 +369,7 @@ public class FileUploadController {
 
     private void deleteUnuseData() {
         // 遍历 UPLOADED_FOLDER 文件夹下文件，已知文件名作为 dbService map 的 key, dbService 有很多多余数据，如果 key 不在 UPLOADED_FOLDER 里的文件列表中，则删除
-        Map<String, Object> all = dbService.getAll();
+        Map<String, Object> all = fileDatabaseService.getAll();
         try {
             checkUploadFolder();
 
@@ -390,7 +385,7 @@ public class FileUploadController {
                             && !k.startsWith("collection-")
                             && !k.startsWith("collection_upload-")
                             && !k.startsWith("keep-alive")) {
-                        dbService.remove(k);
+                        fileDatabaseService.remove(k);
                         log.info("RM = {}", k);
                     }
                 }

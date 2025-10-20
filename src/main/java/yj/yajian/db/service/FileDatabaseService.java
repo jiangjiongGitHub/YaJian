@@ -40,7 +40,7 @@ public class FileDatabaseService {
 
     // 数据存储目录 ${database.directory:./data}
     @Value("${database.directory}")
-    private String dataDirectory;
+    private String databaseDirectory;
 
     // 序列化对象 Jackson vs Fastjson
     private final ObjectMapper objectMapper = new ObjectMapper();
@@ -75,7 +75,6 @@ public class FileDatabaseService {
     /**
      * 定期保存数据 fixedRate 改为 fixedDelay
      */
-    @Scheduled(initialDelay = 60000, fixedDelay = 600000) // 保存数据库文件
     public void autoSave() {
         log.info("Executing autoSave at: " + new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date())); // 添加日志输出
         writerExecutor.submit(this::saveToFile);
@@ -83,7 +82,7 @@ public class FileDatabaseService {
     }
 
     private void deleteOldFiles() {
-        Path dirPath = Paths.get(dataDirectory);
+        Path dirPath = Paths.get(databaseDirectory);
         if (Files.exists(dirPath)) {
             try (Stream<Path> paths = Files.list(dirPath)) {
                 paths.filter(Files::isRegularFile)
@@ -136,7 +135,7 @@ public class FileDatabaseService {
 
     // 私有方法实现
     private File findLatestDataFile() throws IOException {
-        Path dirPath = Paths.get(dataDirectory);
+        Path dirPath = Paths.get(databaseDirectory);
         if (!Files.exists(dirPath)) {
             Files.createDirectories(dirPath);
             return null;
@@ -171,7 +170,7 @@ public class FileDatabaseService {
 
     private synchronized void saveToFile() {
         try {
-            Path dirPath = Paths.get(dataDirectory);
+            Path dirPath = Paths.get(databaseDirectory);
             if (!Files.exists(dirPath)) {
                 Files.createDirectories(dirPath);
             }

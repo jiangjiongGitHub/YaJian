@@ -1,21 +1,17 @@
 package yj.yajian.db.controller;
 
-import cn.hutool.core.date.DateUtil;
 import com.alibaba.fastjson.JSONObject;
 import com.alibaba.fastjson.TypeReference;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.web.bind.annotation.*;
 import yj.yajian.tool.entity.DemoEntity;
 import yj.yajian.db.service.FileDatabaseService;
 
 import java.math.BigDecimal;
 import java.security.SecureRandom;
-import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Arrays;
-import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
@@ -24,21 +20,10 @@ import java.util.Map;
 @RequestMapping("/data")
 public class DataController {
 
-    private final FileDatabaseService dbService;
+    private final FileDatabaseService fileDatabaseService;
 
     public DataController(FileDatabaseService dbService) {
-        this.dbService = dbService;
-    }
-
-    @Scheduled(initialDelay = 75000, fixedDelay = 60000) // 记录日期
-    public void autoSave() {
-        dbService.put("DATE", DateUtil.today());
-        log.info("Executing put at: " + new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date()));
-    }
-
-    @Scheduled(cron = "0 0 18 * * ?")
-    public void autoKill() {
-        log.info("Executing autoKill at: " + new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date()) + ", but do nothing.");
+        this.fileDatabaseService = dbService;
     }
 
     private static final ThreadLocal<SecureRandom> RANDOM = ThreadLocal.withInitial(SecureRandom::new);
@@ -78,9 +63,9 @@ public class DataController {
                     .expireDate(LocalDate.now().minusDays(2))
                     .active(true)
                     .build();
-            dbService.put("list", JSONObject.toJSONString(Arrays.asList(product1, product2)));
+            fileDatabaseService.put("list", JSONObject.toJSONString(Arrays.asList(product1, product2)));
         }
-        dbService.put(key, value);
+        fileDatabaseService.put(key, value);
         return true;
     }
 
@@ -89,23 +74,23 @@ public class DataController {
     public Object getData(@RequestParam String key) {
         {
             // 放入一个List<DemoEntity>对象，测试json序列化和反序列化
-            List<DemoEntity> list = JSONObject.parseObject(dbService.get("list"), new TypeReference<List<DemoEntity>>() {
+            List<DemoEntity> list = JSONObject.parseObject(fileDatabaseService.get("list"), new TypeReference<List<DemoEntity>>() {
             });
         }
-        return dbService.get(key);
+        return fileDatabaseService.get(key);
     }
 
     // http://127.0.0.1:18888/data/all
     @GetMapping("/all")
     public Map<String, Object> getAll() {
-        return dbService.getAll();
+        return fileDatabaseService.getAll();
     }
 
     // 根据key删除元素
     // URL: http://127.0.0.1:18888/data/remove?key=123
     @GetMapping("/remove")
     public Boolean remove(@RequestParam String key) {
-        dbService.remove(key);
+        fileDatabaseService.remove(key);
         return true;
     }
 }

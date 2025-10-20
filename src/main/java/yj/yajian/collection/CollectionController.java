@@ -27,20 +27,20 @@ public class CollectionController {
     private static final String perfix = "collection-";
 
     @Resource
-    private FileDatabaseService dbService;
+    private FileDatabaseService fileDatabaseService;
 
     @Resource
-    private TempFileDatabaseService tempService;
+    private TempFileDatabaseService tempFileDatabaseService;
 
     // 上传文件存储目录 ${app.upload.folder:./uploads}
     @Value("${app.upload.folder}")
-    private String UPLOADED_FOLDER;
+    private String UPLOAD_FOLDER;
 
     @GetMapping
     public List<CollectionItem> getAllCollections(@RequestParam(defaultValue = "0") int page,
                                                   @RequestParam(defaultValue = "100") int size) {
         // 返回所有收藏，支持分页
-        List<CollectionItem> allItems = dbService.getAll().entrySet().stream()
+        List<CollectionItem> allItems = fileDatabaseService.getAll().entrySet().stream()
                 .filter(entry -> entry.getKey().startsWith(perfix))
                 .map(entry -> JSONObject.parseObject(entry.getValue().toString(), CollectionItem.class))
                 .sorted((item1, item2) -> Long.compare(item2.getId(), item1.getId())) // 按ID倒序排序
@@ -59,7 +59,7 @@ public class CollectionController {
     @GetMapping("/{id}")
     public CollectionItem getCollectionById(@PathVariable Long id) {
         // 返回指定ID的收藏
-        String s = dbService.get(perfix + id);
+        String s = fileDatabaseService.get(perfix + id);
         if (StringUtils.isEmpty(s)) {
             return new CollectionItem();
         }
@@ -92,8 +92,8 @@ public class CollectionController {
         }
 
         item.setId(Long.parseLong(new SimpleDateFormat("yyyyMMddHHmmss").format(new Date())));
-        dbService.put(perfix + item.getId(), JSONObject.toJSONString(item));
-        dbService.autoSave();
+        fileDatabaseService.put(perfix + item.getId(), JSONObject.toJSONString(item));
+        fileDatabaseService.autoSave();
         tempSave(item);
         return ResponseEntity.ok(item);
     }
@@ -125,8 +125,8 @@ public class CollectionController {
             }
         }
 
-        dbService.put(perfix + item.getId(), JSONObject.toJSONString(item));
-        dbService.autoSave();
+        fileDatabaseService.put(perfix + item.getId(), JSONObject.toJSONString(item));
+        fileDatabaseService.autoSave();
         tempSave(item);
         return ResponseEntity.ok(item);
     }
@@ -134,14 +134,14 @@ public class CollectionController {
     @DeleteMapping("/{id}")
     public ResponseEntity<Long> deleteCollection(@PathVariable Long id) {
         // 删除收藏
-        dbService.remove(perfix + id);
+        fileDatabaseService.remove(perfix + id);
         return ResponseEntity.ok(id);
     }
 
     // 文件保存方法
     private String saveFile(MultipartFile file) throws IOException {
         // 创建上传目录
-        Path uploadPath = Paths.get(UPLOADED_FOLDER);
+        Path uploadPath = Paths.get(UPLOAD_FOLDER);
         if (!Files.exists(uploadPath)) {
             Files.createDirectories(uploadPath);
         }
@@ -158,7 +158,7 @@ public class CollectionController {
         Path filePath = uploadPath.resolve(fileName);
         Files.write(filePath, file.getBytes());
         // 根据 UPLOADED_FOLDER + "/" + fileName 构造html img标签
-        String filePathName = UPLOADED_FOLDER.replace(".", "") + "/" + fileName;
+        String filePathName = UPLOAD_FOLDER.replace(".", "") + "/" + fileName;
         // style="max-width: 60%; height: auto; max-height: 300px; margin: 10px; border: 1px solid #ddd; border-radius: 4px; object-fit: contain;"
         return "<img src=\"" + filePathName + "\" alt=\"" + fileName + "\" class=\"img-collection\">";
     }
@@ -166,7 +166,7 @@ public class CollectionController {
     @PutMapping("/{id}/pin")
     public ResponseEntity<CollectionItem> pinCollection(@PathVariable Long id) {
         // 获取原始收藏项
-        String s = dbService.get(perfix + id);
+        String s = fileDatabaseService.get(perfix + id);
         if (StringUtils.isEmpty(s)) {
             return ResponseEntity.notFound().build();
         }
@@ -181,8 +181,8 @@ public class CollectionController {
         item.setTime(new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date()));
 
         // 保存更新后的项
-        dbService.put(perfix + item.getId(), JSONObject.toJSONString(item));
-        dbService.autoSave();
+        fileDatabaseService.put(perfix + item.getId(), JSONObject.toJSONString(item));
+        fileDatabaseService.autoSave();
 
         return ResponseEntity.ok(item);
     }
@@ -192,15 +192,15 @@ public class CollectionController {
         keys.add(TempFileDatabaseService.key);
         item.setKeys(keys);
 
-        tempService.loadDataFromFile();
-        tempService.put(perfix + item.getId(), JSONObject.toJSONString(item));
-        tempService.saveToFile();
+        tempFileDatabaseService.loadDataFromFile();
+        tempFileDatabaseService.put(perfix + item.getId(), JSONObject.toJSONString(item));
+        tempFileDatabaseService.saveToFile();
     }
 
     @GetMapping("/count")
     public int getCollectionCount() {
         // 返回收藏总数
-        return (int) dbService.getAll().entrySet().stream()
+        return (int) fileDatabaseService.getAll().entrySet().stream()
                 .filter(entry -> entry.getKey().startsWith(perfix))
                 .count();
     }

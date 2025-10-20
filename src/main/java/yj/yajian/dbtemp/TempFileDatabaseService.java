@@ -6,7 +6,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import yj.yajian.bookmark.Bookmark;
 import yj.yajian.collection.CollectionItem;
@@ -41,7 +40,10 @@ public class TempFileDatabaseService {
 
     // 数据存储目录 ${database.directory:./data}
     @Value("${database.directory}")
-    private String dataDirectory;
+    private String databaseDirectory;
+
+    @Resource
+    private FileDatabaseService fileDatabaseService;
 
     // 序列化对象 Jackson vs Fastjson
     private final ObjectMapper objectMapper = new ObjectMapper();
@@ -66,7 +68,7 @@ public class TempFileDatabaseService {
 
     public synchronized Map<String, String> loadDataFromFile() {
         try {
-            Path dirPath = Paths.get(dataDirectory + "temp");
+            Path dirPath = Paths.get(databaseDirectory + "temp");
             if (!Files.exists(dirPath)) {
                 Files.createDirectories(dirPath);
             }
@@ -94,7 +96,7 @@ public class TempFileDatabaseService {
 
     public synchronized void saveToFile() {
         try {
-            Path dirPath = Paths.get(dataDirectory + "temp");
+            Path dirPath = Paths.get(databaseDirectory + "temp");
             if (!Files.exists(dirPath)) {
                 Files.createDirectories(dirPath);
             }
@@ -116,10 +118,6 @@ public class TempFileDatabaseService {
         }
     }
 
-    @Resource
-    private FileDatabaseService dbService;
-
-    @Scheduled(initialDelay = 15000, fixedDelay = 120000) // 更新心跳
     public void autoKeepAlive() {
         log.info("Executing keep alive at: " + new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date())); // 添加日志输出
         loadDataFromFile();
@@ -147,8 +145,7 @@ public class TempFileDatabaseService {
         saveToFile();
     }
 
-    @Scheduled(initialDelay = 30000, fixedDelay = 120000) // 同步：收藏、书签
-    public synchronized void autoRead() {
+    public synchronized void autoReadTemp() {
         log.info("Executing sync temp data at: " + new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date())); // 添加日志输出
         loadDataFromFile();
         String mapStr = TEMPDATABASE.get("keep-alive");
@@ -172,9 +169,9 @@ public class TempFileDatabaseService {
             log.info(entry.getKey() + ", " + entry.getValue());
             if (entry.getKey().startsWith("collection-")) {
                 CollectionItem itemTemp = JSON.parseObject(entry.getValue(), CollectionItem.class);
-                CollectionItem item = JSON.parseObject(dbService.get(entry.getKey()), CollectionItem.class);
+                CollectionItem item = JSON.parseObject(fileDatabaseService.get(entry.getKey()), CollectionItem.class);
                 if (item == null || itemTemp.getTime().compareTo(item.getTime()) > 0) {
-                    dbService.put(entry.getKey(), JSONObject.toJSONString(itemTemp));
+                    fileDatabaseService.put(entry.getKey(), JSONObject.toJSONString(itemTemp));
                 } else {
                     log.info("数据已更新完毕：{}", entry.getKey());
                 }
@@ -190,9 +187,9 @@ public class TempFileDatabaseService {
             }
             if (entry.getKey().startsWith("bookmark-")) {
                 Bookmark itemTemp = JSON.parseObject(entry.getValue(), Bookmark.class);
-                Bookmark item = JSON.parseObject(dbService.get(entry.getKey()), Bookmark.class);
+                Bookmark item = JSON.parseObject(fileDatabaseService.get(entry.getKey()), Bookmark.class);
                 if (item == null || !(itemTemp.getTitle() + itemTemp.getUrl()).equals(item.getTitle() + item.getUrl())) {
-                    dbService.put(entry.getKey(), JSONObject.toJSONString(itemTemp));
+                    fileDatabaseService.put(entry.getKey(), JSONObject.toJSONString(itemTemp));
                 } else {
                     log.info("数据已更新完毕：{}", entry.getKey());
                 }
