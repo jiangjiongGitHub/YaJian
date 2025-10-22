@@ -145,7 +145,7 @@ public class TempFileDatabaseService {
         saveToFile();
     }
 
-    public synchronized void autoReadTemp() {
+    public synchronized void autoSyncTemp() {
         log.info("Executing sync temp data at: " + new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date())); // 添加日志输出
         loadDataFromFile();
         String mapStr = TEMPDATABASE.get("keep-alive");

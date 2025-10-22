@@ -34,7 +34,7 @@ public class ScheduledServer {
             tempFileDatabaseService.autoKeepAlive();
 
         if (RUN_COUNT % 4 == 1)
-            tempFileDatabaseService.autoReadTemp();
+            tempFileDatabaseService.autoSyncTemp();
 
         if (RUN_COUNT % 10 == 1)
             fileDatabaseService.autoSave();
@@ -42,6 +42,7 @@ public class ScheduledServer {
         if (RUN_COUNT % 10 == 1)
             fileUploadController.autoDelete();
 
+        log.info("RUN_COUNT: {}", RUN_COUNT);
         RUN_COUNT++;
     }
 
